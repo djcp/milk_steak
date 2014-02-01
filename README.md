@@ -1,7 +1,7 @@
-Recipevolve
+MilkSteak
 ===========
 
-Recipevolve is a recipe tracker that:
+MilkSteak is a recipe tracker that:
 
 FIRST COURSE:
 -------------
