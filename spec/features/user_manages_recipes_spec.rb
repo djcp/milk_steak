@@ -41,4 +41,5 @@ Serve with raw jellybeans
 end
 
 def user_logs_in
+  visit new_user_session_path
 end

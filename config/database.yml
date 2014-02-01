@@ -1,6 +1,6 @@
 development: &default
   adapter: postgresql
-  database: recipevolve_development
+  database: milk_steak_development
   encoding: utf8
   min_messages: warning
   pool: 5
@@ -8,4 +8,4 @@ development: &default
 
 test:
   <<: *default
-  database: recipevolve_test
+  database: milk_steak_test
