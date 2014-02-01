@@ -1,4 +1,4 @@
-Recipevolve::Application.configure do
+MilkSteak::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
   # In the development environment your application's code is reloaded on
@@ -31,5 +31,5 @@ Recipevolve::Application.configure do
   config.action_controller.action_on_unpermitted_parameters = :raise
 
 
-  config.action_mailer.default_url_options = { host: 'recipevolve.local' }
+  config.action_mailer.default_url_options = { host: 'milksteak.local' }
 end

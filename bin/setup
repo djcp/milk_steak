@@ -29,5 +29,5 @@ else
 fi
 
 # Set up staging and production git remotes
-git remote add staging git@heroku.com:recipevolve-staging.git
-git remote add production git@heroku.com:recipevolve-production.git
+git remote add staging git@heroku.com:milk_steak-staging.git
+git remote add production git@heroku.com:milk_steak-production.git

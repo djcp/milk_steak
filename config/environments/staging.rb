@@ -1,6 +1,6 @@
 Mail.register_interceptor RecipientInterceptor.new(ENV['EMAIL_RECIPIENTS'])
 require Rails.root.join('config/initializers/smtp')
-Recipevolve::Application.configure do
+MilkSteak::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Code is not reloaded between requests.
@@ -86,5 +86,5 @@ Recipevolve::Application.configure do
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
 
-  config.action_mailer.default_url_options = { host: 'staging.recipevolve.com' }
+  config.action_mailer.default_url_options = { host: 'staging.milksteak.com' }
 end

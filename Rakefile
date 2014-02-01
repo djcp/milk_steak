@@ -3,7 +3,7 @@
 
 require File.expand_path('../config/application', __FILE__)
 
-Recipevolve::Application.load_tasks
+MilkSteak::Application.load_tasks
 if defined?(RSpec)
   desc 'Run factory specs.'
 

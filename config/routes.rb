@@ -1,3 +1,3 @@
-Recipevolve::Application.routes.draw do
+MilkSteak::Application.routes.draw do
   devise_for :users
 end

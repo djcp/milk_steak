@@ -9,7 +9,7 @@
 # if you're sharing your code publicly.
 
 if ['test', 'development'].include? Rails.env
-  Recipevolve::Application.config.secret_key_base = 'abc' * 30
+  MilkSteak::Application.config.secret_key_base = 'abc' * 30
 else
-  Recipevolve::Application.config.secret_key_base = ENV['SECRET_KEY_BASE']
+  MilkSteak::Application.config.secret_key_base = ENV['SECRET_KEY_BASE']
 end
