@@ -19,6 +19,7 @@ gem 'simple_form'
 gem 'uglifier'
 gem 'unicorn'
 gem 'devise'
+gem 'acts_as_list'
 
 group :development do
   gem 'better_errors'

@@ -11,10 +11,38 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140201191902) do
+ActiveRecord::Schema.define(version: 20140202225543) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "ingredients", force: true do |t|
+    t.string "name",               null: false
+    t.string "notes", limit: 1024
+    t.string "url",   limit: 1024
+  end
+
+  add_index "ingredients", ["name"], name: "index_ingredients_on_name", using: :btree
+
+  create_table "recipe_ingredients", force: true do |t|
+    t.integer "recipe_id",     null: false
+    t.integer "ingredient_id", null: false
+    t.integer "position"
+    t.integer "quantity"
+    t.string  "unit"
+  end
+
+  add_index "recipe_ingredients", ["ingredient_id"], name: "index_recipe_ingredients_on_ingredient_id", using: :btree
+  add_index "recipe_ingredients", ["position"], name: "index_recipe_ingredients_on_position", using: :btree
+  add_index "recipe_ingredients", ["recipe_id", "ingredient_id"], name: "index_recipe_ingredients_on_recipe_id_and_ingredient_id", unique: true, using: :btree
+  add_index "recipe_ingredients", ["recipe_id"], name: "index_recipe_ingredients_on_recipe_id", using: :btree
+
+  create_table "recipes", force: true do |t|
+    t.string  "name"
+    t.integer "user_id"
+  end
+
+  add_index "recipes", ["user_id"], name: "index_recipes_on_user_id", using: :btree
 
   create_table "users", force: true do |t|
     t.string   "email",                  default: "", null: false

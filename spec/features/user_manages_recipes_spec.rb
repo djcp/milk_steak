@@ -6,23 +6,33 @@ feature 'User manages recipes' do
 
     click_on 'New Recipe'
 
-    recipe_on_page.fill_in_form_with(
-      name: 'Milk Steak',
-      ingredients: '1 lb steak
+    recipe_on_page.fill_in_main_form_with(
+      'Name' => 'Milk Steak'
+    )
+    recipe_on_page.fill_in_ingredients_with(
+      '1 lb steak
 8 oz milk
 2 tsp salt
 1 tablespoon butter
-pinch black pepper',
-      directions: 'Season steak with salt and pepper
+pinch black pepper'
+    )
+    recipe_on_page.fill_in_directions_with(
+      'Season steak with salt and pepper
 Saute steak until browned on both sides
 Simmer steak in milk until done
 Serve with raw jellybeans
-',
-      cooking_methods: 'saute, simmer',
-      cultural_influences: 'American, Philadelphia',
-      courses: 'dinner',
-      dietary_restrictions: ''
+'
     )
+    recipe_on_page.fill_in_cooking_methods_with(
+      'saute, simmer'
+    )
+    recipe_on_page.fill_in_cultural_influences_with(
+      'American, Philadelphia'
+    )
+    recipe_on_page.fill_in_courses_with(
+      'dinner'
+    )
+    recipe_on_page.fill_in_dietary_restrictions_with('')
 
     recipe_on_page.submit
 
@@ -46,4 +56,8 @@ def user_logs_in
   fill_in 'Email', with: user.email
   fill_in 'Password', with: user.password
   click_on 'Sign in'
+end
+
+def recipe_on_page
+  @recipe_on_page = RecipeOnPage.new
 end

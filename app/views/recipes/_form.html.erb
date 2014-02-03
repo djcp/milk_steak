@@ -1,0 +1,5 @@
+<%= simple_form_for @recipe do |f| %>
+  <%= f.input :name %>
+  <%= f.simple_fields_for :ingredients do %>
+  <% end %>
+<% end %>
