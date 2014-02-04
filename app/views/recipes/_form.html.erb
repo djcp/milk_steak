@@ -1,5 +1,15 @@
 <%= simple_form_for @recipe do |f| %>
   <%= f.input :name %>
-  <%= f.simple_fields_for :ingredients do %>
+  <%= f.simple_fields_for :recipe_ingredients do |ri_form| %>
+    <%= ri_form.input :quantity %>
+    <%= ri_form.input :unit %>
+    <%= ri_form.simple_fields_for :ingredient do |i_form| %>
+      <%= i_form.input :name %>
+    <% end %>
   <% end %>
+  <%= f.input :preparation_time %>
+  <%= f.input :cooking_time %>
+  <%= f.input :servings %>
+  <%= f.input :serving_units %>
+  <%= f.button :submit %>
 <% end %>

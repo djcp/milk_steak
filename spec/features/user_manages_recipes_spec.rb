@@ -7,15 +7,23 @@ feature 'User manages recipes' do
     click_on 'New Recipe'
 
     recipe_on_page.fill_in_main_form_with(
-      'Name' => 'Milk Steak'
+      'Name' => 'Milk Steak',
+      'Preparation Time' => '5',
+      'Cooking Time' => '15',
+      'Servings' => '1',
+      'Serving Units' => 'servings'
     )
+
     recipe_on_page.fill_in_ingredients_with(
-      '1 lb steak
-8 oz milk
-2 tsp salt
-1 tablespoon butter
-pinch black pepper'
+      [
+        { quantity: 1, unit: 'lb', name: 'steak' },
+        { quantity: 8, unit: 'oz', name: 'milk' },
+        { quantity: 1, unit: 'tbps', name: 'butter' },
+        { quantity: 1, unit: 'pinch', name: 'black pepper' }
+      ]
     )
+
+    click_on 'Create Recipe'
     recipe_on_page.fill_in_directions_with(
       'Season steak with salt and pepper
 Saute steak until browned on both sides

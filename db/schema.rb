@@ -39,6 +39,10 @@ ActiveRecord::Schema.define(version: 20140202225543) do
 
   create_table "recipes", force: true do |t|
     t.string  "name"
+    t.integer "preparation_time"
+    t.integer "cooking_time"
+    t.integer "servings"
+    t.string  "serving_units"
     t.integer "user_id"
   end
 

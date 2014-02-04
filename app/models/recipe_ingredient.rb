@@ -4,6 +4,7 @@ class RecipeIngredient < ActiveRecord::Base
 
   validates :recipe, presence: true
   validates :ingredient, presence: true
+  accepts_nested_attributes_for :ingredient
 
   acts_as_list scope: :recipe
 end
