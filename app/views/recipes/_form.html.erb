@@ -1,15 +1,27 @@
 <%= simple_form_for @recipe do |f| %>
-  <%= f.input :name %>
-  <%= f.simple_fields_for :recipe_ingredients do |ri_form| %>
-    <%= ri_form.input :quantity %>
-    <%= ri_form.input :unit %>
-    <%= ri_form.simple_fields_for :ingredient do |i_form| %>
-      <%= i_form.input :name %>
+  <fieldset>
+    <legend>New Recipe</legend>
+    <%= f.input :name %>
+    <div class="metadata">
+      <%= f.input :preparation_time %>
+      <%= f.input :cooking_time %>
+      <%= f.input :servings %>
+      <%= f.input :serving_units %>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Ingredients</legend>
+    <%= f.simple_fields_for :recipe_ingredients do |ri_form| %>
+      <%= ri_form.input :quantity %>
+      <%= ri_form.input :unit %>
+      <%= ri_form.simple_fields_for :ingredient do |i_form| %>
+        <%= i_form.input :name %>
+      <% end %>
     <% end %>
-  <% end %>
-  <%= f.input :preparation_time %>
-  <%= f.input :cooking_time %>
-  <%= f.input :servings %>
-  <%= f.input :serving_units %>
-  <%= f.button :submit %>
+  </fieldset>
+
+  <fieldset>
+    <%= f.button :submit %>
+  </fieldset>
 <% end %>

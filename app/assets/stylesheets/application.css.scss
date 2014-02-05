@@ -26,3 +26,39 @@ nav {
     @include omega();
   }
 }
+
+input {
+  width: 100%;
+}
+
+form.new_recipe {
+  fieldset {
+    margin-bottom: 1em;
+    @include span-columns(12);
+    @include omega();
+    legend {
+      font-size: 1.5em;
+    }
+  }
+  .metadata {
+    @include span-columns(12);
+    @include omega();
+
+    .recipe_preparation_time,
+    .recipe_cooking_time,
+    .recipe_servings,
+    .recipe_serving_units {
+      @include span-columns(2);
+    }
+  }
+  .recipe_recipe_ingredients_quantity{
+    @include span-columns(2);
+  }
+  .recipe_recipe_ingredients_unit{
+    @include span-columns(2);
+  }
+  .recipe_recipe_ingredients_ingredient_name{
+    @include span-columns(8);
+    @include omega();
+  }
+}
