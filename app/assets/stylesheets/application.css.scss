@@ -1,8 +1,28 @@
 @charset 'utf-8';
 
+@import 'normalize';
+
 ///////////////////////////////////////////////////////////////////////////////
 
 @import 'bourbon';
 @import 'neat';
 
 ///////////////////////////////////////////////////////////////////////////////
+
+body {
+  @include outer-container;
+}
+
+nav {
+  ul, li {
+    margin-left: 0;
+    padding-left: 0;
+  }
+  li {
+    @include span-columns(9);
+  }
+  li.login {
+    @include span-columns(3);
+    @include omega();
+  }
+}
