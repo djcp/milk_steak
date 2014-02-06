@@ -5,6 +5,9 @@ describe RecipeIngredient do
   it { should belong_to(:ingredient) }
   it { should validate_presence_of(:recipe) }
   it { should validate_presence_of(:ingredient) }
+  it { should accept_nested_attributes_for(:ingredient) }
+  it { should validate_numericality_of(:quantity) }
+  it { should ensure_length_of(:unit).is_at_most(255) }
 
   context "position" do
     it "has a logical default position" do
