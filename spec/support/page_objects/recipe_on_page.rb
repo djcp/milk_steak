@@ -1,6 +1,28 @@
 class RecipeOnPage
   include Capybara::DSL
 
+  def title
+    within '.recipe' do
+      find('header h1').text
+    end
+  end
+
+  def ingredient_names
+    all('.recipe_ingredient .name').map(&:text)
+  end
+
+  def ingredient_quantities
+    all('.recipe_ingredient .quantity').map(&:text)
+  end
+
+  def user
+    find('.user').text
+  end
+
+  def directions
+    find('.recipe .directions').text
+  end
+
   def fill_in_main_form_with(attributes = {})
     attributes.each do |k, v|
       field_id = "recipe_#{k.gsub(' ', '').underscore}"
@@ -27,5 +49,9 @@ class RecipeOnPage
 
   def fill_in_directions_with(directions)
     fill_in "recipe_directions", with: directions
+  end
+
+  def submit
+    click_on 'Create Recipe'
   end
 end

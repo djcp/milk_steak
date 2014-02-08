@@ -8,6 +8,7 @@ class CreateRecipes < ActiveRecord::Migration
       t.string :serving_units
       t.string :directions, limit: 8.kilobytes, null: false
       t.belongs_to :user
+      t.timestamps
     end
 
     add_index :recipes, :user_id

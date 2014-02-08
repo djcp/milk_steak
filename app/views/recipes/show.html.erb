@@ -1,0 +1,14 @@
+<article class="<%= dom_class(@recipe) %>" id="<%= dom_id(@recipe) %>">
+  <header>
+    <h1><%= @recipe.name %></h1>
+    <h2>On: <%= @recipe.created_at %>, by <span class="user"><%= @recipe.user_email %></span></h2>
+  </header>
+
+  <ul class="recipe_ingredients">
+    <%= render @recipe.recipe_ingredients %>
+  </ul>
+
+  <div class="directions">
+    <%= @recipe.directions %>
+  </div>
+</article>

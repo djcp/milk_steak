@@ -6,6 +6,7 @@ class CreateRecipeIngredients < ActiveRecord::Migration
       t.integer :position
       t.integer :quantity
       t.string :unit
+      t.timestamps
     end
 
     add_index :recipe_ingredients, :position

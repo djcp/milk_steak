@@ -8,6 +8,35 @@ class RecipesController < ApplicationController
   end
 
   def create
+    recipe = Recipe.create!(recipe_params.merge(user: current_user))
+    redirect_to recipe_path(recipe)
+  rescue Exception => e
+    flash[:error] = "Couldn't create that recipe: #{e.inspect}"
+    redirect_to '/'
+  end
 
+  def show
+    @recipe = Recipe.find(params[:id])
+  end
+
+  private
+
+  def recipe_params
+    params.require(:recipe).permit(
+      :name,
+      :preparation_time,
+      :cooking_time,
+      :services,
+      :serving_units,
+      :directions,
+      :servings,
+      recipe_ingredients_attributes: [
+        :quantity,
+        :unit,
+        ingredient_attributes: [
+          :name
+        ]
+      ]
+    )
   end
 end

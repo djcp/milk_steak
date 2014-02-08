@@ -12,6 +12,7 @@ FactoryGirl.define do
 
   factory :recipe do
     name
+    directions "Do stuff"
   end
 
   factory :ingredient do

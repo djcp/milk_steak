@@ -13,11 +13,13 @@
   <fieldset>
     <legend>Ingredients</legend>
     <%= f.simple_fields_for :recipe_ingredients do |ri_form| %>
-      <%= ri_form.input :quantity %>
-      <%= ri_form.input :unit %>
-      <%= ri_form.simple_fields_for :ingredient do |i_form| %>
-        <%= i_form.input :name %>
-      <% end %>
+      <div class="ingredient" data-ingredient-index="<%= ri_form.index %>">
+        <%= ri_form.input :quantity %>
+        <%= ri_form.input :unit %>
+        <%= ri_form.simple_fields_for :ingredient do |i_form| %>
+          <%= i_form.input :name, required: false %>
+        <% end %>
+      </div>
     <% end %>
   </fieldset>
 

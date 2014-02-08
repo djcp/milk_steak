@@ -9,6 +9,11 @@ describe RecipeIngredient do
   it { should validate_numericality_of(:quantity) }
   it { should ensure_length_of(:unit).is_at_most(255) }
 
+  it "delegates name to ingredient" do
+    recipe_ingredient = build(:recipe_ingredient)
+    expect(recipe_ingredient.name).to eq recipe_ingredient.ingredient.name
+  end
+
   context "position" do
     it "has a logical default position" do
       recipe_ingredient = create(:recipe_ingredient)
