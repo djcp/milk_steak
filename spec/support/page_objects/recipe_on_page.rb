@@ -25,7 +25,7 @@ class RecipeOnPage
       with: ingredient[:name]
   end
 
-  def fill_in_directions_with(value)
-
+  def fill_in_directions_with(directions)
+    fill_in "recipe_directions", with: directions
   end
 end

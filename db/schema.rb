@@ -38,11 +38,12 @@ ActiveRecord::Schema.define(version: 20140202225543) do
   add_index "recipe_ingredients", ["recipe_id"], name: "index_recipe_ingredients_on_recipe_id", using: :btree
 
   create_table "recipes", force: true do |t|
-    t.string  "name"
+    t.string  "name",                          null: false
     t.integer "preparation_time"
     t.integer "cooking_time"
     t.integer "servings"
     t.string  "serving_units"
+    t.string  "directions",       limit: 8192, null: false
     t.integer "user_id"
   end
 

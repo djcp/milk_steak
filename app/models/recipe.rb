@@ -9,4 +9,6 @@ class Recipe < ActiveRecord::Base
   validates :name, presence: true,
     length: { maximum: 255 }
   validates :serving_units, length: { maximum: 255 }
+  validates :directions, presence: true,
+    length: { maximum: 8.kilobytes }
 end

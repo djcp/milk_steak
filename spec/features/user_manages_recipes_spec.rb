@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-feature 'User manages recipes' do
+feature 'User manages recipes', js: true do
   scenario 'adds a recipe' do
     user = user_logs_in
 
@@ -23,7 +23,6 @@ feature 'User manages recipes' do
       ]
     )
 
-    click_on 'Create Recipe'
     recipe_on_page.fill_in_directions_with(
       'Season steak with salt and pepper
 Saute steak until browned on both sides
@@ -31,6 +30,7 @@ Simmer steak in milk until done
 Serve with raw jellybeans
 '
     )
+
     recipe_on_page.fill_in_cooking_methods_with(
       'saute, simmer'
     )

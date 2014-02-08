@@ -27,7 +27,7 @@ nav {
   }
 }
 
-input {
+input,textarea {
   width: 100%;
 }
 
@@ -60,5 +60,8 @@ form.new_recipe {
   .recipe_recipe_ingredients_ingredient_name{
     @include span-columns(8);
     @include omega();
+  }
+  .recipe_directions textarea{
+    height: 10em;
   }
 }
