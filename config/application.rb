@@ -14,6 +14,7 @@ Bundler.require(:default, Rails.env)
 module MilkSteak
   class Application < Rails::Application
     config.active_record.default_timezone = :utc
+    I18n.enforce_available_locales = true
 
     config.generators do |generate|
       generate.helper false

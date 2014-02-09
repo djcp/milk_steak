@@ -1,7 +1,9 @@
 <nav>
   <ul>
     <li>
-      <%= link_to t('ui.recipes.links.new'), new_recipe_path %>
+      <% if current_user.present? %>
+        <%= link_to t('ui.recipes.links.new'), new_recipe_path %>
+      <% end %>
     </li>
     <li class="login">
     <% if current_user.present? %>

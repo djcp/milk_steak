@@ -20,6 +20,7 @@ RSpec.configure do |config|
   end
 
   config.include Features, type: :feature
+  config.include Devise::TestHelpers, :type => :controller
   config.include FactoryGirl::Syntax::Methods
   config.infer_base_class_for_anonymous_controllers = false
   config.order = 'random'

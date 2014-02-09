@@ -1,4 +1,5 @@
 en:
+  created: Created!
   date:
     formats:
       default: '%m/%d/%Y'

@@ -1,4 +1,6 @@
 class RecipesController < ApplicationController
+  before_filter :redirect_to_login, if: -> {current_user.blank?}
+
   def new
     @recipe = Recipe.new
     5.times do
@@ -9,8 +11,9 @@ class RecipesController < ApplicationController
 
   def create
     recipe = Recipe.create!(recipe_params.merge(user: current_user))
+    flash[:message] = t('created')
     redirect_to recipe_path(recipe)
-  rescue Exception => e
+  rescue ActiveRecord::RecordInvalid => e
     flash[:error] = "Couldn't create that recipe: #{e.inspect}"
     redirect_to '/'
   end
