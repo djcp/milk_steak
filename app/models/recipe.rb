@@ -3,6 +3,9 @@ class Recipe < ActiveRecord::Base
   has_many :ingredients, through: :recipe_ingredients
   belongs_to :user
 
+  acts_as_taggable_on :cooking_methods, :cultural_influences,
+    :courses, :dietary_restrictions
+
   accepts_nested_attributes_for :recipe_ingredients,
     reject_if: ->(attr) { attr['unit'].blank? }
 

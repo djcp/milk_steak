@@ -7,6 +7,10 @@ class RecipeOnPage
     end
   end
 
+  def cooking_methods
+    all('.cooking_method').map(&:text)
+  end
+
   def ingredient_names
     all('.recipe_ingredient .name').map(&:text)
   end
@@ -34,6 +38,22 @@ class RecipeOnPage
     ingredients.each_with_index do |ingredient, index|
       fill_in_ingredient(ingredient, index)
     end
+  end
+
+  def fill_in_cooking_methods_with(stuff)
+    fill_in "recipe_cooking_method_list", with: stuff
+  end
+
+  def fill_in_cultural_influences_with(stuff)
+    fill_in "recipe_cultural_influence_list", with: stuff
+  end
+
+  def fill_in_courses_with(stuff)
+    fill_in "recipe_course_list", with: stuff
+  end
+
+  def fill_in_dietary_restrictions_with(stuff)
+    fill_in "recipe_dietary_restriction_list", with: stuff
   end
 
   def fill_in_ingredient(ingredient, index)

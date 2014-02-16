@@ -31,16 +31,16 @@ Serve with raw jellybeans
 '
     )
 
-    # recipe_on_page.fill_in_cooking_methods_with(
-    #   'saute, simmer'
-    # )
-    # recipe_on_page.fill_in_cultural_influences_with(
-    #   'American, Philadelphia'
-    # )
-    # recipe_on_page.fill_in_courses_with(
-    #   'dinner'
-    # )
-    # recipe_on_page.fill_in_dietary_restrictions_with('')
+    recipe_on_page.fill_in_cooking_methods_with(
+      'saute, simmer'
+    )
+    recipe_on_page.fill_in_cultural_influences_with(
+      'American, Philadelphia'
+    )
+    recipe_on_page.fill_in_courses_with(
+      'dinner'
+    )
+    recipe_on_page.fill_in_dietary_restrictions_with('low salt')
 
     recipe_on_page.submit
 
@@ -50,9 +50,10 @@ Serve with raw jellybeans
       '1', '8', '1', '1'
     ])
     expect(recipe_on_page.directions).to include('Season steak')
-    # expect(recipe_on_page.cooking_methods).to include('saute')
-    # expect(recipe_on_page.cultural_influences).to include('American')
-    # expect(recipe_on_page.courses).to include('Dinner')
+    expect(recipe_on_page.cooking_methods).to include('saute')
+    expect(recipe_on_page.cultural_influences).to include('american')
+    expect(recipe_on_page.courses).to include('dinner')
+    expect(recipe_on_page.dietary_restrictions).to include('low salt')
     expect(recipe_on_page.user).to eq user.email
   end
 end

@@ -17,4 +17,9 @@ describe Recipe do
   it { should validate_numericality_of(:preparation_time) }
   it { should validate_numericality_of(:cooking_time) }
   it { should validate_numericality_of(:servings) }
+
+  it_behaves_like 'an object tagged in the context of', 'cooking_methods'
+  it_behaves_like 'an object tagged in the context of', 'cultural_influences'
+  it_behaves_like 'an object tagged in the context of', 'courses'
+  it_behaves_like 'an object tagged in the context of', 'dietary_restrictions'
 end

@@ -20,6 +20,7 @@ gem 'uglifier'
 gem 'unicorn'
 gem 'devise'
 gem 'acts_as_list'
+gem 'acts_as_taggable_on'
 
 group :development do
   gem 'better_errors'
