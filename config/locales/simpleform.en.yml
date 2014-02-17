@@ -1,0 +1,24 @@
+en:
+  simple_form:
+    labels:
+      recipe:
+        cooking_method_list: 'Cooking Methods'
+        cultural_influence_list: 'Cultural Influences'
+        course_list: 'Appropriate Courses'
+        dietary_restriction_list: 'Dietary Restrictions'
+        cooking_time: 'Total cooking time'
+    hints:
+      recipe:
+        preparation_time: 'in minutes'
+        cooking_time: 'in minutes'
+        cooking_method_list: 'A comma-separated list of the major cooking methods involved in creating this recipe'
+        cultural_influence_list: 'A comma-separated list of the "influences" in this recipe - tex-mex? Southern India? Chinese?'
+        course_list: 'A comma-separated list of the courses or occasions this dish is appropriate for.'
+        dietary_restriction_list: 'What common "restricted diets" is this recipe good for - Vegan? Low-salt? Gluten-free?'
+        serving_units: 'servings, slices, muffins, etc.'
+    placeholders:
+      recipe:
+        cooking_method_list: 'bake, saute, steam, etc.'
+        cultural_influence_list: 'indian, chinese, american, etc.'
+        course_list: 'supper, breakfast, dessert, salad, christmas dinner, etc.'
+        dietary_restriction_list: 'vegetarian, vegan, gluten-free, soy-free, etc.'

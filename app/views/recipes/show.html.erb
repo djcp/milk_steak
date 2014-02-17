@@ -4,11 +4,19 @@
     <h2>On: <%= @recipe.created_at %>, by <span class="user"><%= @recipe.user_email %></span></h2>
   </header>
 
-  <ul class="recipe_ingredients">
-    <%= render @recipe.recipe_ingredients %>
-  </ul>
+  <div class="recipe-narrative">
+    <ul class="recipe_ingredients">
+      <%= render @recipe.recipe_ingredients %>
+    </ul>
 
-  <div class="directions">
-    <%= @recipe.directions %>
+    <div class="directions">
+      <%= @recipe.directions %>
+    </div>
   </div>
+
+  <%= render 'tagged_attributes', recipe: @recipe, attribute: 'cooking_methods' %>
+  <%= render 'tagged_attributes', recipe: @recipe, attribute: 'cultural_influences' %>
+  <%= render 'tagged_attributes', recipe: @recipe, attribute: 'courses' %>
+  <%= render 'tagged_attributes', recipe: @recipe, attribute: 'dietary_restrictions' %>
+
 </article>

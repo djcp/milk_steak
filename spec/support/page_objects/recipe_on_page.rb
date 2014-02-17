@@ -8,7 +8,19 @@ class RecipeOnPage
   end
 
   def cooking_methods
-    all('.cooking_method').map(&:text)
+    all('.cooking_methods a').map(&:text)
+  end
+
+  def cultural_influences
+    all('.cultural_influences a').map(&:text)
+  end
+
+  def courses
+    all('.courses a').map(&:text)
+  end
+
+  def dietary_restrictions
+    all('.dietary_restrictions a').map(&:text)
   end
 
   def ingredient_names

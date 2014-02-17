@@ -2,14 +2,10 @@
 
 @import 'normalize';
 
-///////////////////////////////////////////////////////////////////////////////
-
 @import 'bourbon';
 @import 'neat';
 
-///////////////////////////////////////////////////////////////////////////////
-
-body {
+.main-container {
   @include outer-container;
 }
 
@@ -63,5 +59,20 @@ form.new_recipe {
   }
   .recipe_directions textarea{
     height: 10em;
+  }
+}
+
+.recipe {
+  @include fill-parent;
+  @include span-columns(12);
+  @include omega;
+
+  .recipe-narrative{
+    @include span-columns(8 of 12);
+    min-height: 20em;
+  }
+  aside {
+    @include span-columns(4 of 12);
+    @include omega();
   }
 }
