@@ -41,20 +41,43 @@ describe RecipesController do
           expect(flash[:message]).to eq I18n.t('created')
         end
       end
+
+      context 'invalid recipe' do
+        it 'sets a logical flash message' do
+          post :create, {recipe: {name: 'foo'}}
+
+          expect(flash[:error]).to include I18n.t('invalid_recipe_creation')
+        end
+        it 'does not error' do
+          post :create, {recipe: {name: 'foo'}}
+
+          expect(response).to be_successful
+        end
+      end
     end
   end
 
   context 'guest user' do
-    it 'is redirected to the sign-up form' do
-      get :new
+    context '#new' do
+      it 'is redirected to the sign-up form' do
+        get :new
 
-      expect(response).to redirect_to(new_user_session_path)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+
+      it 'has a logical message' do
+        post :create, {recipe: {name: 'foo'}}
+
+        expect(response).to redirect_to(new_user_session_path)
+      end
     end
 
-    it 'has a logical message' do
-      get :new
+    context '#create' do
+      it 'cannot post to #create' do
+        post :new
 
-      expect(response).to redirect_to(new_user_session_path)
+        expect(response).to redirect_to(new_user_session_path)
+      end
     end
   end
 end

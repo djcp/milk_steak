@@ -15,8 +15,8 @@ class RecipesController < ApplicationController
     flash[:message] = t('created')
     redirect_to recipe_path(recipe)
   rescue ActiveRecord::RecordInvalid => e
-    flash[:error] = "Couldn't create that recipe: #{e.inspect}"
-    redirect_to '/'
+    flash[:error] = "#{t('invalid_recipe_creation')} #{e.inspect}"
+    render :new
   end
 
   def show

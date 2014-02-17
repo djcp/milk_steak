@@ -1,5 +1,6 @@
 en:
   created: Created!
+  invalid_recipe: "We couldn't create that recipe"
   date:
     formats:
       default: '%m/%d/%Y'
