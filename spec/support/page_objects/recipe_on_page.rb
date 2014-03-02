@@ -7,8 +7,16 @@ class RecipeOnPage
     end
   end
 
+  def has_autocomplete_including?(term)
+    find('.ui-autocomplete li a', text: term)
+  end
+
   def cooking_methods
     all('.cooking_methods a').map(&:text)
+  end
+
+  def fill_in_serving_units_with(term)
+    fill_in('recipe_serving_units', with: term)
   end
 
   def cultural_influences

@@ -1,6 +1,23 @@
 require 'spec_helper'
 
 feature 'User manages recipes', js: true do
+  scenario 'values autocomplete' do
+    user = user_logs_in
+    recipe = create(
+      :recipe,
+      serving_units: 'pieces', cooking_method_list: 'bake, broil, saute'
+    )
+    click_on 'New Recipe'
+
+    recipe_on_page.fill_in_cooking_methods_with(
+      'bro'
+    )
+    expect(recipe_on_page).to have_autocomplete_including('broil')
+
+    recipe_on_page.fill_in_serving_units_with('pi')
+    expect(recipe_on_page).to have_autocomplete_including('pieces')
+  end
+
   scenario 'adds a recipe' do
     user = user_logs_in
 
