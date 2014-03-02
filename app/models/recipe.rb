@@ -18,4 +18,18 @@ class Recipe < ActiveRecord::Base
     length: { maximum: 8.kilobytes }
 
   delegate :email, to: :user, prefix: true
+
+  def self.unique_serving_units
+    select('serving_units').uniq()
+  end
+
+  def self.fuzzy_autocomplete_for(context, query)
+    ActsAsTaggableOn::Tagging.includes(:tag).where(
+      context: context,
+      taggable_type: 'Recipe'
+    ).uniq('name').where(
+      'name like ?', "%#{query}%"
+    )
+  end
+
 end

@@ -30,10 +30,22 @@
   </fieldset>
 
   <fieldset>
-    <%= f.input :cooking_method_list %>
-    <%= f.input :cultural_influence_list %>
-    <%= f.input :course_list %>
-    <%= f.input :dietary_restriction_list %>
+    <%= f.input :cooking_method_list, input_html: {
+        class: 'autocomplete_multiple',
+        'data-target' => autocompletes_cooking_methods_path
+      }%>
+    <%= f.input :cultural_influence_list, input_html: {
+        class: 'autocomplete_multiple',
+        'data-target' => autocompletes_cultural_influences_path
+      }%>
+    <%= f.input :course_list, input_html: {
+        class: 'autocomplete_multiple',
+        'data-target' => autocompletes_courses_path
+      }%>
+    <%= f.input :dietary_restriction_list, input_html: {
+        class: 'autocomplete_multiple',
+        'data-target' => autocompletes_dietary_restrictions_path
+      }%>
   </fieldset>
 
   <fieldset>
