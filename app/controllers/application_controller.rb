@@ -8,4 +8,8 @@ class ApplicationController < ActionController::Base
   def redirect_to_login
     redirect_to new_user_session_path and return
   end
+
+  def forbidden
+    render text: 'forbidden', status: :forbidden
+  end
 end

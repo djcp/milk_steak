@@ -3,9 +3,7 @@ require 'spec_helper'
 describe RecipesController do
   context 'signed in user' do
     before do
-      user = build(:user)
-      request.env['warden'].stub(authenticate!: user)
-      controller.stub(current_user: user)
+      sign_in_user build(:user)
     end
 
     context '#new' do
@@ -87,8 +85,4 @@ def create_stubbed_recipe
   Recipe.stub(:create!).and_return(recipe)
 
   recipe
-end
-
-def user
-  @user ||= build_stubbed(:user)
 end
