@@ -7,7 +7,10 @@
       <%= f.input :preparation_time %>
       <%= f.input :cooking_time %>
       <%= f.input :servings %>
-      <%= f.input :serving_units %>
+      <%= f.input :serving_units, input_html: {
+        class: 'autocomplete_single',
+        'data-target' => autocompletes_serving_units_path
+      }%>
     </div>
   </fieldset>
 
@@ -16,9 +19,15 @@
     <%= f.simple_fields_for :recipe_ingredients do |ri_form| %>
       <div class="ingredient" data-ingredient-index="<%= ri_form.index %>">
         <%= ri_form.input :quantity %>
-        <%= ri_form.input :unit %>
+        <%= ri_form.input :unit, input_html: {
+          class: 'autocomplete_single',
+          'data-target' => autocompletes_ingredient_units_path
+        }%>
         <%= ri_form.simple_fields_for :ingredient do |i_form| %>
-          <%= i_form.input :name, required: false %>
+          <%= i_form.input :name, required: false, input_html: {
+            class: 'autocomplete_single',
+            'data-target' => autocompletes_ingredient_names_path
+          }%>
         <% end %>
       </div>
     <% end %>

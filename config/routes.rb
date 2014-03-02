@@ -9,6 +9,8 @@ MilkSteak::Application.routes.draw do
     resources :courses, only: [:index]
     resources :dietary_restrictions, only: [:index]
     resources :serving_units, only: [:index]
+    resources :ingredient_units, only: [:index]
+    resources :ingredient_names, only: [:index]
   end
 
   root to: 'homes#index'

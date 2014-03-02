@@ -13,4 +13,8 @@ class RecipeIngredient < ActiveRecord::Base
     reject_if: ->(attr) { attr['name'].blank? }
 
   delegate :name, to: :ingredient
+
+  def self.unique_units
+    select('unit').uniq()
+  end
 end

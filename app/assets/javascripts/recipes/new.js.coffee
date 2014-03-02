@@ -1,10 +1,18 @@
 $ ->
+  target = ''
+
+  $('.autocomplete_single').autocomplete
+    source: (request, response) ->
+      $.getJSON target, q: request.term, response
+    minLength: 2
+    search: ->
+      target = $(@).data('target')
+      true
+
   split = (val) ->
     val.split /,\s*/
   extractLast = (term) ->
     split(term).pop()
-
-  target = ''
 
   # don't navigate away from the field on tab when selecting an item
   $(".autocomplete_multiple").bind("keydown", (event) ->
@@ -21,7 +29,7 @@ $ ->
       # custom minLength
       target = $(@).data('target')
       term = extractLast(@value)
-      false  if term.length < 2
+      false if term.length < 2
 
     focus: ->
       # prevent value inserted on focus
