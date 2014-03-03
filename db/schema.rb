@@ -27,10 +27,10 @@ ActiveRecord::Schema.define(version: 20140216210232) do
   add_index "ingredients", ["name"], name: "index_ingredients_on_name", using: :btree
 
   create_table "recipe_ingredients", force: true do |t|
-    t.integer  "recipe_id",     null: false
-    t.integer  "ingredient_id", null: false
+    t.integer  "recipe_id",                             null: false
+    t.integer  "ingredient_id",                         null: false
     t.integer  "position"
-    t.integer  "quantity"
+    t.decimal  "quantity",      precision: 5, scale: 3
     t.string   "unit"
     t.datetime "created_at"
     t.datetime "updated_at"

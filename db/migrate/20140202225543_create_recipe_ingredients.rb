@@ -4,7 +4,7 @@ class CreateRecipeIngredients < ActiveRecord::Migration
       t.belongs_to :recipe, null: false
       t.belongs_to :ingredient, null: false
       t.integer :position
-      t.integer :quantity
+      t.decimal :quantity, precision: 5, scale: 3
       t.string :unit
       t.timestamps
     end
