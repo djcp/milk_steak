@@ -47,7 +47,7 @@ feature 'User manages recipes', js: true do
       [
         { quantity: 1, unit: 'lb', name: 'steak' },
         { quantity: 8, unit: 'oz', name: 'milk' },
-        { quantity: 1, unit: 'tbps', name: 'butter' },
+        { quantity: 2.5, unit: 'tbps', name: 'butter' },
         { quantity: 1, unit: 'pinch', name: 'black pepper' }
       ]
     )
@@ -76,7 +76,7 @@ Serve with raw jellybeans
     expect(recipe_on_page.title).to eq 'Milk Steak'
     expect(recipe_on_page.ingredient_names).to include('steak', 'milk')
     expect(recipe_on_page.ingredient_quantities).to match_array([
-      '1', '8', '1', '1'
+      '1', '8', '2.5', '1'
     ])
     expect(recipe_on_page.directions).to include('Season steak')
     expect(recipe_on_page.cooking_methods).to include('saute')
