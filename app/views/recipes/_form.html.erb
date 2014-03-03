@@ -1,6 +1,6 @@
 <%= simple_form_for @recipe do |f| %>
 
-  <fieldset>
+  <fieldset id="recipe_metadata">
     <legend>New Recipe</legend>
     <%= f.input :name %>
     <div class="metadata">
@@ -14,31 +14,36 @@
     </div>
   </fieldset>
 
-  <fieldset>
+  <fieldset id="ingredients">
     <legend>Ingredients</legend>
-    <%= f.simple_fields_for :recipe_ingredients do |ri_form| %>
-      <div class="ingredient" data-ingredient-index="<%= ri_form.index %>">
-        <%= ri_form.input :quantity %>
-        <%= ri_form.input :unit, input_html: {
-          class: 'autocomplete_single',
-          'data-target' => autocompletes_ingredient_units_path
-        }%>
-        <%= ri_form.simple_fields_for :ingredient do |i_form| %>
-          <%= i_form.input :name, required: false, input_html: {
+    <div id="ingredients_container">
+      <%= f.simple_fields_for :recipe_ingredients do |ri_form| %>
+        <div class="ingredient" data-ingredient-index="<%= ri_form.index %>">
+          <%= ri_form.input :quantity %>
+          <%= ri_form.input :unit, input_html: {
             class: 'autocomplete_single',
-            'data-target' => autocompletes_ingredient_names_path
+            'data-target' => autocompletes_ingredient_units_path
           }%>
-        <% end %>
-      </div>
-    <% end %>
+          <%= ri_form.simple_fields_for :ingredient do |i_form| %>
+            <%= i_form.input :name, required: false, input_html: {
+              class: 'autocomplete_single',
+              'data-target' => autocompletes_ingredient_names_path
+            }%>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+    <div class="more_ingredients">
+      <a href="#" id="more_ingredients_control">More ingredients</a>
+    </div>
   </fieldset>
 
-  <fieldset>
+  <fieldset id="directions">
     <legend>Directions</legend>
     <%= f.input :directions, as: :text %>
   </fieldset>
 
-  <fieldset>
+  <fieldset id="taggables">
     <%= f.input :cooking_method_list, input_html: {
         class: 'autocomplete_multiple',
         'data-target' => autocompletes_cooking_methods_path

@@ -7,6 +7,16 @@ class RecipeOnPage
     end
   end
 
+  def has_ingredient_fields_numbering?(count)
+    all('fieldset#ingredients div.ingredient').count == count
+  end
+
+  def click_to_add_more_ingredients
+    within('#ingredients') do
+      click_on 'More ingredients'
+    end
+  end
+
   def has_autocomplete_including?(term)
     find('.ui-autocomplete li a', text: term)
   end

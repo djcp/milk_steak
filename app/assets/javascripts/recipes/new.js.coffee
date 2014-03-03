@@ -1,4 +1,25 @@
 $ ->
+
+  addMoreIngredients = (event) ->
+    event.preventDefault()
+    lastIngredient = $('#ingredients_container div.ingredient:last-child')
+    lastIngredientIndex = $(lastIngredient).data('ingredient-index')
+    nextIngredientIndex = lastIngredientIndex + 1
+
+    regex = new RegExp(lastIngredientIndex,'gm')
+    ingredientHtml =
+      "<div class='ingredient' data-ingredient-index='#{nextIngredientIndex}'>" +
+      $(lastIngredient).clone().html() +
+      '</div>'
+
+    $('#ingredients_container').append(
+      ingredientHtml.replace(regex, nextIngredientIndex)
+    )
+
+  $('#more_ingredients_control').on
+    click: (event) ->
+      addMoreIngredients(event)
+
   target = ''
 
   $('.autocomplete_single').autocomplete
@@ -26,7 +47,7 @@ $ ->
       return
 
     search: ->
-      # custom minLength
+      # Minlength of the last element
       target = $(@).data('target')
       term = extractLast(@value)
       false if term.length < 2

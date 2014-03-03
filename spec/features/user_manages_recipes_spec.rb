@@ -1,6 +1,18 @@
 require 'spec_helper'
 
 feature 'User manages recipes', js: true do
+  scenario 'can add arbitrary numbers of ingredients' do
+    user = user_logs_in
+
+    click_on 'New Recipe'
+
+    recipe_on_page.click_to_add_more_ingredients
+    recipe_on_page.click_to_add_more_ingredients
+    recipe_on_page.click_to_add_more_ingredients
+
+    expect(recipe_on_page).to have_ingredient_fields_numbering(8)
+  end
+
   scenario 'values autocomplete' do
     user = user_logs_in
     recipe = create(
