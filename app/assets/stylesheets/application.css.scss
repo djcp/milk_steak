@@ -7,76 +7,23 @@
 @import 'normalize';
 
 @import 'bourbon';
+@import 'bitters/bitters';
 @import 'neat';
+
+@import '_variables';
+@import url(//fonts.googleapis.com/css?family=Roboto+Condensed);
+
+@import '_header';
+@import '_nav';
+@import '_homes_index';
+@import '_recipes_forms';
+@import '_recipes_show';
 
 .main-container {
   @include outer-container;
 }
 
-nav {
-  ul, li {
-    margin-left: 0;
-    padding-left: 0;
-  }
-  li {
-    @include span-columns(9);
-  }
-  li.login {
-    @include span-columns(3);
-    @include omega();
-  }
-}
-
-input,textarea {
-  width: 100%;
-}
-
-form.new_recipe {
-  fieldset {
-    margin-bottom: 1em;
-    @include span-columns(12);
-    @include omega();
-    legend {
-      font-size: 1.5em;
-    }
-  }
-  .metadata {
-    @include span-columns(12);
-    @include omega();
-
-    .recipe_preparation_time,
-    .recipe_cooking_time,
-    .recipe_servings,
-    .recipe_serving_units {
-      @include span-columns(2);
-    }
-  }
-  .recipe_recipe_ingredients_quantity{
-    @include span-columns(2);
-  }
-  .recipe_recipe_ingredients_unit{
-    @include span-columns(2);
-  }
-  .recipe_recipe_ingredients_ingredient_name{
-    @include span-columns(8);
-    @include omega();
-  }
-  .recipe_directions textarea{
-    height: 10em;
-  }
-}
-
-.recipe {
-  @include fill-parent;
+footer {
   @include span-columns(12);
-  @include omega;
-
-  .recipe-narrative{
-    @include span-columns(8 of 12);
-    min-height: 20em;
-  }
-  aside {
-    @include span-columns(4 of 12);
-    @include omega();
-  }
+  @include omega();
 }

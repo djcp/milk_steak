@@ -11,10 +11,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140216210232) do
+ActiveRecord::Schema.define(version: 20140330171821) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "images", force: true do |t|
+    t.string   "filepicker_url"
+    t.string   "caption",        limit: 1024
+    t.integer  "recipe_id"
+    t.boolean  "featured",                    default: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "ingredients", force: true do |t|
     t.string   "name",                    null: false

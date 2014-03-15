@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe Recipe do
+  it { should have_many(:images).dependent(:destroy) }
   it { should have_many(:recipe_ingredients).dependent(:destroy) }
   it { should have_many(:ingredients).through(:recipe_ingredients) }
   it { should accept_nested_attributes_for(:recipe_ingredients) }
@@ -22,4 +23,33 @@ describe Recipe do
   it_behaves_like 'an object tagged in the context of', 'cultural_influences'
   it_behaves_like 'an object tagged in the context of', 'courses'
   it_behaves_like 'an object tagged in the context of', 'dietary_restrictions'
+
+
+  context '#featured_image' do
+    it 'chooses a featured image' do
+      FeaturedImageChooser.stub(:find)
+      recipe = build(:recipe)
+
+      recipe.featured_image
+
+      expect(FeaturedImageChooser).to have_received(:find)
+    end
+  end
+
+  context '#featured_image?' do
+    it 'false when none exist' do
+      FeaturedImageChooser.stub(find: nil)
+      recipe = build(:recipe)
+
+      expect(recipe.featured_image?).to be_false
+
+    end
+
+    it 'true when there is one' do
+      FeaturedImageChooser.stub(find: build(:image))
+      recipe = build(:recipe)
+
+      expect(recipe.featured_image?).to be_true
+    end
+  end
 end

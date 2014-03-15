@@ -4,9 +4,12 @@ class RecipesController < ApplicationController
   def new
     @recipe = Recipe.new
     5.times do
-      recipe_ingredient = @recipe.recipe_ingredients.build(
+      @recipe.recipe_ingredients.build(
         ingredient: Ingredient.new
       )
+    end
+    4.times do
+      @recipe.images.build
     end
   end
 
@@ -38,6 +41,11 @@ class RecipesController < ApplicationController
       :cultural_influence_list,
       :course_list,
       :dietary_restriction_list,
+      images_attributes: [
+        :caption,
+        :featured,
+        :filepicker_url
+      ],
       recipe_ingredients_attributes: [
         :quantity,
         :unit,

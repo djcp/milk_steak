@@ -4,13 +4,14 @@ ruby '2.0.0'
 
 gem 'airbrake'
 gem 'bourbon'
+gem 'bitters'
+gem 'neat'
 gem 'coffee-rails'
 gem 'email_validator'
 gem 'flutie'
 gem 'high_voltage'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
-gem 'neat'
 gem 'pg'
 gem 'rack-timeout'
 gem 'rails', '>= 4.0.0'
@@ -22,6 +23,9 @@ gem 'unicorn'
 gem 'devise'
 gem 'acts_as_list'
 gem 'acts_as_taggable_on'
+gem 'will_paginate'
+gem 'sprockets', '~> 2.11.0' # See: https://github.com/rails/sass-rails/issues/191
+gem 'filepicker-rails'
 
 group :development do
   gem 'better_errors'
@@ -36,6 +40,7 @@ group :development, :test do
   gem 'factory_girl_rails'
   gem 'rspec-rails', '>= 2.14'
   gem 'pry-rails'
+  gem 'dotenv-rails'
 end
 
 group :test do

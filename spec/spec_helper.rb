@@ -10,16 +10,12 @@ require 'webmock/rspec'
 
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |file| require file }
 
-module Features
-  # Extend this module in spec/support/features/*.rb
-end
-
 RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
 
-  config.include Features, type: :feature
+  config.include Features::SessionHelpers, type: :feature
   config.include Devise::TestHelpers, :type => :controller
   config.include FactoryGirl::Syntax::Methods
   config.infer_base_class_for_anonymous_controllers = false

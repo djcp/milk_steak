@@ -44,6 +44,7 @@
   </fieldset>
 
   <fieldset id="taggables">
+    <legend>Metadata</legend>
     <%= f.input :cooking_method_list, input_html: {
         class: 'autocomplete_multiple',
         'data-target' => autocompletes_cooking_methods_path
@@ -60,6 +61,19 @@
         class: 'autocomplete_multiple',
         'data-target' => autocompletes_dietary_restrictions_path
       }%>
+  </fieldset>
+
+  <fieldset id="images">
+    <legend>Images</legend>
+    <div class="images">
+      <%= f.simple_fields_for :images do |image_form| %>
+        <div class="image">
+          <%= image_form.input :caption %>
+          <%= image_form.input :featured, as: :boolean %>
+          <%= image_form.filepicker_field :filepicker_url, mimetypes: 'image/*', onchange: 'photoUploaded(event)' %>
+        </div>
+      <% end %>
+    </div>
   </fieldset>
 
   <fieldset>

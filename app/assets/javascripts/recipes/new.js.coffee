@@ -1,5 +1,4 @@
 $ ->
-
   addMoreIngredients = (event) ->
     event.preventDefault()
     lastIngredient = $('#ingredients_container div.ingredient:last-child')

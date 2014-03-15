@@ -1,13 +1,21 @@
 class Recipe < ActiveRecord::Base
+  has_many :images, dependent: :destroy, inverse_of: :recipe
   has_many :recipe_ingredients, dependent: :destroy, inverse_of: :recipe
   has_many :ingredients, through: :recipe_ingredients
   belongs_to :user
+
+  def self.recent
+    order('created_at desc')
+  end
 
   acts_as_taggable_on :cooking_methods, :cultural_influences,
     :courses, :dietary_restrictions
 
   accepts_nested_attributes_for :recipe_ingredients,
     reject_if: ->(attr) { attr['unit'].blank? }
+
+  accepts_nested_attributes_for :images,
+    reject_if: ->(attr) { attr['filepicker_url'].blank? }
 
   validates :preparation_time, :cooking_time, :servings,
     numericality: true, allow_blank: true
@@ -32,4 +40,11 @@ class Recipe < ActiveRecord::Base
     )
   end
 
+  def featured_image?
+    featured_image.present?
+  end
+
+  def featured_image
+    FeaturedImageChooser.find(self)
+  end
 end

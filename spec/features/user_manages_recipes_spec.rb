@@ -2,7 +2,7 @@ require 'spec_helper'
 
 feature 'User manages recipes', js: true do
   scenario 'can add arbitrary numbers of ingredients' do
-    user = user_logs_in
+    user_logs_in
 
     click_on 'New Recipe'
 
@@ -14,7 +14,7 @@ feature 'User manages recipes', js: true do
   end
 
   scenario 'values autocomplete' do
-    user = user_logs_in
+    user_logs_in
     recipe = create(
       :recipe,
       serving_units: 'pieces', cooking_method_list: 'bake, broil, saute'
@@ -87,15 +87,10 @@ Serve with raw jellybeans
   end
 end
 
-def user_logs_in
-  user = create(:user)
-  visit new_user_session_path
-  fill_in 'Email', with: user.email
-  fill_in 'Password', with: user.password
-  click_on 'Sign in'
-  user
-end
-
 def recipe_on_page
   @recipe_on_page = RecipeOnPage.new
+end
+
+def image_file(file_name)
+  File.open("spec/support/files/#{file_name}.jpg")
 end

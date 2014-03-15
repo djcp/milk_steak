@@ -1,0 +1,14 @@
+header.site {
+  @include background-image(
+    linear-gradient($brown, darken($brown, 40%))
+  );
+
+  h1 {
+    margin: 0;
+    padding: .1em;
+    font-family: "Roboto Condensed";
+    text-align: center;
+    color: white;
+    font-size: 5em;
+  }
+}

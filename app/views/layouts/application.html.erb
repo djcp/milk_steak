@@ -9,11 +9,15 @@
 </head>
   <body class="<%= body_class %>">
     <div class="main-container">
+      <header class="site">
+        <h1>Milk Steak</h1>
+      </header>
       <%= render 'nav' -%>
       <%= render 'flashes' -%>
       <%= yield %>
       <%= render 'footer' -%>
     </div>
+    <%= filepicker_js_include_tag %>
     <%= render 'javascript' -%>
   </body>
 </html>

@@ -1,0 +1,6 @@
+<div class="<%= dom_class(recipe) %>" id="<%= dom_id(recipe) %>">
+  <% if recipe.featured_image? %>
+    <%= render recipe.featured_image %>
+  <% end %>
+  <h2><%= link_to(recipe.name, recipe) %></h2>
+</div>
