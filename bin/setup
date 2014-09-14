@@ -17,9 +17,6 @@ if [ ! -f .env ]; then
   cp .sample.env .env
 fi
 
-# Pick a port for Foreman
-echo "port: 7000" > .foreman
-
 # Set up staging and production git remotes
-git remote add staging git@heroku.com:milk_steak-staging.git
-git remote add production git@heroku.com:milk_steak-production.git
+git remote add staging git@heroku.com:milk-steak-staging.git
+git remote add production git@heroku.com:milk-steak-production.git
