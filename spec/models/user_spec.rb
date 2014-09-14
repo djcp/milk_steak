@@ -14,12 +14,9 @@ describe User do
       end
     end
 
-    it "should reject invalid email addresses" do
-      %w|example.com foo blap.foo.com|.each do |email|
-        subject.email = email
-        subject.valid?
-
-        expect(subject.errors_on(:email)).to include 'is invalid'
+    %w|example.com foo blap.foo.com|.each do |email|
+      it "should reject invalid email addresses" do
+        should_not allow_value(email).for(:email)
       end
 
     end

@@ -82,7 +82,7 @@ end
 
 def create_stubbed_recipe
   recipe = build_stubbed(:recipe)
-  Recipe.stub(:create!).and_return(recipe)
+  allow(Recipe).to receive(:create!).and_return(recipe)
 
   recipe
 end

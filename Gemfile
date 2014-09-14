@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.0.0'
+ruby '2.1.2'
 
 gem 'airbrake'
 gem 'bourbon'
@@ -14,7 +14,7 @@ gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'pg'
 gem 'rack-timeout'
-gem 'rails', '>= 4.0.0'
+gem 'rails', '~> 4.1.x'
 gem 'recipient_interceptor'
 gem 'sass-rails'
 gem 'simple_form'
@@ -24,7 +24,7 @@ gem 'devise'
 gem 'acts_as_list'
 gem 'acts_as_taggable_on'
 gem 'will_paginate'
-gem 'sprockets', '~> 2.11.0' # See: https://github.com/rails/sass-rails/issues/191
+gem 'sprockets'
 gem 'filepicker-rails'
 
 group :development do
@@ -38,7 +38,7 @@ end
 
 group :development, :test do
   gem 'factory_girl_rails'
-  gem 'rspec-rails', '>= 2.14'
+  gem 'rspec-rails'
   gem 'pry-rails'
   gem 'dotenv-rails'
 end
@@ -47,7 +47,7 @@ group :test do
   gem 'capybara-webkit', '>= 1.0.0'
   gem 'database_cleaner'
   gem 'launchy'
-  gem 'shoulda-matchers'
+  gem 'shoulda-matchers', require: false
   gem 'simplecov', require: false
   gem 'timecop'
   gem 'webmock'

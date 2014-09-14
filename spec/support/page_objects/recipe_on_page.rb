@@ -18,7 +18,7 @@ class RecipeOnPage
   end
 
   def has_autocomplete_including?(term)
-    find('.ui-autocomplete li a', text: term)
+    find('.ui-autocomplete li', text: term)
   end
 
   def cooking_methods

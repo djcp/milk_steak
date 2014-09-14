@@ -20,14 +20,6 @@ fi
 # Pick a port for Foreman
 echo "port: 7000" > .foreman
 
-# Set up DNS via Pow
-if [ -d ~/.pow ]
-then
-  echo 7000 > ~/.pow/`basename $PWD`
-else
-  echo "Pow not set up but the team uses it for this project. Setup: http://goo.gl/RaDPO"
-fi
-
 # Set up staging and production git remotes
 git remote add staging git@heroku.com:milk_steak-staging.git
 git remote add production git@heroku.com:milk_steak-production.git

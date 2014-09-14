@@ -27,7 +27,7 @@ describe Recipe do
 
   context '#featured_image' do
     it 'chooses a featured image' do
-      FeaturedImageChooser.stub(:find)
+      allow(FeaturedImageChooser).to receive(:find)
       recipe = build(:recipe)
 
       recipe.featured_image
@@ -38,18 +38,17 @@ describe Recipe do
 
   context '#featured_image?' do
     it 'false when none exist' do
-      FeaturedImageChooser.stub(find: nil)
+      allow(FeaturedImageChooser).to receive(:find).and_return(nil)
       recipe = build(:recipe)
 
-      expect(recipe.featured_image?).to be_false
-
+      expect(recipe.featured_image?).to be false
     end
 
     it 'true when there is one' do
-      FeaturedImageChooser.stub(find: build(:image))
+      allow(FeaturedImageChooser).to receive(:find).and_return(build(:image))
       recipe = build(:recipe)
 
-      expect(recipe.featured_image?).to be_true
+      expect(recipe.featured_image?).to be true
     end
   end
 end
