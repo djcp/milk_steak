@@ -22,7 +22,7 @@ class RecipeOnPage
   end
 
   def cooking_methods
-    all('.cooking_methods a').map(&:text)
+    all('.cooking_methods span').map(&:text)
   end
 
   def fill_in_serving_units_with(term)
@@ -30,15 +30,15 @@ class RecipeOnPage
   end
 
   def cultural_influences
-    all('.cultural_influences a').map(&:text)
+    all('.cultural_influences span').map(&:text)
   end
 
   def courses
-    all('.courses a').map(&:text)
+    all('.courses span').map(&:text)
   end
 
   def dietary_restrictions
-    all('.dietary_restrictions a').map(&:text)
+    all('.dietary_restrictions span').map(&:text)
   end
 
   def ingredient_names
