@@ -8,12 +8,12 @@ describe Recipe do
   it { should belong_to(:user) }
 
   it { should validate_presence_of(:name) }
-  it { should ensure_length_of(:name).is_at_most(255) }
+  it { should validate_length_of(:name).is_at_most(255) }
 
-  it { should ensure_length_of(:serving_units).is_at_most(255) }
+  it { should validate_length_of(:serving_units).is_at_most(255) }
 
   it { should validate_presence_of(:directions) }
-  it { should ensure_length_of(:directions).is_at_most(8.kilobytes) }
+  it { should validate_length_of(:directions).is_at_most(8.kilobytes) }
 
   it { should validate_numericality_of(:preparation_time) }
   it { should validate_numericality_of(:cooking_time) }
