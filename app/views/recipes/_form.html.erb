@@ -1,7 +1,13 @@
 <%= simple_form_for @recipe do |f| %>
 
   <fieldset id="recipe_metadata">
-    <legend>New Recipe</legend>
+    <legend>
+      <% if @recipe.persisted? %>
+        Edit Recipe
+      <% else %>
+        New Recipe
+      <% end %>
+    </legend>
     <%= f.input :name %>
     <div class="metadata">
       <%= f.input :preparation_time %>
@@ -19,6 +25,11 @@
     <div id="ingredients_container">
       <%= f.simple_fields_for :recipe_ingredients do |ri_form| %>
         <div class="ingredient" data-ingredient-index="<%= ri_form.index %>">
+          <% if ri_form.object.persisted? %>
+            <%= ri_form.input :_destroy, as: :boolean %>
+          <% else %>
+            <div class="recipe_recipe_ingredients__destroy">&nbsp;</div>
+          <% end %>
           <%= ri_form.input :quantity %>
           <%= ri_form.input :unit, input_html: {
             class: 'autocomplete_single',
@@ -45,19 +56,19 @@
 
   <fieldset id="taggables">
     <legend>Metadata</legend>
-    <%= f.input :cooking_method_list, input_html: {
+    <%= f.input :cooking_method_list, as: :text, input_html: {
         class: 'autocomplete_multiple',
         'data-target' => autocompletes_cooking_methods_path
       }%>
-    <%= f.input :cultural_influence_list, input_html: {
+    <%= f.input :cultural_influence_list, as: :text, input_html: {
         class: 'autocomplete_multiple',
         'data-target' => autocompletes_cultural_influences_path
       }%>
-    <%= f.input :course_list, input_html: {
+    <%= f.input :course_list, as: :text, input_html: {
         class: 'autocomplete_multiple',
         'data-target' => autocompletes_courses_path
       }%>
-    <%= f.input :dietary_restriction_list, input_html: {
+    <%= f.input :dietary_restriction_list, as: :text, input_html: {
         class: 'autocomplete_multiple',
         'data-target' => autocompletes_dietary_restrictions_path
       }%>
@@ -70,6 +81,10 @@
         <div class="image">
           <%= image_form.input :caption %>
           <%= image_form.input :featured, as: :boolean %>
+          <% if image_form.object.persisted? %>
+            <%= image_form.input :_destroy, as: :boolean %>
+            <%= link_to(filepicker_image_tag(image_form.object.filepicker_url, w: 32, h: 32, fit: 'crop', cache: true), filepicker_image_url(image_form.object.filepicker_url), target: '_blank') %>
+          <% end %>
           <%= image_form.filepicker_field :filepicker_url, mimetypes: 'image/*', onchange: 'photoUploaded(event)' %>
         </div>
       <% end %>

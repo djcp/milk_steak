@@ -1,5 +1,5 @@
 <li class="<%= dom_class(recipe_ingredient) %>" id="<%= dom_id(recipe_ingredient) %>">
   <span class="quantity"><%= recipe_ingredient.quantity.to_s.sub(/\.0$/,'') %></span>
   <span class="unit"><%= recipe_ingredient.unit %></span>
-  <span class="name"><%= recipe_ingredient.name %></span>
+  <span class="name"><%= link_to(recipe_ingredient.name, root_path(filter_set: { ingredients: recipe_ingredient.name })) %></span>
 </li>

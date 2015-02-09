@@ -13,5 +13,7 @@ en:
       short: '%B %d'
   ui:
     recipes:
+      invalid_creation: We couldn't create that recipe. Please see below.
+      updated: Updated!
       links:
         new: 'New Recipe'

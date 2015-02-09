@@ -2,7 +2,7 @@
   <aside>
     <h3><%= attribute.titleize %></h3>
     <div class="<%= attribute %>">
-      <%= render recipe.send(attribute.to_sym) -%>
+      <%= render recipe.send(attribute.to_sym), attribute: attribute -%>
     </div>
   </aside>
 <% end -%>

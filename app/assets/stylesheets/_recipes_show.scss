@@ -1,0 +1,57 @@
+article.recipe {
+  h1 {
+    font-family: "Roboto Condensed";
+    font-size: 3em;
+    margin-bottom: 1em;
+  }
+
+  h2 {
+    font-size: .75em;
+    font-weight: normal;
+    margin-bottom: 2em;
+    color: #999;
+    span {
+      font-weight: bold;
+    }
+  }
+  .recipe-narrative{
+    padding: 2em;
+    @include span-columns(9 of 12);
+    min-height: 20em;
+  }
+
+  .recipe_ingredients {
+    margin: 1em;
+    background-color: white;
+    padding: 1em;
+    border-radius: 1em;
+  }
+
+  div.tags {
+    padding:  2em;
+    @include span-columns(3 of 12);
+    @include omega();
+    @include sidebar();
+    a {
+      color: black;
+      &:hover {
+        color: lighten(black, 40%);
+      }
+    }
+  }
+  div.images {
+    margin-top: 2em;
+    padding: 0px 2em 0px 2em;
+    @include span-columns(3 of 12);
+
+    img {
+      width: 187px;
+      height: 187px;
+      border: 1px solid darken($light-gray, 20%);
+      border-radius: 10px;
+      box-shadow: 5px 5px 5px $light-gray;
+      margin-bottom: 2em;
+    }
+  }
+}
+

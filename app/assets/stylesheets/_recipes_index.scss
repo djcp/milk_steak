@@ -1,0 +1,29 @@
+.recipe-list {
+  @include span-columns(9);
+
+  .recipe {
+    padding: 2em;
+    @include span-columns(3 of 9);
+    @include omega(3n);
+
+    h2 {
+      text-align: center;
+      font-size: .75em;
+    }
+    img {
+      width: 187px;
+      height: 187px;
+      border: 1px solid darken($light-gray, 20%);
+      border-radius: 10px;
+      box-shadow: 5px 5px 5px $light-gray;
+    }
+  }
+}
+
+.recipe-filters {
+  padding: 2em;
+  margin-bottom: 2em;
+  @include span-columns(3);
+  @include omega();
+  @include sidebar();
+}

@@ -1,0 +1,99 @@
+input,textarea {
+  width: 100%;
+}
+
+form.new_recipe, form.edit_recipe {
+  @include span-columns(12);
+  padding: 2em;
+  fieldset{
+    margin-top: 1.5em;
+    border-radius: .5em;
+  }
+  legend{
+    border: 1px solid #dddddd;
+    font-size: 1.5em;
+    background: #f7f7f7;
+    padding: .25em;
+    border-radius: .25em;
+    text-shadow: $gray .1em .1em 2px;
+    font-weight: bold;
+  }
+  textarea {
+    height: 2.7em;
+  }
+  .error {
+    color: darken($error-color, 60%);
+    font-weight: bold;
+  }
+  .hint {
+    font-size: 0.8em;
+    color: $dark-gray;
+    opacity: 0;
+    margin-bottom: 1em;
+    display: block;
+    text-align: right;
+  }
+  .field_with_hint:hover{
+    .hint{
+      opacity: 1;
+    }
+  }
+  .field_with_hint input:focus + .hint{
+    opacity: 1;
+  }
+  .metadata {
+    @include span-columns(12);
+    @include omega();
+
+    .recipe_preparation_time,
+    .recipe_cooking_time,
+    .recipe_servings,
+    .recipe_serving_units {
+      @include span-columns(3);
+    }
+  }
+  .images{
+    @include span-columns(12);
+    @include omega();
+
+    .image{
+      @include span-columns(3);
+      @include omega(4n);
+      height: 12em;
+    }
+    img {
+      vertical-align: middle;
+    }
+    .boolean{
+      width: auto;
+    }
+    label{
+      display: inline;
+    }
+  }
+  #ingredients {
+    input {
+      margin-bottom: 2em;
+    }
+  }
+  .recipe_recipe_ingredients__destroy{
+    font-size: 0.75em;
+    @include span-columns(1);
+    input {
+      width: 1em;
+    }
+  }
+  .recipe_recipe_ingredients_quantity{
+    @include span-columns(2);
+  }
+  .recipe_recipe_ingredients_unit{
+    @include span-columns(2);
+  }
+  .recipe_recipe_ingredients_ingredient_name{
+    @include span-columns(7);
+    @include omega();
+  }
+  .recipe_directions textarea{
+    height: 10em;
+  }
+}

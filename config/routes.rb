@@ -1,7 +1,7 @@
 MilkSteak::Application.routes.draw do
   devise_for :users
 
-  resources :recipes, only: [:index, :new, :create, :show]
+  resources :recipes, only: [:index, :new, :create, :show, :edit, :update]
 
   namespace :autocompletes do
     resources :cooking_methods, only: [:index]
@@ -13,5 +13,5 @@ MilkSteak::Application.routes.draw do
     resources :ingredient_names, only: [:index]
   end
 
-  root to: 'homes#index'
+  root to: 'recipes#index'
 end

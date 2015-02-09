@@ -12,9 +12,11 @@ class Recipe < ActiveRecord::Base
     :courses, :dietary_restrictions
 
   accepts_nested_attributes_for :recipe_ingredients,
+    allow_destroy: true,
     reject_if: ->(attr) { attr['unit'].blank? }
 
   accepts_nested_attributes_for :images,
+    allow_destroy: true,
     reject_if: ->(attr) { attr['filepicker_url'].blank? }
 
   validates :preparation_time, :cooking_time, :servings,

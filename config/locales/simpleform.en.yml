@@ -1,7 +1,16 @@
 en:
+  helpers:
+    submit:
+      filter_set:
+        create: Apply
   simple_form:
     labels:
       recipe:
+        recipe_ingredients:
+          _destroy: Remove
+        images:
+          featured: Feature image?
+          _destroy: Delete
         cooking_method_list: 'Cooking Methods'
         cultural_influence_list: 'Cultural Influences'
         course_list: 'Appropriate Courses'
@@ -22,3 +31,10 @@ en:
         cultural_influence_list: 'indian, chinese, american, etc.'
         course_list: 'supper, breakfast, dessert, salad, christmas dinner, etc.'
         dietary_restriction_list: 'vegetarian, vegan, gluten-free, soy-free, etc.'
+      filter_set:
+        name: Keywords in the recipe name
+        ingredients: garlic, tomatoes, pork, etc.
+        cooking_methods: bake, saute, steam, etc.
+        cultural_influences: indian, chinese, american, etc.
+        courses: dinner, breakfast, dessert, salad, etc.
+        dietary_restrictions: vegetarian, gluten-free, soy-free, etc.

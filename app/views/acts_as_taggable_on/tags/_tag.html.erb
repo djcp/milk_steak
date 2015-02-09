@@ -1,3 +1,3 @@
-<span class="<%= dom_class(tag)%>" id="<%= dom_id(tag) %>">
-  <%= tag.name %>
+<span class="badge <%= dom_class(tag)%>" id="<%= dom_id(tag) %>">
+  <%= link_to(tag.name, root_path(filter_set: { attribute => tag.name })) %>
 </span>

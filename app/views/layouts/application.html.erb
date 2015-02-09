@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="ROBOTS" content="NOODP" />
-  <title><%= page_title %></title>
-  <%= stylesheet_link_tag :application, :media => 'all' %>
-  <%= csrf_meta_tags %>
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="ROBOTS" content="NOODP" />
+    <title><%= page_title %></title>
+    <%= stylesheet_link_tag :application, :media => 'all' %>
+    <%= csrf_meta_tags %>
+  </head>
   <body class="<%= body_class %>">
     <div class="main-container">
       <header class="site">
-        <h1>Milk Steak</h1>
+        <h1><%= link_to('Recipes', root_path) %></h1>
       </header>
-      <%= render 'nav' -%>
-      <%= render 'flashes' -%>
-      <%= yield %>
-      <%= render 'footer' -%>
+      <div class="body-container">
+        <%= render 'nav' -%>
+        <%= render 'flashes' -%>
+        <%= yield %>
+        <%= render 'footer' -%>
+      </div>
     </div>
     <%= filepicker_js_include_tag %>
     <%= render 'javascript' -%>

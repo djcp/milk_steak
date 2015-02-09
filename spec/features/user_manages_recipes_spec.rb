@@ -18,6 +18,39 @@ feature 'User manages recipes', js: true do
     expect(recipe_on_page).to have_ingredient_fields_numbering(8)
   end
 
+  scenario 'can update a recipe' do
+    user_logs_in
+
+    click_on 'New Recipe'
+
+    recipe_on_page.fill_in_main_form_with(
+      'Name' => 'Test recipe',
+      'Preparation Time' => '5',
+      'Cooking Time' => '15',
+      'Servings' => '1',
+      'Serving Units' => 'servings'
+    )
+    recipe_on_page.fill_in_directions_with(
+      'Do stuff'
+    )
+    recipe_on_page.submit
+
+    visit '/'
+
+    click_on 'Test recipe'
+
+    click_on 'edit'
+
+    recipe_on_page.fill_in_main_form_with(
+      'Name' => 'Updated Test recipe'
+    )
+    recipe_on_page.submit
+
+    visit '/'
+
+    expect(page).to have_content('Updated Test recipe')
+  end
+
   scenario 'values autocomplete' do
     user_logs_in
     recipe = create(
@@ -78,7 +111,7 @@ Serve with raw jellybeans
 
     recipe_on_page.submit
 
-    expect(recipe_on_page.title).to eq 'Milk Steak'
+    expect(recipe_on_page.title).to match /Milk Steak/
     expect(recipe_on_page.ingredient_names).to include('steak', 'milk')
     expect(recipe_on_page.ingredient_quantities).to match_array([
       '1', '8', '2.5', '1'

@@ -3,7 +3,7 @@ class RecipeOnPage
 
   def title
     within '.recipe' do
-      find('header h1').text
+      find('h1').text
     end
   end
 
@@ -102,6 +102,6 @@ class RecipeOnPage
   end
 
   def submit
-    click_on 'Create Recipe'
+    find('input[type="submit"]').click
   end
 end

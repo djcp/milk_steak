@@ -1,0 +1,28 @@
+body {
+  // @include background-image(
+  //   linear-gradient($light-gray, darken($light-gray, 10%))
+  // );
+
+  background: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  background-image: url("<%= asset_path('tomato_bg.jpg') %>");
+  background-color: $tomato-red;
+}
+
+header.site {
+  h1 {
+    margin: 0;
+    padding: .1em;
+    font-family: "Roboto Condensed";
+    text-align: center;
+    color: white;
+    font-size: 5em;
+    a {
+      color: white;
+      &:hover {
+        color: darken(white, 40%);
+      }
+    }
+  }
+}
