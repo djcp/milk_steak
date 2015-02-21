@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.1.2'
+ruby '2.1.5'
 
 gem 'airbrake'
 gem 'bourbon'
@@ -14,7 +14,7 @@ gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'pg'
 gem 'rack-timeout'
-gem 'rails'
+gem 'rails', '~> 4.2.0'
 gem 'recipient_interceptor'
 gem 'sass-rails'
 gem 'simple_form'
