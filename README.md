@@ -1,20 +1,19 @@
-MilkSteak
-===========
+MilkSteak [![Build Status](https://secure.travis-ci.org/djcp/milk_steak.png?branch=master)](https://travis-ci.org/djcp/milk_steak) [![Code Climate](https://codeclimate.com/github/djcp/milk_steak/badges/gpa.svg)](https://codeclimate.com/github/djcp/milk_steak)
+=========
 
 MilkSteak is a recipe tracker that:
 
 FIRST COURSE:
 -------------
 
-- [ ] Allows you to track ingredients and recipe directions,
-- [ ] Has ingredient and quantity auto-fills on the entry form,
-- [ ] Has multiple tag facets (cooking methods, cuisine, course, dietary) with auto-fills,
+- [x] Allows you to track ingredients and recipe directions,
+- [x] Has ingredient and quantity auto-fills on the entry form,
+- [x] Has multiple tag facets (cooking methods, cuisine, course, dietary) with auto-fills,
 
 SECOND COURSE:
 --------------
 
-- [ ] Rich tag-based browsing and full-text searches
-- [ ] Allows users to log in via google, facebook, or github authentication,
+- [x] Rich tag-based browsing and full-text searches
 - [ ] Allows users to comment on ingredients, directions and the recipe in general,
 - [ ] Allows users to rate recipes,
 
@@ -43,5 +42,5 @@ author.
 
 See LICENSE.txt for more information about the GPLv3 license.
 
-Copyright (c) 2013 - @djcp - Dan Collis Puro - http://github/djcp
+Copyright (c) 2015 - @djcp - Dan Collis Puro - http://github/djcp
 

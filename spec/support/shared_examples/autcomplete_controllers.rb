@@ -1,10 +1,11 @@
 shared_examples 'an autocomplete controller' do
   context '#index' do
     context 'non-authenticated user' do
-      it 'returns forbidden' do
+      it 'is successful' do
         get :index, q: 'foo'
 
-        expect(response).to be_forbidden
+        expect(response).to be_successful
+        expect(response.content_type).to eq 'application/json'
       end
     end
 
