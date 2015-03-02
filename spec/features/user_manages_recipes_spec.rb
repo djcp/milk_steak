@@ -31,7 +31,7 @@ feature 'User manages recipes', js: true do
       'Serving Units' => 'servings'
     )
     recipe_on_page.fill_in_directions_with(
-      'Do stuff'
+      'Do stuff *amazing stuff*'
     )
     recipe_on_page.submit
 
@@ -45,6 +45,8 @@ feature 'User manages recipes', js: true do
       'Name' => 'Updated Test recipe'
     )
     recipe_on_page.submit
+
+    expect(page).to have_css('em', text: 'amazing stuff')
 
     visit '/'
 

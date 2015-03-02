@@ -26,6 +26,7 @@ gem 'acts-as-taggable-on'
 gem 'will_paginate'
 gem 'sprockets'
 gem 'filepicker-rails'
+gem 'redcarpet'
 
 group :development do
   gem 'better_errors'

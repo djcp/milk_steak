@@ -15,7 +15,7 @@
     </ul>
 
     <div class="directions">
-      <%= @recipe.directions %>
+      <%= raw markdown_format(@recipe.directions) %>
     </div>
   </div>
 
