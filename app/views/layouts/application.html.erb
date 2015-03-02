@@ -15,7 +15,9 @@
       <div class="body-container">
         <%= render 'nav' -%>
         <%= render 'flashes' -%>
-        <%= yield %>
+        <div id="main_content">
+          <%= yield %>
+        </div>
         <%= render 'footer' -%>
       </div>
     </div>

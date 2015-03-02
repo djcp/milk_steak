@@ -21,6 +21,7 @@
 @import '_recipes_forms';
 @import '_recipes_show';
 @import '_recipes_index';
+@import '_devise_customizations';
 
 .main-container, .body-container {
   @include outer-container;
