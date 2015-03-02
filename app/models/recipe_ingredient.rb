@@ -5,8 +5,11 @@ class RecipeIngredient < ActiveRecord::Base
 
   validates :recipe, presence: true
   validates :ingredient, presence: true
-  validates :quantity, numericality: true, allow_blank: true
-  validates :unit, allow_blank: true,
+  validates :quantity,
+    allow_blank: true,
+    length: { maximum: 10 }
+  validates :unit,
+    allow_blank: true,
     length: { maximum: 255 }
 
   accepts_nested_attributes_for :ingredient,

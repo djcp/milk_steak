@@ -24,6 +24,7 @@ form.new_recipe, form.edit_recipe {
   .error {
     color: darken($error-color, 60%);
     font-weight: bold;
+    font-size: 0.7em;
   }
   .hint {
     font-size: 0.8em;
@@ -71,27 +72,33 @@ form.new_recipe, form.edit_recipe {
       display: inline;
     }
   }
-  #ingredients {
-    input {
-      margin-bottom: 2em;
-    }
-  }
-  .recipe_recipe_ingredients__destroy{
-    font-size: 0.75em;
-    @include span-columns(1);
-    input {
-      width: 1em;
-    }
-  }
-  .recipe_recipe_ingredients_quantity{
-    @include span-columns(2);
-  }
-  .recipe_recipe_ingredients_unit{
-    @include span-columns(2);
-  }
-  .recipe_recipe_ingredients_ingredient_name{
-    @include span-columns(7);
+
+  .ingredient {
+    @include span-columns(12);
     @include omega();
+    margin-bottom: 1em;
+
+    input {
+      margin-bottom: 0.5em;
+    }
+
+    .recipe_recipe_ingredients__destroy{
+      font-size: 0.75em;
+      @include span-columns(1);
+      input {
+        width: 1em;
+      }
+    }
+    .recipe_recipe_ingredients_quantity{
+      @include span-columns(2);
+    }
+    .recipe_recipe_ingredients_unit{
+      @include span-columns(2);
+    }
+    .recipe_recipe_ingredients_ingredient_name{
+      @include span-columns(7);
+      @include omega();
+    }
   }
   .recipe_directions textarea{
     height: 10em;

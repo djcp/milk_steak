@@ -6,7 +6,7 @@ describe RecipeIngredient do
   it { should validate_presence_of(:recipe) }
   it { should validate_presence_of(:ingredient) }
   it { should accept_nested_attributes_for(:ingredient) }
-  it { should validate_numericality_of(:quantity) }
+  it { should validate_length_of(:quantity).is_at_most(10) }
   it { should validate_length_of(:unit).is_at_most(255) }
 
   it "delegates name to ingredient" do
