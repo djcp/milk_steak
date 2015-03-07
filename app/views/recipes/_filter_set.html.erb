@@ -1,0 +1,33 @@
+<%= simple_form_for(filter_set, url: root_path, method: :get) do |filter| %>
+  <%= filter.input :name %>
+
+  <%= filter.input :ingredients, required: false, input_html: {
+    class: 'autocomplete_multiple',
+    'data-target' => autocompletes_ingredient_names_path
+  } %>
+
+  <%= filter.input :cooking_methods, input_html: {
+    class: 'autocomplete_multiple',
+    'data-target' => autocompletes_cooking_methods_path
+  } %>
+
+  <%= filter.input :cultural_influences, input_html: {
+    class: 'autocomplete_multiple',
+    'data-target' => autocompletes_cultural_influences_path
+  } %>
+
+  <%= filter.input :courses, input_html: {
+    class: 'autocomplete_multiple',
+    'data-target' => autocompletes_courses_path
+  } %>
+
+  <%= filter.input :dietary_restrictions, input_html: {
+    class: 'autocomplete_multiple',
+    'data-target' => autocompletes_dietary_restrictions_path
+  } %>
+
+  <%= filter.input :author %>
+
+  <%= filter.button :submit %>
+  <%= link_to('Clear filters', root_path) %>
+<% end %>

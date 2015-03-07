@@ -1,0 +1,10 @@
+<% if filter_set.active_filters.present? %>
+  <div class="filter_indicator">
+    <span class="label">Filtering by:</span>
+    <ul class="active_filters">
+      <% filter_set.active_filters.map do |filter| %>
+        <li><span class="remove_filter" data-filter-name="<%= filter %>">☒</span><%= filter.to_s.humanize %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

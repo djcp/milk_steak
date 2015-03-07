@@ -1,12 +1,15 @@
 class FilterSet
   include ActiveModel::Model
-  attr_accessor :cooking_methods,
+  FILTERS = [
+    :cooking_methods,
     :cultural_influences,
     :courses,
     :dietary_restrictions,
     :name,
     :ingredients,
     :author
+  ]
+  attr_accessor *FILTERS
 
   def initialize(params)
     @cooking_methods = params[:cooking_methods]
@@ -16,6 +19,10 @@ class FilterSet
     @name = params[:name]
     @ingredients = params[:ingredients]
     @author = params[:author]
+  end
+
+  def active_filters
+    FILTERS.find_all { |filter| self.send(filter).present? }
   end
 
   def apply_to(recipes)
