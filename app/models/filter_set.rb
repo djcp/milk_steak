@@ -5,7 +5,8 @@ class FilterSet
     :courses,
     :dietary_restrictions,
     :name,
-    :ingredients
+    :ingredients,
+    :author
 
   def initialize(params)
     @cooking_methods = params[:cooking_methods]
@@ -14,6 +15,7 @@ class FilterSet
     @dietary_restrictions = params[:dietary_restrictions]
     @name = params[:name]
     @ingredients = params[:ingredients]
+    @author = params[:author]
   end
 
   def apply_to(recipes)
@@ -31,6 +33,11 @@ class FilterSet
       query = ingredients_query
       recipes = recipes.joins(:ingredients).where(
         query[:query_string], *query[:parameters]
+      )
+    end
+    if author.present?
+      recipes = recipes.joins(:user).where(
+        'users.email like ?', author.downcase
       )
     end
     recipes.distinct

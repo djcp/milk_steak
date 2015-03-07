@@ -25,6 +25,20 @@ feature 'User filters recipes', js: true do
     )
   end
 
+  scenario 'filters by recipe owner' do
+    user = user_logs_in
+    first_recipe = Recipe.first
+    first_recipe.update(user_id: user.id)
+    last_recipe = Recipe.last
+
+    visit '/'
+    fill_in 'Author', with: user.email
+    click_on 'Apply'
+
+    expect(page).to have_content(first_recipe.name)
+    expect(page).not_to have_content(last_recipe.name)
+  end
+
   scenario 'filters by cooking method' do
     user_logs_in
 

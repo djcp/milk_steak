@@ -5,4 +5,5 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable, :confirmable
 
   validates :email, email: true, presence: true, uniqueness: true
+  has_many :recipes
 end
