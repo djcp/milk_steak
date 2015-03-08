@@ -17,10 +17,10 @@ nav {
     padding-left: 0;
   }
   li {
-    @include span-columns(8 of 12);
+    @include span-columns(6 of 12);
   }
   li.login {
-    @include span-columns(4 of 12);
+    @include span-columns(6 of 12);
     @include omega();
     text-align: right;
   }

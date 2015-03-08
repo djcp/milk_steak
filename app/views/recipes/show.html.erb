@@ -1,9 +1,11 @@
 <article class="<%= dom_class(@recipe) %>" id="<%= dom_id(@recipe) %>">
   <div class="recipe-narrative">
     <h1><%= @recipe.name %></h1>
-    <h2><%= l(@recipe.created_at, format: :default) %>, by
+    <h2><%= l(@recipe.created_at, format: :default) %>
       <span class="user">
-        <%= @recipe.user_email %>
+        <% if @recipe.user_email.present? %>
+          <%= link_to(@recipe.user_email, root_path(filter_set: { author: @recipe.user_email } )) %>
+        <% end %>
       </span>
       <% if @recipe.user == current_user %>
         <%= link_to('edit', edit_recipe_path(@recipe)) %>

@@ -1,0 +1,3 @@
+<div class="<%= dom_class(image) %> <%= featured_image_class(image) %> thumbnail" id="<%= dom_id(image) %>">
+  <%= link_to(filepicker_image_tag(image.filepicker_url, w: 185, h: 185, fit: 'crop', cache: true), image.recipe) %>
+</div>

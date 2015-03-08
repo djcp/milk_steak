@@ -12,13 +12,13 @@ class FilterSet
   attr_accessor *FILTERS
 
   def initialize(params)
-    @cooking_methods = params[:cooking_methods]
-    @cultural_influences = params[:cultural_influences]
-    @courses = params[:courses]
-    @dietary_restrictions = params[:dietary_restrictions]
-    @name = params[:name]
-    @ingredients = params[:ingredients]
-    @author = params[:author]
+    @cooking_methods = normalize params[:cooking_methods]
+    @cultural_influences = normalize params[:cultural_influences]
+    @courses = normalize params[:courses]
+    @dietary_restrictions = normalize params[:dietary_restrictions]
+    @name = normalize params[:name]
+    @ingredients = normalize params[:ingredients]
+    @author = normalize params[:author]
   end
 
   def active_filters
@@ -51,6 +51,12 @@ class FilterSet
   end
 
   private
+
+  def normalize(value)
+    if value
+      value.split(',').find_all{|element| element.present?}.join(',')
+    end
+  end
 
   def ingredients_query
     queries = []

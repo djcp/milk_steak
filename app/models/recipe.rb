@@ -27,7 +27,7 @@ class Recipe < ActiveRecord::Base
   validates :directions, presence: true,
     length: { maximum: 8.kilobytes }
 
-  delegate :email, to: :user, prefix: true
+  delegate :email, to: :user, prefix: true, allow_nil: true
 
   def self.unique_serving_units
     select('serving_units').uniq()

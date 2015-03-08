@@ -1,6 +1,6 @@
 <div class="<%= dom_class(recipe) %>" id="<%= dom_id(recipe) %>">
   <% if recipe.featured_image? %>
-    <%= render recipe.featured_image %>
+    <%= render 'homepage_image', image: recipe.featured_image %>
   <% else %>
     <div class="image not_featured">
       <%= link_to(image_tag('no_photo.png'), recipe) %>

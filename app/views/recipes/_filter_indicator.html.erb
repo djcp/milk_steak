@@ -3,7 +3,7 @@
     <span class="label">Filtering by:</span>
     <ul class="active_filters">
       <% filter_set.active_filters.map do |filter| %>
-        <li><span class="remove_filter" data-filter-name="<%= filter %>">☒</span><%= filter.to_s.humanize %></li>
+        <li><span class="remove_filter" data-filter-name="<%= filter %>">☒</span><%= filter.to_s.humanize %> :: <%= filter_set.send(filter) %></li>
       <% end %>
     </ul>
   </div>

@@ -50,6 +50,11 @@ feature 'User filters recipes', js: true do
     expect(page).to have_content 'French fries'
     expect(page).not_to have_content 'Burritos'
 
+    within('.active_filters') do
+      expect(page).to have_content('Cooking methods')
+      expect(page).to have_content('deep fried')
+    end
+
     click_on 'Clear filters'
 
     fill_in 'Name', with: 'burrit'

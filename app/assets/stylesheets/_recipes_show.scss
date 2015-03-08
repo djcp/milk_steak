@@ -44,13 +44,23 @@ article.recipe {
     padding: 0px 2em 0px 2em;
     @include span-columns(3 of 12);
 
-    img {
+    .thumbnail img {
       width: 187px;
       height: 187px;
       border: 1px solid darken($light-gray, 20%);
       border-radius: 10px;
       box-shadow: 5px 5px 5px $light-gray;
       margin-bottom: 2em;
+    }
+
+    .modalDialog img {
+      border: 1px solid darken($light-gray, 20%);
+      border-radius: 10px;
+    }
+    .modalDialog .caption {
+      border-radius: 5px;
+      padding: .5em;
+      background-color: white;
     }
   }
 }
