@@ -49,6 +49,10 @@ class RecipeOnPage
     all('.recipe_ingredient .quantity').map(&:text)
   end
 
+  def description
+    find('.description')
+  end
+
   def user
     find('.user').text
   end

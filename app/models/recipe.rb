@@ -26,6 +26,7 @@ class Recipe < ActiveRecord::Base
   validates :serving_units, length: { maximum: 255 }
   validates :directions, presence: true,
     length: { maximum: 8.kilobytes }
+  validates :description, length: { maximum: 2.kilobytes }
 
   delegate :email, to: :user, prefix: true, allow_nil: true
 

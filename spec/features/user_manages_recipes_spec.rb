@@ -80,7 +80,8 @@ feature 'User manages recipes', js: true do
       'Preparation Time' => '5',
       'Cooking Time' => '15',
       'Servings' => '1',
-      'Serving Units' => 'servings'
+      'Serving Units' => 'servings',
+      'Description' => 'A *description*'
     )
 
     recipe_on_page.fill_in_ingredients_with(
@@ -124,6 +125,7 @@ Serve with raw jellybeans
     expect(recipe_on_page.courses).to include('dinner')
     expect(recipe_on_page.dietary_restrictions).to include('low salt')
     expect(recipe_on_page.user).to eq 'by: ' + user.email
+    expect(recipe_on_page.description).to have_css('em', text: 'description')
   end
 end
 

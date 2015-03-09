@@ -9,6 +9,8 @@
       <% end %>
     </legend>
     <%= f.input :name %>
+    <%= f.input :description, as: :text %>
+    <p class="markdown_info"><%= link_to('You can use markdown formatting in your description', '//daringfireball.net/projects/markdown/basics', target: '_blank') %></p>
     <div class="metadata">
       <%= f.input :preparation_time %>
       <%= f.input :cooking_time %>
@@ -52,7 +54,7 @@
   <fieldset id="directions">
     <legend>Directions</legend>
     <%= f.input :directions, as: :text %>
-    <p class="markdown_info"><%= link_to('You can use markdown formatting', '//daringfireball.net/projects/markdown/basics', target: '_blank') %></p>
+    <p class="markdown_info"><%= link_to('You can use markdown formatting in the directions', '//daringfireball.net/projects/markdown/basics', target: '_blank') %></p>
   </fieldset>
 
   <fieldset id="taggables">

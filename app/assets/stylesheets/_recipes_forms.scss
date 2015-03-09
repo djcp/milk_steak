@@ -18,6 +18,12 @@ form.new_recipe, form.edit_recipe {
     text-shadow: $gray .1em .1em 2px;
     font-weight: bold;
   }
+  .recipe_description {
+    textarea {
+      height: 5em;
+    }
+  }
+
   textarea {
     height: 2.7em;
   }

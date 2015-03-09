@@ -10,6 +10,8 @@ describe Recipe do
   it { should validate_presence_of(:name) }
   it { should validate_length_of(:name).is_at_most(255) }
 
+  it { should validate_length_of(:description).is_at_most(2.kilobytes) }
+
   it { should validate_length_of(:serving_units).is_at_most(255) }
 
   it { should validate_presence_of(:directions) }

@@ -6,6 +6,12 @@
       <% end %>
     </h1>
 
+    <% if @recipe.description? %>
+      <blockquote class="description">
+        <%= raw markdown_format(@recipe.description) %>
+      </blockquote>
+    <% end %>
+
     <ul class="recipe_ingredients">
       <%= render @recipe.recipe_ingredients %>
     </ul>

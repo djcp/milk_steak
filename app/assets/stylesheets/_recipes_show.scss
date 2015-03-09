@@ -2,12 +2,15 @@ article.recipe {
   h1.title {
     font-family: "Roboto Condensed";
     font-size: 3em;
-    margin-bottom: 1em;
-
+    margin-bottom: .5em;
     a {
       font-size: .5em;
       vertical-align: super;
     }
+  }
+
+  .description {
+    margin: 0em 3em 2em 3em;
   }
 
   .metadata {
