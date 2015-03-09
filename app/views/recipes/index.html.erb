@@ -11,3 +11,5 @@
   <h2>Search</h2>
   <%= render 'filter_set', filter_set: @filter_set %>
 </div>
+
+<% content_for(:page_title, home_page_title(@filter_set)) %>

@@ -3,7 +3,7 @@
   <fieldset id="recipe_metadata">
     <legend>
       <% if @recipe.persisted? %>
-        Edit Recipe
+        Edit Recipe "<%= @recipe.name %>"
       <% else %>
         New Recipe
       <% end %>

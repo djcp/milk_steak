@@ -1,4 +1,15 @@
 module ApplicationHelper
+  def url_to_recipe(recipe)
+    recipe_path(recipe) + '/' + recipe.name_for_url
+  end
+
+  def home_page_title(filter_set)
+    return '' if filter_set.active_filters.empty?
+    filter_set.active_filters.map do |filter|
+      "#{filter.to_s.humanize} :: #{filter_set.send(filter)}"
+    end.join(' ')
+  end
+
   def markdown_format(text)
     if text.present?
       renderer = Redcarpet::Render::HTML.new(

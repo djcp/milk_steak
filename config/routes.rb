@@ -1,7 +1,12 @@
 MilkSteak::Application.routes.draw do
   devise_for :users
 
-  resources :recipes, only: [:index, :new, :create, :show, :edit, :update]
+  resources :recipes, only: [:index, :new, :create, :show, :edit, :update] do
+    member do
+      get 'edit', to: 'recipes#edit'
+      get ':rando', to: 'recipes#show'
+    end
+  end
 
   namespace :autocompletes do
     resources :cooking_methods, only: [:index]

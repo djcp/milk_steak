@@ -3,8 +3,8 @@
     <%= render 'homepage_image', image: recipe.featured_image %>
   <% else %>
     <div class="image not_featured">
-      <%= link_to(image_tag('no_photo.png'), recipe) %>
+      <%= link_to(image_tag('no_photo.png'), url_to_recipe(recipe)) %>
     </div>
   <% end %>
-  <h2><%= link_to(recipe.name, recipe) %></h2>
+  <h2><%= link_to(recipe.name, url_to_recipe(recipe)) %></h2>
 </div>

@@ -29,6 +29,10 @@ class Recipe < ActiveRecord::Base
 
   delegate :email, to: :user, prefix: true, allow_nil: true
 
+  def name_for_url
+    name.downcase.gsub(/[^a-z\d ]/i,'').gsub(' ','_')
+  end
+
   def self.unique_serving_units
     select('serving_units').uniq()
   end
