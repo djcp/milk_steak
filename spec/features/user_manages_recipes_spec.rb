@@ -123,7 +123,7 @@ Serve with raw jellybeans
     expect(recipe_on_page.cultural_influences).to include('american')
     expect(recipe_on_page.courses).to include('dinner')
     expect(recipe_on_page.dietary_restrictions).to include('low salt')
-    expect(recipe_on_page.user).to eq user.email
+    expect(recipe_on_page.user).to eq 'by: ' + user.email
   end
 end
 

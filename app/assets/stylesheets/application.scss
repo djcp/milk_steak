@@ -24,6 +24,9 @@
 @import '_recipes_index';
 @import '_devise_customizations';
 
+a:hover {
+  text-decoration: underline;
+}
 ul {
   @extend %default-ul;
   list-style-position: inside;

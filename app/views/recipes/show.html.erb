@@ -1,16 +1,10 @@
 <article class="<%= dom_class(@recipe) %>" id="<%= dom_id(@recipe) %>">
   <div class="recipe-narrative">
-    <h1><%= @recipe.name %></h1>
-    <h2><%= l(@recipe.created_at, format: :default) %>
-      <span class="user">
-        <% if @recipe.user_email.present? %>
-          <%= link_to(@recipe.user_email, root_path(filter_set: { author: @recipe.user_email } )) %>
-        <% end %>
-      </span>
+    <h1 class="title"><%= @recipe.name %>
       <% if @recipe.user == current_user %>
         <%= link_to('edit', edit_recipe_path(@recipe)) %>
       <% end %>
-    </h2>
+    </h1>
 
     <ul class="recipe_ingredients">
       <%= render @recipe.recipe_ingredients %>
@@ -22,6 +16,14 @@
   </div>
 
   <div class="tags">
+    <div class="metadata">
+      <div>Created: <%= l(@recipe.created_at, format: :default) %></div>
+      <% if @recipe.user_email.present? %>
+        <div class="user">
+          by: <span class="badge"><%= link_to(@recipe.user_email, root_path(filter_set: { author: @recipe.user_email } )) %></span>
+        </div>
+      <% end %>
+    </div>
     <%= render 'tagged_attributes', recipe: @recipe, attribute: 'cooking_methods' %>
     <%= render 'tagged_attributes', recipe: @recipe, attribute: 'cultural_influences' %>
     <%= render 'tagged_attributes', recipe: @recipe, attribute: 'courses' %>

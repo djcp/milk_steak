@@ -8,7 +8,7 @@ en:
 
   time:
     formats:
-      default: '%a, %b %-d, %Y at %r'
+      default: '%a, %b %-d, %Y'
       date: '%b %-d, %Y'
       short: '%B %d'
   ui:

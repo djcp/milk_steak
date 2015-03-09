@@ -10,7 +10,7 @@
   <body class="<%= body_class %>">
     <div class="main-container">
       <header class="site">
-        <h1><%= link_to('Recipes', root_path) %></h1>
+        <h1><%= link_to(ENV.fetch('APP_NAME', 'Recipes'), root_path) %></h1>
       </header>
       <div class="body-container">
         <%= render 'nav' -%>
