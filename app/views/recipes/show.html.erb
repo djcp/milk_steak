@@ -23,7 +23,16 @@
 
   <div class="tags">
     <div class="metadata">
-      <div>Created: <%= l(@recipe.created_at, format: :default) %></div>
+      <% if @recipe.preparation_time? %>
+        <div><span class="type">Prep time:</span> <%= @recipe.preparation_time %> minutes</div>
+      <% end %>
+      <% if @recipe.cooking_time? %>
+        <div><span class="type">Total Cooking time:</span> <%= @recipe.cooking_time %> minutes</div>
+      <% end %>
+      <% if @recipe.servings? || @recipe.serving_units? %>
+        <div><span class="type">Makes:</span> <%= @recipe.servings %> <%= @recipe.serving_units %></div>
+      <% end %>
+      <div><span class="type">Created:</span> <%= l(@recipe.created_at, format: :default) %></div>
       <% if @recipe.user_email.present? %>
         <div class="user">
           by: <span class="badge"><%= link_to(@recipe.user_email, root_path(filter_set: { author: @recipe.user_email } )) %></span>

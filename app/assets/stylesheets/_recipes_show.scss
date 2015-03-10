@@ -15,6 +15,9 @@ article.recipe {
 
   .metadata {
     padding-bottom: 2em;
+    span.type {
+      font-weight: bold;
+    }
   }
 
   .recipe-narrative{
@@ -24,9 +27,8 @@ article.recipe {
   }
 
   .recipe_ingredients {
-    margin: 1em;
     background-color: white;
-    padding: 1em;
+    padding: 1em 2em 1em 2em;
     border-radius: 1em;
   }
 

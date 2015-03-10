@@ -29,12 +29,10 @@ a:hover {
 }
 ul {
   @extend %default-ul;
-  list-style-position: inside;
 }
 
 ol {
   @extend %default-ol;
-  list-style-position: inside;
 }
 
 .main-container, .body-container {
