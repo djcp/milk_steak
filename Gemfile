@@ -11,6 +11,7 @@ gem 'flutie'
 gem 'high_voltage'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
+gem 'paperclip', '~> 4.2'
 gem 'pg'
 gem 'rack-timeout'
 gem 'rails', '~> 4.2.0'
@@ -24,7 +25,6 @@ gem 'acts_as_list'
 gem 'acts-as-taggable-on'
 gem 'will_paginate'
 gem 'sprockets'
-gem 'filepicker-rails'
 gem 'redcarpet'
 
 group :development do
@@ -53,6 +53,7 @@ group :test do
 end
 
 group :staging, :production do
+  gem 'aws-sdk', '~> 1.5.7'
   gem 'newrelic_rpm', '>= 3.6.7'
   gem 'rails_12factor'
 end

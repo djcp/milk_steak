@@ -2,7 +2,6 @@ require 'spec_helper'
 
 feature 'Compression' do
   scenario "a visitor has a browser that supports compression", :js do
-    page.driver.allow_url('filepicker.io')
     page.driver.allow_url('googleapis.com')
 
     ['deflate','gzip', 'deflate,gzip','gzip,deflate'].each do|compression_method|

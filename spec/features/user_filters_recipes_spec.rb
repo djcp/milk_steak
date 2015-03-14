@@ -4,7 +4,6 @@ feature 'User filters recipes', js: true do
   include RecipeGenerator
 
   before do
-    page.driver.allow_url('filepicker.io')
     page.driver.allow_url('googleapis.com')
   end
 

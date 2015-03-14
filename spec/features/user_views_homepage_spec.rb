@@ -3,7 +3,6 @@ require 'spec_helper'
 feature 'User views homepage', js: true do
   include RecipeGenerator
   before do
-    page.driver.allow_url('filepicker.io')
     page.driver.allow_url('googleapis.com')
   end
 

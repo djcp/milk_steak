@@ -10,7 +10,7 @@ FactoryGirl.define do
   sequence(:dietary_restriction) { |n| "restriction #{n}" }
 
   factory :image do
-    filepicker_url "MyString"
+    image { File.open('spec/support/files/sample.jpg') }
     recipe
     featured false
   end

@@ -72,7 +72,7 @@ class RecipesController < ApplicationController
         :id,
         :caption,
         :featured,
-        :filepicker_url
+        :image
       ],
       recipe_ingredients_attributes: [
         :_destroy,

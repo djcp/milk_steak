@@ -101,9 +101,9 @@
           <%= image_form.input :featured, as: :boolean %>
           <% if image_form.object.persisted? %>
             <%= image_form.input :_destroy, as: :boolean %>
-            <%= link_to(filepicker_image_tag(image_form.object.filepicker_url, w: 32, h: 32, fit: 'crop', cache: true), filepicker_image_url(image_form.object.filepicker_url), target: '_blank') %>
+            <%= link_to(image_tag(image_form.object.image(:tiny)), image_form.object.image.url(:large), target: '_blank') %>
           <% end %>
-          <%= image_form.filepicker_field :filepicker_url, mimetypes: 'image/*', onchange: 'photoUploaded(event)' %>
+          <%= image_form.file_field :image %>
         </div>
       <% end %>
     </div>

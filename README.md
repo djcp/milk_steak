@@ -24,9 +24,8 @@ See [eclecticrecip.es](http://eclecticrecip.es).
 
 This app is set up assuming a heroku deployment but should be trivial to deploy
 elsewhere. Mail delivery is assumed to go out via SMTP (via sendgrid or the
-like), while file uploads are (currently) handled via
-[filepicker.io](filepicker.io). See `sample.env` for the relevant environment
-variables.
+like), while file uploads are handled via paperclip and an upload to s3.  See
+`sample.env` for the relevant environment variables.
 
 ## Contributors:
 
