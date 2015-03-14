@@ -7,7 +7,14 @@
     </li>
     <li class="login">
       <% if current_user.present? %>
-        <%= current_user.email %> :: <%= link_to t('ui.recipes.links.my'), root_path(filter_set: { author: current_user.email }) %> :: <%= link_to 'Log out', destroy_user_session_path, method: :delete %>
+        <%= current_user.email %>
+        <span class="spacer">::</span>
+        <%= link_to(
+          t('ui.recipes.links.my'),
+          root_path(filter_set: { author: current_user.email })
+          ) %>
+        <span class="spacer">::</span>
+        <%= link_to 'Log out', destroy_user_session_path, method: :delete %>
     <% else %>
       <%= link_to 'Log in', new_user_session_path %>
     <% end %>

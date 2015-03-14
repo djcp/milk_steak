@@ -5,12 +5,6 @@ nav {
   color: white;
   background: $tomato-red;
 
-  a {
-    color: white;
-    &:hover {
-      color: darken(white, 30%);
-    }
-  }
   ul, li {
     margin-top: 0;
     margin-left: 0;

@@ -1,6 +1,6 @@
 /*
  *= require jquery-ui/autocomplete
-*/
+ */
 
 @charset 'utf-8';
 
@@ -27,6 +27,19 @@
 a:hover {
   text-decoration: underline;
 }
+
+footer, nav {
+  span.spacer{
+    margin: 0em 0.5em 0em 0.5em;
+  }
+  a {
+    color: white;
+    &:hover {
+      color: darken(white, 30%);
+    }
+  }
+}
+
 ul {
   @extend %default-ul;
 }
@@ -44,6 +57,7 @@ ol {
 }
 
 footer {
+  font-size: 0.75em;
   color: white;
   padding: 1em;
   background-color: $tomato-red;
