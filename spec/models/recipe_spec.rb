@@ -5,6 +5,7 @@ describe Recipe do
   it { should have_many(:recipe_ingredients).dependent(:destroy) }
   it { should have_many(:ingredients).through(:recipe_ingredients) }
   it { should accept_nested_attributes_for(:recipe_ingredients) }
+  it { should accept_nested_attributes_for(:images) }
   it { should belong_to(:user) }
 
   it { should validate_presence_of(:name) }
@@ -25,7 +26,6 @@ describe Recipe do
   it_behaves_like 'an object tagged in the context of', 'cultural_influences'
   it_behaves_like 'an object tagged in the context of', 'courses'
   it_behaves_like 'an object tagged in the context of', 'dietary_restrictions'
-
 
   context '#featured_image' do
     it 'chooses a featured image' do

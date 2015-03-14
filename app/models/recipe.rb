@@ -13,7 +13,7 @@ class Recipe < ActiveRecord::Base
 
   accepts_nested_attributes_for :recipe_ingredients,
     allow_destroy: true,
-    reject_if: ->(attr) { attr['unit'].blank? }
+    reject_if: ->(attr) { attr['unit'].blank? && attr['quantity'].blank? }
 
   accepts_nested_attributes_for :images,
     allow_destroy: true,

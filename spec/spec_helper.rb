@@ -26,5 +26,6 @@ RSpec.configure do |config|
   config.use_transactional_fixtures = false
 end
 
+Capybara.default_wait_time = 5
 Capybara.javascript_driver = :webkit
 WebMock.disable_net_connect!(allow_localhost: true)

@@ -25,20 +25,35 @@
   <fieldset id="ingredients">
     <legend>Ingredients</legend>
     <div id="ingredients_container">
+      <p>An ingredient needs to have either a quantity or a unit, along with a name.</p>
+      <div class="ingredient">
+        <div class="recipe_recipe_ingredients__destroy header">
+          Remove
+        </div>
+        <div class="recipe_recipe_ingredients_quantity header">
+          Quantity
+        </div>
+        <div class="recipe_recipe_ingredients_unit header">
+          Unit
+        </div>
+        <div class="recipe_recipe_ingredients_ingredient_name header">
+          Name
+        </div>
+      </div>
       <%= f.simple_fields_for :recipe_ingredients do |ri_form| %>
         <div class="ingredient" data-ingredient-index="<%= ri_form.index %>">
           <% if ri_form.object.persisted? %>
-            <%= ri_form.input :_destroy, as: :boolean %>
+            <%= ri_form.input :_destroy, as: :boolean, label: false %>
           <% else %>
             <div class="recipe_recipe_ingredients__destroy">&nbsp;</div>
           <% end %>
-          <%= ri_form.input :quantity %>
-          <%= ri_form.input :unit, input_html: {
+          <%= ri_form.input :quantity, label: false %>
+          <%= ri_form.input :unit, label: false, input_html: {
             class: 'autocomplete_single',
             'data-target' => autocompletes_ingredient_units_path
           }%>
           <%= ri_form.simple_fields_for :ingredient do |i_form| %>
-            <%= i_form.input :name, required: false, input_html: {
+            <%= i_form.input :name, required: false, label: false, input_html: {
               class: 'autocomplete_single',
               'data-target' => autocompletes_ingredient_names_path
             }%>

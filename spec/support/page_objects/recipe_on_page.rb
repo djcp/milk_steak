@@ -8,7 +8,7 @@ class RecipeOnPage
   end
 
   def has_ingredient_fields_numbering?(count)
-    all('fieldset#ingredients div.ingredient').count == count
+    all('fieldset#ingredients div.ingredient').count == count + 1
   end
 
   def click_to_add_more_ingredients

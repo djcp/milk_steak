@@ -82,14 +82,16 @@ form.new_recipe, form.edit_recipe {
   .ingredient {
     @include span-columns(12);
     @include omega();
-    margin-bottom: 1em;
+
+    .header {
+      font-weight: bold;
+    }
 
     input {
       margin-bottom: 0.5em;
     }
 
     .recipe_recipe_ingredients__destroy{
-      font-size: 0.75em;
       @include span-columns(1);
       input {
         width: 1em;
