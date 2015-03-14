@@ -15,7 +15,7 @@ notifications:
   email:
     - false
 rvm:
-  - 2.1.5
+  - 2.2.1
 addons:
   postgresql: "9.4"
 sudo: false
