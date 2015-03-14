@@ -2,7 +2,6 @@ source 'https://rubygems.org'
 
 ruby '2.2.1'
 
-gem 'airbrake'
 gem 'bourbon'
 gem 'bitters'
 gem 'neat'
@@ -37,6 +36,7 @@ end
 
 group :development, :test do
   gem 'factory_girl_rails'
+  gem 'brakeman', require: false
   gem 'rspec-rails'
   gem 'pry-rails'
   gem 'dotenv-rails'
