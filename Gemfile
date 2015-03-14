@@ -52,7 +52,7 @@ group :test do
   gem 'webmock'
 end
 
-group :staging, :production do
+group :production do
   gem 'aws-sdk', '~> 1.5.7'
   gem 'newrelic_rpm', '>= 3.6.7'
   gem 'rails_12factor'

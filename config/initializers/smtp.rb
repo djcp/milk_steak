@@ -1,4 +1,4 @@
-if Rails.env.staging? || Rails.env.production?
+if Rails.env.production?
   SMTP_SETTINGS = {
     address: ENV['SMTP_ADDRESS'], # example: 'smtp.sendgrid.net'
     authentication: :plain,
