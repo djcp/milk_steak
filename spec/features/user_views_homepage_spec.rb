@@ -1,29 +1,28 @@
 require 'spec_helper'
 
 feature 'User views homepage', js: true do
+  include RecipeGenerator
   before do
     page.driver.allow_url('filepicker.io')
     page.driver.allow_url('googleapis.com')
   end
 
   scenario 'sees a paginated list of recipes' do
-    generate_recipes
     user_logs_in
+
+    create_recipes
     visit '/'
 
-    sees_a_list_of_new_recipes
+    sees_a_list_of_recipes_numbering(2)
 
-    can_select_next_page
+    visit '/?per_page=1'
+
+    sees_a_list_of_recipes_numbering(1)
+
+    expect(page).to have_link('Next')
   end
 end
 
-def can_select_next_page
-end
-
-def sees_a_list_of_new_recipes
-  expect(page).to have_css('div.recipe', count: 2)
-end
-
-def generate_recipes
-  create_list(:full_recipe, 2)
+def sees_a_list_of_recipes_numbering(count)
+  expect(page).to have_css('div.recipe', count: count)
 end
