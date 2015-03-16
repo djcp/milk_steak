@@ -21,13 +21,15 @@ $ ->
 
   target = ''
 
-  $('.autocomplete_single').autocomplete
-    source: (request, response) ->
-      $.getJSON target, q: request.term, response
-    minLength: 2
-    search: ->
-      target = $(@).data('target')
-      true
+  $(document).on('keyup.autocomplete_single', '.autocomplete_single', ->
+    $(@).autocomplete
+      source: (request, response) ->
+        $.getJSON target, q: request.term, response
+      minLength: 2
+      search: ->
+        target = $(@).data('target')
+        true
+  )
 
   split = (val) ->
     val.split /,\s*/
