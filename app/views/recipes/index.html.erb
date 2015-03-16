@@ -2,6 +2,7 @@
   <%= render 'filter_indicator', filter_set: @filter_set %>
 
   <div class="recipe-list">
+    <%= will_paginate(@recipes) %>
     <%= render @recipes %>
     <%= will_paginate(@recipes) %>
   </div>
