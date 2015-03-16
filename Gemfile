@@ -13,7 +13,6 @@ gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'paperclip', '~> 4.2'
 gem 'pg'
-gem 'rack-timeout'
 gem 'rails', '~> 4.2.0'
 gem 'recipient_interceptor'
 gem 'sass-rails'
@@ -53,6 +52,7 @@ group :test do
 end
 
 group :production do
+  gem 'rack-timeout'
   gem 'aws-sdk', '~> 1.5.7'
   gem 'newrelic_rpm', '>= 3.6.7'
   gem 'rails_12factor'

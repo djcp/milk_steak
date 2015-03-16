@@ -17,7 +17,7 @@ class Recipe < ActiveRecord::Base
 
   accepts_nested_attributes_for :images,
     allow_destroy: true,
-    reject_if: ->(attr) { attr['image'].blank? }
+    reject_if: ->(attr) { attr['id'].blank? && attr['image'].blank? }
 
   validates :preparation_time, :cooking_time, :servings,
     numericality: true, allow_blank: true
