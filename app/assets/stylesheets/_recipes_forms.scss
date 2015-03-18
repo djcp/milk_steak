@@ -61,12 +61,14 @@ form.new_recipe, form.edit_recipe {
   }
   .images{
     @include span-columns(12);
-    @include omega();
-
-    .image{
-      @include span-columns(3);
-      @include omega(4n);
-      height: 12em;
+    .image-wrapper{
+      border: 1px solid $gray;
+      border-radius: 5px;
+      @include span-columns(5);
+      margin-bottom: 1em;
+    }
+    .image {
+      padding: 1em;
     }
     img {
       vertical-align: middle;
@@ -86,11 +88,9 @@ form.new_recipe, form.edit_recipe {
     .header {
       font-weight: bold;
     }
-
     input {
       margin-bottom: 0.5em;
     }
-
     .recipe_recipe_ingredients__destroy{
       @include span-columns(1);
       input {

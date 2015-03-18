@@ -11,6 +11,7 @@
 @import 'neat';
 
 @import '_variables';
+@import '_responsive_breakpoints';
 @import '_mixins';
 @import url(//fonts.googleapis.com/css?family=Roboto+Condensed);
 
@@ -57,6 +58,7 @@ ol {
 }
 
 footer {
+  margin-top: 1em;
   font-size: 0.75em;
   color: white;
   padding: 1em;

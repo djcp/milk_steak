@@ -1,15 +1,16 @@
-<div class="<%= dom_class(image) %> <%= featured_image_class(image) %> thumbnail" id="<%= dom_id(image) %>">
-  <%= link_to(image_tag(image.image(:thumb)), "#openModal#{image.id}")%>
-</div>
-
-<div id="openModal<%= image.id %>" class="modalDialog">
-  <div>
-    <a href="#close" title="Close" class="close">X</a>
-    <%= image_tag(image.image(:large)) %>
-    <% if image.caption? %>
-      <div class="caption">
-        <%= image.caption %>
-      </div>
-    <% end %>
+<div class="image-wrapper">
+  <div class="<%= dom_class(image) %> <%= featured_image_class(image) %> thumbnail" id="<%= dom_id(image) %>">
+    <%= link_to(image_tag(image.image(:thumb)), "#openModal#{image.id}")%>
+  </div>
+  <div id="openModal<%= image.id %>" class="modalDialog">
+    <div>
+      <a href="#close" title="Close" class="close">X</a>
+      <%= image_tag(image.image(:large)) %>
+      <% if image.caption? %>
+        <div class="caption">
+          <%= image.caption %>
+        </div>
+      <% end %>
+    </div>
   </div>
 </div>

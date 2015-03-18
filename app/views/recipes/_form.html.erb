@@ -96,14 +96,16 @@
     <legend>Images</legend>
     <div class="images">
       <%= f.simple_fields_for :images do |image_form| %>
-        <div class="image">
-          <%= image_form.input :caption %>
-          <%= image_form.input :featured, as: :boolean %>
-          <% if image_form.object.persisted? %>
-            <%= image_form.input :_destroy, as: :boolean %>
-            <%= link_to(image_tag(image_form.object.image(:tiny)), image_form.object.image.url(:large), target: '_blank') %>
-          <% end %>
-          <%= image_form.file_field :image %>
+        <div class="image-wrapper">
+          <div class="image">
+            <%= image_form.input :caption %>
+            <%= image_form.input :featured, as: :boolean %>
+            <% if image_form.object.persisted? %>
+              <%= image_form.input :_destroy, as: :boolean %>
+              Preview: <%= link_to(image_tag(image_form.object.image(:tiny)), image_form.object.image.url(:large), target: '_blank') %>
+            <% end %>
+            <%= image_form.file_field :image %>
+          </div>
         </div>
       <% end %>
     </div>

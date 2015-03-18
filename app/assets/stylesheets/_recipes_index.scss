@@ -1,10 +1,20 @@
 .recipe-container {
-  @include span-columns(9);
+  @include media($mobile) {
+    @include span-columns(8);
+  }
+  @include media($medium) {
+    @include span-columns(8);
+  }
+  @include media($desktop) {
+    @include span-columns(9);
+  }
 
   .filter_indicator {
     font-family: "Roboto Condensed";
     padding: 1em 0em 0em 1em;
+
     @include span-columns(9 of 9);
+
     ul, li {
       display: inline;
     }
@@ -27,16 +37,24 @@
   .recipe-list {
     .recipe {
       padding: 2em;
-      @include span-columns(3 of 9);
-      @include omega(3n);
+      @include media($mobile) {
+        @include span-columns(8 of 8);
+        @include omega();
+      }
+      @include media($medium) {
+        @include span-columns(4 of 8);
+        @include omega(2n);
+      }
 
+      @include media($desktop) {
+        @include span-columns(3 of 9);
+        @include omega(3n);
+      }
       h2 {
         text-align: center;
         font-size: .75em;
       }
       img {
-        width: 187px;
-        height: 187px;
         border: 1px solid darken($light-gray, 20%);
         border-radius: 10px;
         box-shadow: 5px 5px 5px $light-gray;
@@ -46,9 +64,17 @@
 }
 
 .recipe-filters {
+  @include media($mobile) {
+    @include span-columns(4);
+  }
+  @include media($medium) {
+    @include span-columns(4);
+  }
+  @include media($desktop) {
+    @include span-columns(3);
+  }
   padding: 2em;
   margin-bottom: 2em;
-  @include span-columns(3);
   @include omega();
   @include sidebar();
 }

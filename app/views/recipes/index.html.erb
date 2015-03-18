@@ -1,11 +1,10 @@
 <div class="recipe-container">
   <%= render 'filter_indicator', filter_set: @filter_set %>
-
+  <%= will_paginate(@recipes) %>
   <div class="recipe-list">
-    <%= will_paginate(@recipes) %>
     <%= render @recipes %>
-    <%= will_paginate(@recipes) %>
   </div>
+  <%= will_paginate(@recipes) %>
 </div>
 
 <div class="recipe-filters">

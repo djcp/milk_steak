@@ -22,7 +22,15 @@ article.recipe {
 
   .recipe-narrative{
     padding: 2em;
-    @include span-columns(9 of 12);
+    @include media($mobile){
+      @include span-columns(12 of 12);
+    }
+    @include media($medium){
+      @include span-columns(8 of 12);
+    }
+    @include media($desktop){
+      @include span-columns(9 of 12);
+    }
     min-height: 20em;
   }
 
@@ -34,9 +42,20 @@ article.recipe {
 
   div.tags {
     padding:  2em;
-    @include span-columns(3 of 12);
-    @include omega();
     @include sidebar();
+    @include media($mobile){
+      @include span-columns(12 of 12);
+      @include omega();
+      border-radius: 0px;
+    }
+    @include media($medium){
+      @include span-columns(4 of 12);
+      @include omega();
+    }
+    @include media($desktop){
+      @include span-columns(3 of 12);
+      @include omega();
+    }
     a {
       color: black;
       &:hover {
@@ -46,26 +65,29 @@ article.recipe {
   }
   div.images {
     margin-top: 2em;
-    padding: 0px 2em 0px 2em;
-    @include span-columns(3 of 12);
+    padding: 0 2% 0 2%;
 
-    .thumbnail img {
-      width: 187px;
-      height: 187px;
-      border: 1px solid darken($light-gray, 20%);
-      border-radius: 10px;
-      box-shadow: 5px 5px 5px $light-gray;
-      margin-bottom: 2em;
-    }
+    @include span-columns(12);
 
-    .modalDialog img {
-      border: 1px solid darken($light-gray, 20%);
-      border-radius: 10px;
-    }
-    .modalDialog .caption {
-      border-radius: 5px;
-      padding: .5em;
-      background-color: white;
+    .image-wrapper {
+      @include span-columns(3);
+      @include omega(4n);
+      .thumbnail img {
+        border: 1px solid darken($light-gray, 20%);
+        border-radius: 10px;
+        box-shadow: 5px 5px 5px $light-gray;
+        margin: 2%;
+      }
+
+      .modalDialog img {
+        border: 1px solid darken($light-gray, 20%);
+        border-radius: 10px;
+      }
+      .modalDialog .caption {
+        border-radius: 5px;
+        padding: .5em;
+        background-color: white;
+      }
     }
   }
 }
