@@ -22,6 +22,7 @@
       font-weight: bold;
     }
     li {
+      white-space: nowrap;
       padding: 0em 1em 0em 0.5em;
     }
     .remove_filter {
@@ -66,14 +67,16 @@
 .recipe-filters {
   @include media($mobile) {
     @include span-columns(4);
+    padding: 1em;
   }
   @include media($medium) {
     @include span-columns(4);
+    padding: 1.5em;
   }
   @include media($desktop) {
     @include span-columns(3);
+    padding: 2em;
   }
-  padding: 2em;
   margin-bottom: 2em;
   @include omega();
   @include sidebar();

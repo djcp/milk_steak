@@ -18,7 +18,9 @@
     pointer-events: auto;
   }
   & > div{
-    width: 640px;
+    max-width: 640px;
+    width: 80%;
+
     position: relative;
     margin: 2% auto;
     padding: 20px;

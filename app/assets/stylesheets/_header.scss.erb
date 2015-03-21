@@ -1,8 +1,4 @@
 body {
-  // @include background-image(
-  //   linear-gradient($light-gray, darken($light-gray, 10%))
-  // );
-
   background: no-repeat;
   background-position: center center;
   background-size: cover;
@@ -18,6 +14,12 @@ header.site {
     text-align: center;
     color: white;
     font-size: 5em;
+    @include media($mobile) {
+      font-size: 2.5em;
+    }
+    @include media($medium) {
+      font-size: 4em;
+    }
     a {
       color: white;
       &:hover {

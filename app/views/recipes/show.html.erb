@@ -45,7 +45,7 @@
     <%= render 'tagged_attributes', recipe: @recipe, attribute: 'dietary_restrictions' %>
   </div>
 
-  <div class="images">
+  <div class="images" id="image_list">
     <%= render @recipe.images.order('id') %>
   </div>
 
