@@ -18,6 +18,11 @@ body.devise-confirmations
   }
   #main_content{
     padding: 3em 10em 1em 10em;
+    @include media($mobile) {
+      padding: 1em;
+    }
+    @include media($medium) {
+      padding: 1em;
+    }
   }
 }
-
