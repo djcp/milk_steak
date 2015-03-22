@@ -13,3 +13,4 @@ rerun.txt
 tmp/*
 tmp/**/*
 .env*
+.elasticbeanstalk/
