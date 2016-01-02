@@ -8,6 +8,8 @@ MilkSteak::Application.routes.draw do
     end
   end
 
+  resources :meal_plans, only: [:new, :index]
+
   namespace :autocompletes do
     resources :cooking_methods, only: [:index]
     resources :cultural_influences, only: [:index]

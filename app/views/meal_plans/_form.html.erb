@@ -1,0 +1,13 @@
+<%= simple_form_for @meal_plan do |f| %>
+  <fieldset id="meal_plan_metadata">
+    <legend>
+      <% if @meal_plan.persisted? %>
+        Edit Meal Plan "<%= @meal_plan.name %>"
+      <% else %>
+        New Meal Plan
+      <% end %>
+    </legend>
+    <%= f.input :name %>
+    <%= f.input :description %>
+  </fieldset>
+<% end %>

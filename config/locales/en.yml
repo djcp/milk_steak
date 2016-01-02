@@ -12,6 +12,9 @@ en:
       date: '%b %-d, %Y'
       short: '%B %d'
   ui:
+    meal_plans:
+      links:
+        new: New Meal Plan
     recipes:
       invalid_creation: We couldn't create that recipe. Please see below.
       updated: Updated!

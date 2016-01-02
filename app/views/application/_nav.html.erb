@@ -1,6 +1,7 @@
 <nav>
   <% if current_user.present? %>
     <%= link_to t('ui.recipes.links.new'), new_recipe_path %>
+    <%= link_to t('ui.meal_plans.links.new'), new_meal_plan_path %>
     <%= link_to(
       t('ui.recipes.links.my'),
       root_path(filter_set: { author: current_user.email })
