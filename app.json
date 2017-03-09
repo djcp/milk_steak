@@ -22,7 +22,8 @@
   "formation": {
   },
   "addons": [
-    "heroku-postgresql"
+    "heroku-postgresql",
+    "slowdb:speckled_hen"
   ],
   "buildpacks": [
     {
