@@ -40,3 +40,5 @@ author.
 See LICENSE.txt for more information about the GPLv3 license.
 
 Copyright (c) 2015 - @djcp - Dan Collis Puro - https://github/djcp
+
+Exciting change!
