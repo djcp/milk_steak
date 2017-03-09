@@ -23,7 +23,7 @@
   },
   "addons": [
     "heroku-postgresql",
-    "slowdb:speckled_hen"
+    "slowdb:update-please"
   ],
   "buildpacks": [
     {
