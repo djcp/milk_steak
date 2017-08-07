@@ -52,6 +52,6 @@ end
 group :production do
   gem 'rack-timeout'
   gem 'aws-sdk', '~> 1.5.7'
-  gem 'newrelic_rpm', '>= 3.6.7'
+  gem 'newrelic_rpm'
   gem 'rails_12factor'
 end
