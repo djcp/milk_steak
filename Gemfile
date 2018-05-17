@@ -1,4 +1,4 @@
-source 'https://rubygems.org'
+source "#{ENV['GEM_SOURCE']}"
 
 gem 'bourbon'
 gem 'bitters'
