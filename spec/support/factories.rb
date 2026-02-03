@@ -1,6 +1,6 @@
-# Read about factories at https://github.com/thoughtbot/factory_girl
+# Read about factories at https://github.com/thoughtbot/factory_bot
 
-FactoryGirl.define do
+FactoryBot.define do
   sequence(:email) { |n| "email#{n}@example.com" }
   sequence(:name) { |n| "Recipe name #{n}" }
   sequence(:ingredient_name) { |n| "Ingredient name #{n}" }
@@ -10,27 +10,35 @@ FactoryGirl.define do
   sequence(:dietary_restriction) { |n| "restriction #{n}" }
 
   factory :image do
-    image { File.open('spec/support/files/sample.jpg') }
+    after(:build) do |image|
+      image.image.attach(
+        io: File.open(Rails.root.join('spec/support/files/sample.jpg')),
+        filename: 'sample.jpg',
+        content_type: 'image/jpeg'
+      )
+    end
     recipe
-    featured false
+    featured { false }
   end
 
   factory :user do
     email
-    password 'asdASD123!@#'
+    password { 'asdASD123!@#' }
+    confirmed_at { Time.current }
   end
 
   factory :recipe do
     name
-    directions "Do stuff"
+    directions { "Do stuff" }
+    user
 
     factory :full_recipe do
       after(:build) do |recipe|
         build_list(:recipe_ingredient, 2, recipe: recipe)
-        recipe.cooking_method_list = 2.times.map { generate(:cooking_method) }.join(',') 
+        recipe.cooking_method_list = 2.times.map { generate(:cooking_method) }.join(',')
         recipe.cultural_influence_list = 2.times.map { generate(:cultural_influence) }.join(',')
         recipe.course_list = 2.times.map { generate(:course) }.join(',')
-        recipe.dietary_restriction_list =  2.times.map { generate(:dietary_restriction) }.join(',')
+        recipe.dietary_restriction_list = 2.times.map { generate(:dietary_restriction) }.join(',')
       end
     end
 

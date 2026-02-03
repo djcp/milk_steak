@@ -102,7 +102,9 @@
             <%= image_form.input :featured, as: :boolean %>
             <% if image_form.object.persisted? %>
               <%= image_form.input :_destroy, as: :boolean %>
-              Preview: <%= link_to(image_tag(image_form.object.image(:tiny)), image_form.object.image.url(:large), target: '_blank') %>
+              <% if image_form.object.image.attached? %>
+                Preview: <%= link_to(image_tag(image_form.object.image_url(:tiny)), url_for(image_form.object.image), target: '_blank') %>
+              <% end %>
             <% end %>
             <%= image_form.file_field :image %>
           </div>
