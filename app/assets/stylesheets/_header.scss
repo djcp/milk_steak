@@ -2,7 +2,7 @@ body {
   background: no-repeat;
   background-position: center center;
   background-size: cover;
-  background-image: url("<%= asset_path('tomato_bg.jpg') %>");
+  background-image: url("tomato_bg.jpg");
   background-color: $tomato-red;
 }
 
