@@ -10,6 +10,6 @@ class ApplicationController < ActionController::Base
   end
 
   def forbidden
-    render text: 'forbidden', status: :forbidden
+    render plain: 'forbidden', status: :forbidden
   end
 end

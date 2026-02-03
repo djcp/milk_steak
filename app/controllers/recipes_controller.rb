@@ -1,9 +1,9 @@
 class RecipesController < ApplicationController
-  before_filter :redirect_to_login,
+  before_action :redirect_to_login,
     if: -> {current_user.blank?},
     only: [:new, :update, :create, :edit]
-  before_filter :find_recipe, only: [:show, :edit, :update]
-  before_filter :can_update, only: [:edit, :update]
+  before_action :find_recipe, only: [:show, :edit, :update]
+  before_action :can_update, only: [:edit, :update]
 
   def index
     @filter_set = FilterSet.new(params.fetch(:filter_set, {}))
@@ -21,7 +21,7 @@ class RecipesController < ApplicationController
 
   def update
     begin
-      @recipe.update_attributes!(recipe_params)
+      @recipe.update!(recipe_params)
       flash[:notice] = t('ui.recipes.updated')
       redirect_to recipe_path(@recipe)
     rescue ActiveRecord::RecordInvalid => e
