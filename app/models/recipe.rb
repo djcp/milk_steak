@@ -1,4 +1,4 @@
-class Recipe < ActiveRecord::Base
+class Recipe < ApplicationRecord
   has_many :images, dependent: :destroy, inverse_of: :recipe
   has_many :recipe_ingredients, dependent: :destroy, inverse_of: :recipe
   has_many :ingredients, through: :recipe_ingredients
@@ -35,16 +35,16 @@ class Recipe < ActiveRecord::Base
   end
 
   def self.unique_serving_units
-    select('serving_units').uniq()
+    select(:serving_units).distinct
   end
 
   def self.fuzzy_autocomplete_for(context, query)
     ActsAsTaggableOn::Tagging.includes(:tag).where(
       context: context,
       taggable_type: 'Recipe'
-    ).uniq('name').where(
-      'name like ?', "%#{query}%"
-    )
+    ).joins(:tag).where(
+      'tags.name like ?', "%#{query}%"
+    ).distinct
   end
 
   def featured_image?

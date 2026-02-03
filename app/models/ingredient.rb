@@ -1,4 +1,4 @@
-class Ingredient < ActiveRecord::Base
+class Ingredient < ApplicationRecord
   has_many :recipe_ingredients, dependent: :destroy
   has_many :recipes, through: :recipe_ingredients
   validates :name, presence: true,
@@ -7,6 +7,6 @@ class Ingredient < ActiveRecord::Base
     length: { maximum: 1.kilobyte }
 
   def self.unique_names
-    select('name').uniq()
+    select(:name).distinct
   end
 end

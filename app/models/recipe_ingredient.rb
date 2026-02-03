@@ -1,4 +1,4 @@
-class RecipeIngredient < ActiveRecord::Base
+class RecipeIngredient < ApplicationRecord
   belongs_to :recipe
   belongs_to :ingredient
   acts_as_list scope: :recipe
@@ -18,6 +18,6 @@ class RecipeIngredient < ActiveRecord::Base
   delegate :name, to: :ingredient
 
   def self.unique_units
-    select('unit').uniq()
+    select(:unit).distinct
   end
 end
