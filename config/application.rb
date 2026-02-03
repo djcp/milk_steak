@@ -13,6 +13,15 @@ module MilkSteak
 
     config.middleware.use Rack::Deflater
 
+    # Security headers
+    config.action_dispatch.default_headers = {
+      'X-Frame-Options' => 'SAMEORIGIN',
+      'X-Content-Type-Options' => 'nosniff',
+      'X-XSS-Protection' => '0',
+      'Referrer-Policy' => 'strict-origin-when-cross-origin',
+      'Permissions-Policy' => 'geolocation=(), microphone=(), camera=()'
+    }
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded after loading
