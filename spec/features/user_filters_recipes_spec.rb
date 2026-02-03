@@ -3,10 +3,6 @@ require 'spec_helper'
 feature 'User filters recipes', js: true do
   include RecipeGenerator
 
-  before do
-    page.driver.allow_url('googleapis.com')
-  end
-
   scenario 'filters by recipe owner' do
     user_logs_in
 

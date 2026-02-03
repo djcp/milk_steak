@@ -1,7 +1,9 @@
 require 'spec_helper'
 
 describe User do
-  it { should validate_uniqueness_of :email }
+  subject { build(:user) }
+
+  it { should validate_uniqueness_of(:email).case_insensitive }
   it { should validate_presence_of :email }
   it { should have_many(:recipes) }
 
@@ -19,7 +21,6 @@ describe User do
       it "should reject invalid email addresses" do
         should_not allow_value(email).for(:email)
       end
-
     end
   end
 end
