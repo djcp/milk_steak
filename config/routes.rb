@@ -1,4 +1,4 @@
-MilkSteak::Application.routes.draw do
+Rails.application.routes.draw do
   devise_for :users
 
   resources :recipes, only: [:index, :new, :create, :show, :edit, :update] do
@@ -19,4 +19,7 @@ MilkSteak::Application.routes.draw do
   end
 
   root to: 'recipes#index'
+
+  # Health check endpoint for Rails 8
+  get 'up' => 'rails/health#show', as: :rails_health_check
 end
