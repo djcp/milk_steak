@@ -1,28 +1,37 @@
 source 'https://rubygems.org'
 
+gem 'rails', '~> 8.0.0'
+
+# Required for Ruby 3.4 compatibility
+gem 'mutex_m'
+gem 'bigdecimal'
+gem 'drb'
+gem 'base64'
+
 gem 'bourbon'
 gem 'bitters'
 gem 'neat'
-gem 'coffee-rails'
 gem 'email_validator'
 gem 'flutie'
 gem 'high_voltage'
-gem 'jquery-rails', '~> 4.0.3'
-gem 'jquery-ui-rails', '~> 5.0.3'
-gem 'paperclip', '~> 4.2'
-gem 'pg'
-gem 'rails', '~> 4.2.0'
+gem 'jquery-rails'
+gem 'jquery-ui-rails'
+gem 'image_processing', '~> 1.2'
+gem 'pg', '~> 1.1'
 gem 'recipient_interceptor'
-gem 'sass-rails', '~> 5.0.3'
+gem 'dartsass-rails'
 gem 'simple_form'
-gem 'uglifier', '~> 2.7.1'
-gem 'unicorn'
-gem 'devise', '~> 3.5.4'
+gem 'terser'
+gem 'puma'
+gem 'devise', '~> 4.9'
 gem 'acts_as_list'
-gem 'acts-as-taggable-on'
+gem 'acts-as-taggable-on', '~> 13.0'
 gem 'will_paginate'
-gem 'sprockets', '~> 3.7.1'
+gem 'sprockets-rails'
 gem 'redcarpet'
+gem 'rails-controller-testing'
+gem 'responders'
+gem 'aws-sdk-s3', require: false
 
 group :development do
   gem 'better_errors'
@@ -32,18 +41,19 @@ group :development do
 end
 
 group :development, :test do
-  gem 'factory_girl_rails'
+  gem 'factory_bot_rails'
   gem 'brakeman', require: false
-  gem 'rspec-rails'
+  gem 'rspec-rails', '~> 6.0'
   gem 'pry-rails'
   gem 'dotenv-rails'
 end
 
 group :test do
-  gem 'capybara-webkit', '>= 1.0.0'
-  gem 'database_cleaner'
+  gem 'selenium-webdriver'
+  gem 'capybara'
+  gem 'database_cleaner-active_record'
   gem 'launchy'
-  gem 'shoulda-matchers', require: false
+  gem 'shoulda-matchers', '~> 5.0', require: false
   gem 'simplecov', require: false
   gem 'timecop'
   gem 'webmock'
@@ -51,7 +61,5 @@ end
 
 group :production do
   gem 'rack-timeout'
-  gem 'aws-sdk', '~> 1.5.7'
   gem 'newrelic_rpm'
-  gem 'rails_12factor'
 end
