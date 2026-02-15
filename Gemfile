@@ -45,6 +45,10 @@ group :development, :test do
   gem 'factory_bot_rails'
   gem 'brakeman', require: false
   gem 'rspec-rails', '~> 6.0'
+  gem 'rubocop', require: false
+  gem 'rubocop-performance', require: false
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-rspec', require: false
   gem 'pry-rails'
   gem 'dotenv-rails'
 end
