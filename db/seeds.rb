@@ -10,6 +10,7 @@ if Rails.env == 'development'
   admin = User.where(
     email: 'admin@example.com'
   ).first_or_create!(password: 'asdASD123!@#')
+  admin.confirm
 
   Recipe.create!(
     name: 'Ice',
