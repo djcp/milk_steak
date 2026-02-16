@@ -1,6 +1,19 @@
 article.recipe {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1em;
+
+  @include medium {
+    grid-template-columns: 2fr 1fr;
+  }
+
+  @include desktop {
+    grid-template-columns: 3fr 1fr;
+  }
+
   h1.title {
-    font-family: "Roboto Condensed";
+    grid-column: 1 / -1;
+    font-family: "Roboto Condensed", sans-serif;
     font-size: 3em;
     margin-bottom: .5em;
     a {
@@ -10,10 +23,12 @@ article.recipe {
   }
 
   .description {
+    grid-column: 1 / -1;
     margin: 0em 3em 2em 3em;
   }
 
   .metadata {
+    grid-column: 1 / -1;
     padding-bottom: 2em;
     span.type {
       font-weight: bold;
@@ -22,15 +37,6 @@ article.recipe {
 
   .recipe-narrative{
     padding: 2em;
-    @include media($mobile){
-      @include span-columns(12 of 12);
-    }
-    @include media($medium){
-      @include span-columns(8 of 12);
-    }
-    @include media($desktop){
-      @include span-columns(9 of 12);
-    }
     min-height: 20em;
   }
 
@@ -38,45 +44,62 @@ article.recipe {
     background-color: white;
     padding: 1em 2em 1em 2em;
     border-radius: 1em;
+
+    li {
+      padding: 0.4em 0;
+
+      &:nth-child(even) {
+        background-color: $off-white;
+        margin: 0 -1em;
+        padding-left: 1em;
+        padding-right: 1em;
+        border-radius: 4px;
+      }
+    }
   }
 
   div.tags {
-    padding:  2em;
-    @include sidebar();
-    @include media($mobile){
-      @include span-columns(12 of 12);
-      @include omega();
-      border-radius: 0px;
-    }
-    @include media($medium){
-      @include span-columns(4 of 12);
-      @include omega();
-    }
-    @include media($desktop){
-      @include span-columns(3 of 12);
-      @include omega();
-    }
+    padding: 2em;
+    background-color: $off-white;
+    border-left: 3px solid $tomato-red;
+    border-radius: 0;
+    font-size: 0.8em;
+
     a {
       color: black;
       &:hover {
         color: lighten(black, 40%);
       }
     }
+
+    @include mobile {
+      border-left: none;
+      border-top: 3px solid $tomato-red;
+    }
   }
+
   div.images {
+    grid-column: 1 / -1;
     margin-top: 2em;
     padding: 0 2% 0 2%;
-
-    @include span-columns(12);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1em;
 
     .image-wrapper {
-      @include span-columns(3);
-      @include omega(4n);
       .thumbnail img {
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
         border: 1px solid darken($light-gray, 20%);
         border-radius: 10px;
-        box-shadow: 5px 5px 5px $light-gray;
-        margin: 2%;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+        &:hover {
+          transform: scale(1.03);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
       }
 
       .modalDialog img {
@@ -91,4 +114,3 @@ article.recipe {
     }
   }
 }
-

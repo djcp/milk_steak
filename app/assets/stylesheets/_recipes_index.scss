@@ -1,19 +1,21 @@
+body.recipes-index #main_content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1em;
+
+  @include medium {
+    grid-template-columns: 2fr 1fr;
+  }
+
+  @include desktop {
+    grid-template-columns: 3fr 1fr;
+  }
+}
+
 .recipe-container {
-  @include media($mobile) {
-    @include span-columns(8);
-  }
-  @include media($medium) {
-    @include span-columns(8);
-  }
-  @include media($desktop) {
-    @include span-columns(9);
-  }
-
   .filter_indicator {
-    font-family: "Roboto Condensed";
+    font-family: "Roboto Condensed", sans-serif;
     padding: 1em 0em 0em 1em;
-
-    @include span-columns(9 of 9);
 
     ul, li {
       display: inline;
@@ -36,48 +38,56 @@
   }
 
   .recipe-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5em;
+    padding: 1em;
+
+    @include medium {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include desktop {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
     .recipe {
-      padding: 2em;
-      @include media($mobile) {
-        @include span-columns(8 of 8);
-        @include omega();
-      }
-      @include media($medium) {
-        @include span-columns(4 of 8);
-        @include omega(2n);
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      padding: 1.5em;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      overflow: hidden;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
       }
 
-      @include media($desktop) {
-        @include span-columns(3 of 9);
-        @include omega(3n);
-      }
       h2 {
         text-align: center;
         font-size: .75em;
       }
       img {
-        border: 1px solid darken($light-gray, 20%);
-        border-radius: 10px;
-        box-shadow: 5px 5px 5px $light-gray;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+        border-radius: 8px;
       }
     }
   }
 }
 
 .recipe-filters {
-  @include media($mobile) {
-    @include span-columns(4);
-    padding: 1em;
-  }
-  @include media($medium) {
-    @include span-columns(4);
+  padding: 1em;
+  margin-bottom: 2em;
+  @include sidebar();
+
+  @include medium {
     padding: 1.5em;
   }
-  @include media($desktop) {
-    @include span-columns(3);
+
+  @include desktop {
     padding: 2em;
   }
-  margin-bottom: 2em;
-  @include omega();
-  @include sidebar();
 }

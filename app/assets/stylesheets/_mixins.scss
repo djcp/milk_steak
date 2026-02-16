@@ -5,3 +5,21 @@
   border: 1px darken($light-gray, 30%);
   border-style: none none solid solid;
 }
+
+@mixin mobile() {
+  @media (min-width: 320px) and (max-width: $mobile-max) {
+    @content;
+  }
+}
+
+@mixin medium() {
+  @media (min-width: $medium-min) and (max-width: $medium-max) {
+    @content;
+  }
+}
+
+@mixin desktop() {
+  @media (min-width: $desktop-min) {
+    @content;
+  }
+}

@@ -7,3 +7,13 @@ $gold: #CC9900;
 $yellow-green: #333300;
 $orange: #CC6600;
 $tomato-red: #8e3e47;
+$tomato-red-light: #a85460;
+$tomato-red-dark: #6e2e37;
+$off-white: #f8f9fa;
+
+:root {
+  --color-primary: #{$tomato-red};
+  --color-primary-light: #{$tomato-red-light};
+  --color-primary-dark: #{$tomato-red-dark};
+  --color-off-white: #{$off-white};
+}

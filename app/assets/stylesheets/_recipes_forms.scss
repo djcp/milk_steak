@@ -3,7 +3,7 @@ input,textarea {
 }
 
 form.new_recipe, form.edit_recipe {
-  @include span-columns(12);
+  width: 100%;
   padding: 2em;
   fieldset{
     margin-top: 1.5em;
@@ -49,22 +49,17 @@ form.new_recipe, form.edit_recipe {
     opacity: 1;
   }
   .metadata {
-    @include span-columns(12);
-    @include omega();
-
-    .recipe_preparation_time,
-    .recipe_cooking_time,
-    .recipe_servings,
-    .recipe_serving_units {
-      @include span-columns(3);
-    }
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5em;
   }
   .images{
-    @include span-columns(12);
+    width: 100%;
     .image-wrapper{
       border: 1px solid $gray;
       border-radius: 5px;
-      @include span-columns(5);
+      display: inline-block;
+      width: 40%;
       margin-bottom: 1em;
     }
     .image {
@@ -82,8 +77,10 @@ form.new_recipe, form.edit_recipe {
   }
 
   .ingredient {
-    @include span-columns(12);
-    @include omega();
+    display: grid;
+    grid-template-columns: 1fr 2fr 2fr 7fr;
+    gap: 0.5em;
+    align-items: start;
 
     .header {
       font-weight: bold;
@@ -92,20 +89,9 @@ form.new_recipe, form.edit_recipe {
       margin-bottom: 0.5em;
     }
     .recipe_recipe_ingredients__destroy{
-      @include span-columns(1);
       input {
         width: 1em;
       }
-    }
-    .recipe_recipe_ingredients_quantity{
-      @include span-columns(2);
-    }
-    .recipe_recipe_ingredients_unit{
-      @include span-columns(2);
-    }
-    .recipe_recipe_ingredients_ingredient_name{
-      @include span-columns(7);
-      @include omega();
     }
   }
   .recipe_directions textarea{
