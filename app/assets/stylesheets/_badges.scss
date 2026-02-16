@@ -41,3 +41,33 @@ $success-color: #e6efc2 !default;
 .badge-success {
   @include badge($success-color);
 }
+
+// Override jQuery UI autocomplete dropdown to match badge chip styling
+.ui-autocomplete {
+  background: white;
+  border: 1px solid #888;
+  border-radius: 0.5em;
+  list-style: none;
+  padding: 0.4em;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.ui-autocomplete .ui-menu-item .ui-menu-item-wrapper {
+  background-color: $medium-gray;
+  border: none;
+  border-radius: $badge-font-size * 5;
+  color: #000;
+  display: block;
+  font-size: $badge-font-size;
+  line-height: 1;
+  padding: 0.4em 1.2em;
+  margin: 0.2em 0;
+  cursor: pointer;
+}
+
+.ui-autocomplete .ui-menu-item .ui-menu-item-wrapper.ui-state-active {
+  background-color: $notice-color;
+  color: #333;
+}

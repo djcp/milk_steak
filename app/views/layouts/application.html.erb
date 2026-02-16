@@ -5,6 +5,7 @@
     <meta name="ROBOTS" content="NOODP" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= page_title(app_name: ENV.fetch('APP_NAME', 'Recipes')) %></title>
+    <%= stylesheet_link_tag 'jquery-ui/autocomplete', :media => 'all' %>
     <%= stylesheet_link_tag :application, :media => 'all' %>
     <%= csrf_meta_tags %>
   </head>
