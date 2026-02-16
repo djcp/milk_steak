@@ -6,6 +6,21 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
+SEED_IMAGE_DIR = Rails.root.join('db/seeds/images')
+
+def attach_seed_image(recipe, filename, caption: nil, featured: true)
+  path = SEED_IMAGE_DIR.join(filename)
+  return unless path.exist?
+
+  image = recipe.images.build(caption: caption, featured: featured)
+  image.image.attach(
+    io: File.open(path),
+    filename: filename,
+    content_type: 'image/jpeg'
+  )
+  image.save!
+end
+
 if Rails.env == 'development'
   admin = User.find_or_initialize_by(email: 'admin@example.com')
   if admin.new_record?
@@ -14,7 +29,7 @@ if Rails.env == 'development'
     admin.save!
   end
 
-  Recipe.create!(
+  recipe = Recipe.create!(
     name: 'Ice',
     cooking_method_list: 'freezing',
     cultural_influence_list: 'all the world',
@@ -33,8 +48,9 @@ if Rails.env == 'development'
       )
     ]
   )
+  attach_seed_image(recipe, 'ice.jpg', caption: 'Ice cubes')
 
-  Recipe.create!(
+  recipe = Recipe.create!(
     name: 'Marinara Sauce',
     cooking_method_list: 'simmer, saute',
     cultural_influence_list: 'italian',
@@ -79,8 +95,9 @@ Pour in tomatoes and stir quickly into garlic oil. Bring to a boil and reduce he
       ),
     ]
   )
+  attach_seed_image(recipe, 'marinara_sauce.jpg', caption: 'Homemade marinara sauce')
 
-  Recipe.create!(
+  recipe = Recipe.create!(
     name: 'Chicken Tikka Masala',
     cooking_method_list: 'roast, simmer, marinate',
     cultural_influence_list: 'indian',
@@ -113,8 +130,9 @@ Stir in cream and the roasted chicken. Simmer 10 minutes. Finish with fresh cila
       RecipeIngredient.new(quantity: 0.25, unit: 'cup', ingredient: Ingredient.where(name: 'fresh cilantro').first_or_create!),
     ]
   )
+  attach_seed_image(recipe, 'chicken_tikka_masala.jpg', caption: 'Chicken tikka masala with rice')
 
-  Recipe.create!(
+  recipe = Recipe.create!(
     name: 'Guacamole',
     cooking_method_list: 'raw, mixing',
     cultural_influence_list: 'mexican',
@@ -141,8 +159,9 @@ Serve immediately with tortilla chips or as a topping.',
       RecipeIngredient.new(quantity: 0.25, unit: 'tsp', ingredient: Ingredient.where(name: 'ground cumin').first_or_create!),
     ]
   )
+  attach_seed_image(recipe, 'guacamole.jpg', caption: 'Fresh guacamole with chips')
 
-  Recipe.create!(
+  recipe = Recipe.create!(
     name: 'Cacio e Pepe',
     cooking_method_list: 'boil, toss',
     cultural_influence_list: 'italian, roman',
@@ -165,8 +184,9 @@ Add the drained pasta and toss vigorously. Remove from heat and add Pecorino Rom
       RecipeIngredient.new(quantity: 1, unit: 'tsp', ingredient: Ingredient.where(name: 'salt').first_or_create!),
     ]
   )
+  attach_seed_image(recipe, 'cacio_e_pepe.jpg', caption: 'Cacio e pepe with fresh pepper')
 
-  Recipe.create!(
+  recipe = Recipe.create!(
     name: 'Chana Masala',
     cooking_method_list: 'saute, simmer',
     cultural_influence_list: 'indian, punjabi',
@@ -198,8 +218,9 @@ Add drained chickpeas and 1 cup water. Simmer 20 minutes until sauce thickens. S
       RecipeIngredient.new(quantity: 0.25, unit: 'cup', ingredient: Ingredient.where(name: 'fresh cilantro').first_or_create!),
     ]
   )
+  attach_seed_image(recipe, 'chana_masala.jpg', caption: 'Chana masala with naan')
 
-  Recipe.create!(
+  recipe = Recipe.create!(
     name: 'Carnitas',
     cooking_method_list: 'braise, roast',
     cultural_influence_list: 'mexican, michoacan',
@@ -230,8 +251,9 @@ Alternatively, spread shredded pork on a sheet pan and broil 3-5 minutes until e
       RecipeIngredient.new(quantity: 0.5, unit: 'tsp', ingredient: Ingredient.where(name: 'ground black pepper').first_or_create!),
     ]
   )
+  attach_seed_image(recipe, 'carnitas.jpg', caption: 'Crispy carnitas tacos')
 
-  Recipe.create!(
+  recipe = Recipe.create!(
     name: 'Palak Paneer',
     cooking_method_list: 'saute, blanch, blend',
     cultural_influence_list: 'indian, north indian',
@@ -264,8 +286,9 @@ Add the spinach puree and simmer 5 minutes. Stir in cream and the fried paneer. 
       RecipeIngredient.new(quantity: 0.25, unit: 'cup', ingredient: Ingredient.where(name: 'heavy cream').first_or_create!),
     ]
   )
+  attach_seed_image(recipe, 'palak_paneer.jpg', caption: 'Palak paneer with rice')
 
-  Recipe.create!(
+  recipe = Recipe.create!(
     name: 'Enchiladas Rojas',
     cooking_method_list: 'bake, simmer, fry',
     cultural_influence_list: 'mexican',
@@ -296,8 +319,9 @@ Pour remaining sauce over enchiladas, top with crumbled queso fresco, and bake a
       RecipeIngredient.new(quantity: 3, unit: 'tbsp', ingredient: Ingredient.where(name: 'vegetable oil').first_or_create!),
     ]
   )
+  attach_seed_image(recipe, 'enchiladas_rojas.jpg', caption: 'Enchiladas rojas with queso fresco')
 
-  Recipe.create!(
+  recipe = Recipe.create!(
     name: 'Risotto alla Milanese',
     cooking_method_list: 'saute, simmer, stir',
     cultural_influence_list: 'italian, milanese',
@@ -326,8 +350,9 @@ Stir in the saffron broth, remaining butter, and Parmigiano-Reggiano. Season wit
       RecipeIngredient.new(quantity: 1, unit: 'tsp', ingredient: Ingredient.where(name: 'salt').first_or_create!),
     ]
   )
+  attach_seed_image(recipe, 'risotto.jpg', caption: 'Saffron risotto alla milanese')
 
-  Recipe.create!(
+  recipe = Recipe.create!(
     name: 'Dal Tadka',
     cooking_method_list: 'boil, simmer, temper',
     cultural_influence_list: 'indian, north indian',
@@ -361,8 +386,9 @@ Pour the tadka over the cooked dal and stir well. Simmer together 5 minutes. Fin
       RecipeIngredient.new(quantity: 0.25, unit: 'cup', ingredient: Ingredient.where(name: 'fresh cilantro').first_or_create!),
     ]
   )
+  attach_seed_image(recipe, 'dal_tadka.jpg', caption: 'Dal tadka with tempered spices')
 
-  Recipe.create!(
+  recipe = Recipe.create!(
     name: 'Elote (Mexican Street Corn)',
     cooking_method_list: 'grill, char',
     cultural_influence_list: 'mexican',
@@ -388,8 +414,9 @@ Roll corn in crumbled cotija cheese, then dust with chili powder. Sprinkle with 
       RecipeIngredient.new(quantity: 2, unit: 'tbsp', ingredient: Ingredient.where(name: 'fresh cilantro').first_or_create!),
     ]
   )
+  attach_seed_image(recipe, 'elote.jpg', caption: 'Grilled Mexican street corn')
 
-  Recipe.create!(
+  recipe = Recipe.create!(
     name: 'Penne alla Vodka',
     cooking_method_list: 'boil, saute, simmer',
     cultural_influence_list: 'italian, italian-american',
@@ -419,8 +446,9 @@ Reduce heat to low and stir in heavy cream. Add the drained pasta and toss, addi
       RecipeIngredient.new(quantity: 0.25, unit: 'cup', ingredient: Ingredient.where(name: 'Chopped basil').first_or_create!),
     ]
   )
+  attach_seed_image(recipe, 'penne_alla_vodka.jpg', caption: 'Penne alla vodka with basil')
 
-  Recipe.create!(
+  recipe = Recipe.create!(
     name: 'Pozole Rojo',
     cooking_method_list: 'simmer, toast, blend',
     cultural_influence_list: 'mexican, guerrero',
@@ -451,5 +479,6 @@ Serve in bowls with shredded cabbage, sliced radishes, diced onion, dried oregan
       RecipeIngredient.new(quantity: 2, unit: 'tbsp', ingredient: Ingredient.where(name: 'vegetable oil').first_or_create!),
     ]
   )
+  attach_seed_image(recipe, 'pozole_rojo.jpg', caption: 'Pozole rojo with garnishes')
 
 end

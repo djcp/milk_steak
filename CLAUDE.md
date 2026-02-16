@@ -13,6 +13,12 @@ MilkSteak is a recipe tracker Rails app (deployed at eclecticrecip.es). Users ca
 - **Devise** for authentication
 - **Active Storage** with S3 in production, local disk in dev/test
 
+## System Dependencies
+
+- **libvips** — required for Active Storage image variant processing (thumbnails, resizing)
+  - macOS: `brew install vips`
+  - Debian/Ubuntu: `sudo apt-get install libvips-dev`
+
 ## Common Commands
 
 ```bash
