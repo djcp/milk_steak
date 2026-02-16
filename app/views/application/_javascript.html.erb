@@ -1,4 +1,9 @@
-<%= javascript_include_tag :application %>
+<%= javascript_include_tag "jquery", defer: true %>
+<%= javascript_include_tag "jquery-ui", defer: true %>
+<%= javascript_include_tag "rails-ujs", defer: true %>
+<%= javascript_include_tag "recipes/show", defer: true %>
+<%= javascript_include_tag "recipes/new", defer: true %>
+<%= javascript_include_tag "recipes_index", defer: true %>
 
 <%= yield :javascript %>
 

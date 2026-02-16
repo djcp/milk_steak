@@ -46,15 +46,7 @@ article.recipe {
     border-radius: 1em;
 
     li {
-      padding: 0.4em 0;
-
-      &:nth-child(even) {
-        background-color: $off-white;
-        margin: 0 -1em;
-        padding-left: 1em;
-        padding-right: 1em;
-        border-radius: 4px;
-      }
+      padding: 0.3em 0;
     }
   }
 
