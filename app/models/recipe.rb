@@ -11,6 +11,16 @@ class Recipe < ApplicationRecord
   acts_as_taggable_on :cooking_methods, :cultural_influences,
     :courses, :dietary_restrictions
 
+  # acts_as_taggable_on internally lazy-loads tagging associations;
+  # exempt them from strict loading since we don't control the gem's queries.
+  %i[taggings base_tags
+     cooking_method_taggings cooking_methods
+     cultural_influence_taggings cultural_influences
+     course_taggings courses
+     dietary_restriction_taggings dietary_restrictions].each do |assoc|
+    reflect_on_association(assoc)&.options&.merge!(strict_loading: false)
+  end
+
   accepts_nested_attributes_for :recipe_ingredients,
     allow_destroy: true,
     reject_if: ->(attr) { attr['unit'].blank? && attr['quantity'].blank? }

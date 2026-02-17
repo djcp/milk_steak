@@ -11,6 +11,8 @@ module MilkSteak
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.0
 
+    config.active_record.strict_loading_by_default = true
+
     config.middleware.use Rack::Deflater
 
     # Security headers

@@ -100,6 +100,10 @@ class RecipesController < ApplicationController
 
   def find_recipe
     @recipe = Recipe.find(params[:id])
+    ActiveRecord::Associations::Preloader.new(
+      records: [@recipe],
+      associations: [:user, :images, :recipe_ingredients, :ingredients]
+    ).call
   end
 
   def can_update
