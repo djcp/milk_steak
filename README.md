@@ -31,6 +31,12 @@ like), while file uploads are handled via paperclip and an upload to s3.  See
 
 - Dan Collis Puro - @djcp
 
+## Image Credits
+
+**Background image:** White marble surface by [Henry & Co.](https://www.pexels.com/photo/white-and-gray-marble-surface-1323712/) on Pexels (free for commercial use, no attribution required).
+
+**Seed recipe images:** Sourced from [Unsplash](https://unsplash.com/) (free for commercial use, no attribution required). Food photography was searched by dish name and downloaded for use as seed data during development.
+
 ## LICENSE:
 
 This program is licensed under the GPLv3 or later for non-commercial uses.
