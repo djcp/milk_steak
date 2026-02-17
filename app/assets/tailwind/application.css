@@ -1,0 +1,327 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display&display=swap');
+@import "tailwindcss";
+
+/* ── Custom Theme ── */
+@theme {
+  --font-display: "DM Serif Display", Georgia, serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+
+  --color-cream: #fdf6ee;
+  --color-cream-dark: #f5ead8;
+  --color-warm-white: #faf8f5;
+
+  --color-terra: #8e3e47;
+  --color-terra-light: #a85460;
+  --color-terra-dark: #6e2e37;
+  --color-terra-faint: rgba(142, 62, 71, 0.08);
+  --color-terra-subtle: rgba(142, 62, 71, 0.15);
+
+  --color-olive: #5c6b3c;
+  --color-olive-light: #7a8c56;
+  --color-olive-faint: rgba(92, 107, 60, 0.1);
+
+  --color-gold: #b8860b;
+  --color-gold-light: #daa520;
+  --color-gold-faint: rgba(184, 134, 11, 0.1);
+
+  --color-ink: #2c1810;
+  --color-ink-light: #5c4033;
+  --color-ink-muted: #8b7355;
+
+  --color-tag-method: #fef3c7;
+  --color-tag-method-text: #92400e;
+  --color-tag-culture: #fce7f3;
+  --color-tag-culture-text: #9d174d;
+  --color-tag-course: #dbeafe;
+  --color-tag-course-text: #1e40af;
+  --color-tag-diet: #d1fae5;
+  --color-tag-diet-text: #065f46;
+}
+
+/* ── Base Layer ── */
+@layer base {
+  body {
+    font-family: var(--font-body);
+    color: var(--color-ink);
+    background-color: var(--color-terra-dark);
+    background-image: url("tomato_bg.jpg");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    color: var(--color-ink);
+  }
+
+  a {
+    color: var(--color-terra);
+    transition: color 0.15s ease;
+  }
+  a:hover {
+    color: var(--color-terra-dark);
+  }
+}
+
+/* ── Lightbox (JS-dependent, keep as custom CSS) ── */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+}
+.lightbox-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.lightbox-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.lightbox-content img {
+  max-width: 90vw;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 0.5rem;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+.lightbox-close {
+  position: absolute;
+  top: -44px;
+  right: 0;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.75em;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+.lightbox-close:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 1.25em;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+.lightbox-nav:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+.lightbox-prev {
+  left: -64px;
+}
+.lightbox-next {
+  right: -64px;
+}
+@media (max-width: 640px) {
+  .lightbox-prev { left: 8px; }
+  .lightbox-next { right: 8px; }
+}
+.lightbox-caption {
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  padding: 0.75em 1em;
+  font-size: 0.95em;
+  font-family: var(--font-body);
+}
+.lightbox-counter {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8em;
+  text-align: center;
+}
+
+/* ── jQuery UI Autocomplete Override ── */
+.ui-autocomplete {
+  background: white;
+  border: 1px solid #e5e1dc;
+  border-radius: 0.75rem;
+  list-style: none;
+  padding: 0.5rem;
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  font-family: var(--font-body);
+}
+.ui-autocomplete .ui-menu-item .ui-menu-item-wrapper {
+  display: block;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+.ui-autocomplete .ui-menu-item .ui-menu-item-wrapper.ui-state-active {
+  background-color: var(--color-terra-faint);
+  color: var(--color-terra-dark);
+}
+
+/* ── will_paginate ── */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 1rem 0;
+  font-family: var(--font-body);
+}
+.pagination a,
+.pagination span,
+.pagination em {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  height: 2.25rem;
+  padding: 0 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.pagination a {
+  color: var(--color-terra);
+  background: var(--color-terra-faint);
+}
+.pagination a:hover {
+  background: var(--color-terra-subtle);
+  text-decoration: none;
+}
+.pagination em {
+  font-style: normal;
+  font-weight: 600;
+  background: var(--color-terra);
+  color: white;
+}
+.pagination .disabled {
+  color: #bbb;
+}
+
+/* ── Simple Form Enhancements ── */
+.simple_form label {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--color-ink-light);
+  margin-bottom: 0.25rem;
+}
+.simple_form input[type="text"],
+.simple_form input[type="email"],
+.simple_form input[type="password"],
+.simple_form input[type="number"],
+.simple_form input[type="url"],
+.simple_form textarea,
+.simple_form select {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid #ddd5cc;
+  border-radius: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  color: var(--color-ink);
+  background: white;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.simple_form input:focus,
+.simple_form textarea:focus,
+.simple_form select:focus {
+  outline: none;
+  border-color: var(--color-terra-light);
+  box-shadow: 0 0 0 3px var(--color-terra-faint);
+}
+.simple_form .error {
+  color: #dc2626;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+.simple_form .hint {
+  font-size: 0.8rem;
+  color: var(--color-ink-muted);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.simple_form .field_with_hint:hover .hint,
+.simple_form .field_with_hint input:focus + .hint {
+  opacity: 1;
+}
+
+/* ── Devise form pages ── */
+body.devise-sessions #main_content,
+body.devise-passwords #main_content,
+body.devise-registrations #main_content,
+body.devise-confirmations #main_content {
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 2rem;
+}
+body.devise-sessions br,
+body.devise-passwords br,
+body.devise-registrations br,
+body.devise-confirmations br {
+  display: none;
+}
+body.devise-sessions input[type="checkbox"],
+body.devise-passwords input[type="checkbox"],
+body.devise-registrations input[type="checkbox"],
+body.devise-confirmations input[type="checkbox"] {
+  width: auto;
+}
+body.devise-sessions label[for="user_remember_me"],
+body.devise-passwords label[for="user_remember_me"],
+body.devise-registrations label[for="user_remember_me"],
+body.devise-confirmations label[for="user_remember_me"] {
+  display: inline;
+  width: auto;
+}
+body.devise-sessions a,
+body.devise-passwords a,
+body.devise-registrations a,
+body.devise-confirmations a {
+  display: block;
+  margin-top: 0.5rem;
+}
+
+/* ── Markdown content ── */
+.markdown-content p {
+  margin-bottom: 1em;
+  line-height: 1.75;
+}
+.markdown-content ul, .markdown-content ol {
+  margin-bottom: 1em;
+  padding-left: 1.5em;
+}
+.markdown-content ul { list-style-type: disc; }
+.markdown-content ol { list-style-type: decimal; }

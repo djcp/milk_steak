@@ -1,7 +1,7 @@
-<%= simple_form_for @recipe do |f| %>
+<%= simple_form_for @recipe, html: { class: 'w-full p-4 md:p-8 space-y-6' } do |f| %>
 
-  <fieldset id="recipe_metadata">
-    <legend>
+  <fieldset class="border border-cream-dark rounded-xl p-5 bg-white/50" id="recipe_metadata">
+    <legend class="text-xl font-display px-3 py-1 bg-cream-dark rounded-md text-ink">
       <% if @recipe.persisted? %>
         Edit Recipe "<%= @recipe.name %>"
       <% else %>
@@ -9,9 +9,9 @@
       <% end %>
     </legend>
     <%= f.input :name %>
-    <%= f.input :description, as: :text %>
-    <p class="markdown_info"><%= link_to('You can use markdown formatting in your description', '//daringfireball.net/projects/markdown/basics', target: '_blank') %></p>
-    <div class="metadata">
+    <%= f.input :description, as: :text, input_html: { class: 'h-24' } %>
+    <p class="text-xs text-ink-muted mt-1"><%= link_to('You can use markdown formatting in your description', '//daringfireball.net/projects/markdown/basics', target: '_blank', class: 'text-terra hover:underline') %></p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
       <%= f.input :preparation_time %>
       <%= f.input :cooking_time %>
       <%= f.input :servings %>
@@ -22,26 +22,26 @@
     </div>
   </fieldset>
 
-  <fieldset id="ingredients">
-    <legend>Ingredients</legend>
+  <fieldset class="border border-cream-dark rounded-xl p-5 bg-white/50" id="ingredients">
+    <legend class="text-xl font-display px-3 py-1 bg-cream-dark rounded-md text-ink">Ingredients</legend>
     <div id="ingredients_container">
-      <p>An ingredient needs to have either a quantity or a unit, along with a name.</p>
-      <div class="ingredient">
-        <div class="recipe_recipe_ingredients__destroy header">
+      <p class="text-sm text-ink-muted mb-3">An ingredient needs to have either a quantity or a unit, along with a name.</p>
+      <div class="ingredient grid grid-cols-[1fr_2fr_2fr_7fr] gap-2 items-start">
+        <div class="recipe_recipe_ingredients__destroy header font-semibold text-xs text-ink-muted uppercase tracking-wide">
           Remove
         </div>
-        <div class="recipe_recipe_ingredients_quantity header">
+        <div class="recipe_recipe_ingredients_quantity header font-semibold text-xs text-ink-muted uppercase tracking-wide">
           Quantity
         </div>
-        <div class="recipe_recipe_ingredients_unit header">
+        <div class="recipe_recipe_ingredients_unit header font-semibold text-xs text-ink-muted uppercase tracking-wide">
           Unit
         </div>
-        <div class="recipe_recipe_ingredients_ingredient_name header">
+        <div class="recipe_recipe_ingredients_ingredient_name header font-semibold text-xs text-ink-muted uppercase tracking-wide">
           Name
         </div>
       </div>
       <%= f.simple_fields_for :recipe_ingredients do |ri_form| %>
-        <div class="ingredient" data-ingredient-index="<%= ri_form.index %>">
+        <div class="ingredient grid grid-cols-[1fr_2fr_2fr_7fr] gap-2 items-start" data-ingredient-index="<%= ri_form.index %>">
           <% if ri_form.object.persisted? %>
             <%= ri_form.input :_destroy, as: :boolean, label: false %>
           <% else %>
@@ -61,19 +61,19 @@
         </div>
       <% end %>
     </div>
-    <div class="more_ingredients">
-      <a href="#" id="more_ingredients_control">More ingredients</a>
+    <div class="mt-3">
+      <a href="#" id="more_ingredients_control" class="inline-block text-sm text-terra font-medium hover:underline">+ More ingredients</a>
     </div>
   </fieldset>
 
-  <fieldset id="directions">
-    <legend>Directions</legend>
-    <%= f.input :directions, as: :text %>
-    <p class="markdown_info"><%= link_to('You can use markdown formatting in the directions', '//daringfireball.net/projects/markdown/basics', target: '_blank') %></p>
+  <fieldset class="border border-cream-dark rounded-xl p-5 bg-white/50" id="directions">
+    <legend class="text-xl font-display px-3 py-1 bg-cream-dark rounded-md text-ink">Directions</legend>
+    <%= f.input :directions, as: :text, input_html: { class: 'h-64' } %>
+    <p class="text-xs text-ink-muted mt-1"><%= link_to('You can use markdown formatting in the directions', '//daringfireball.net/projects/markdown/basics', target: '_blank', class: 'text-terra hover:underline') %></p>
   </fieldset>
 
-  <fieldset id="taggables">
-    <legend>Metadata</legend>
+  <fieldset class="border border-cream-dark rounded-xl p-5 bg-white/50" id="taggables">
+    <legend class="text-xl font-display px-3 py-1 bg-cream-dark rounded-md text-ink">Metadata</legend>
     <%= f.input :cooking_method_list, as: :text, input_html: {
         class: 'autocomplete_multiple',
         'data-target' => autocompletes_cooking_methods_path
@@ -92,29 +92,29 @@
       }%>
   </fieldset>
 
-  <fieldset id="images">
-    <legend>Images</legend>
-    <div class="images">
+  <fieldset class="border border-cream-dark rounded-xl p-5 bg-white/50" id="images">
+    <legend class="text-xl font-display px-3 py-1 bg-cream-dark rounded-md text-ink">Images</legend>
+    <div class="flex flex-wrap gap-4">
       <%= f.simple_fields_for :images do |image_form| %>
-        <div class="image-wrapper">
-          <div class="image">
+        <div class="border border-cream-dark rounded-lg p-4 w-full md:w-[45%] bg-white/60">
+          <div class="image space-y-2">
             <%= image_form.input :caption %>
-            <%= image_form.input :featured, as: :boolean %>
+            <%= image_form.input :featured, as: :boolean, boolean_style: :inline %>
             <% if image_form.object.persisted? %>
-              <%= image_form.input :_destroy, as: :boolean %>
+              <%= image_form.input :_destroy, as: :boolean, boolean_style: :inline %>
               <% if image_form.object.image.attached? %>
-                Preview: <%= link_to(image_tag(image_form.object.image_url(:tiny)), url_for(image_form.object.image), target: '_blank') %>
+                <div class="mt-2">Preview: <%= link_to(image_tag(image_form.object.image_url(:tiny), class: 'rounded-md'), url_for(image_form.object.image), target: '_blank') %></div>
               <% end %>
             <% end %>
-            <%= image_form.file_field :image %>
+            <%= image_form.file_field :image, class: 'block text-sm text-ink-muted file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-terra-faint file:text-terra-dark hover:file:bg-terra-subtle file:cursor-pointer' %>
           </div>
         </div>
       <% end %>
     </div>
   </fieldset>
 
-  <fieldset>
-    <%= f.button :submit %>
+  <fieldset class="border-0 pt-2">
+    <%= f.button :submit, class: 'bg-terra text-white px-8 py-3 rounded-xl text-base font-semibold hover:bg-terra-dark transition-colors cursor-pointer border-0 shadow-sm hover:shadow-md' %>
   </fieldset>
 
 <% end %>

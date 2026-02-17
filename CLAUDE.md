@@ -8,8 +8,8 @@ MilkSteak is a recipe tracker Rails app (deployed at eclecticrecip.es). Users ca
 
 - **Ruby 3.4.1** / **Rails 8.0**
 - **PostgreSQL** (dev: `milk_steak_development`, test: `milk_steak_test`)
-- **Sprockets** asset pipeline with jQuery/jQuery UI
-- **DartSass** (Bourbon, Bitters, Neat for styling)
+- **Propshaft** asset pipeline with vendored jQuery/jQuery UI
+- **Tailwind CSS v4** via `tailwindcss-rails` (no Node.js required)
 - **Devise** for authentication
 - **Active Storage** with S3 in production, local disk in dev/test
 

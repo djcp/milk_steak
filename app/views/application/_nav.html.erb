@@ -1,14 +1,15 @@
-<nav>
+<nav class="bg-terra-dark px-4 py-3 text-center flex justify-center flex-wrap gap-1 font-body text-sm">
   <% if current_user.present? %>
-    <%= link_to t('ui.recipes.links.new'), new_recipe_path %>
+    <%= link_to t('ui.recipes.links.new'), new_recipe_path, class: 'text-white no-underline inline-block px-5 py-2 rounded-full transition-colors hover:bg-white/15 hover:no-underline' %>
     <%= link_to(
       t('ui.recipes.links.my'),
-      root_path(filter_set: { author: current_user.email })
+      root_path(filter_set: { author: current_user.email }),
+      class: 'text-white no-underline inline-block px-5 py-2 rounded-full transition-colors hover:bg-white/15 hover:no-underline'
     ) %>
   <% end %>
   <% if current_user.present? %>
-    <%= link_to "#{current_user.email}, log out", destroy_user_session_path, method: :delete, data: { confirm: "Are you sure?" } %>
+    <%= link_to "#{current_user.email}, log out", destroy_user_session_path, method: :delete, data: { confirm: "Are you sure?" }, class: 'text-white/70 no-underline inline-block px-5 py-2 rounded-full transition-colors hover:bg-white/15 hover:text-white hover:no-underline' %>
   <% else %>
-    <%= link_to 'log in', new_user_session_path, class: 'login' %>
+    <%= link_to 'log in', new_user_session_path, class: 'text-white no-underline inline-block px-5 py-2 rounded-full transition-colors hover:bg-white/15 hover:no-underline' %>
   <% end %>
 </nav>

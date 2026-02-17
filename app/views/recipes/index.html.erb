@@ -1,15 +1,17 @@
-<div class="recipe-container">
-  <%= render 'filter_indicator', filter_set: @filter_set %>
-  <%= will_paginate(@recipes) %>
-  <div class="recipe-list">
-    <%= render @recipes %>
+<div class="grid grid-cols-1 md:grid-cols-[1fr_30%] gap-6 p-4 md:p-6">
+  <div class="recipe-container min-w-0">
+    <%= render 'filter_indicator', filter_set: @filter_set %>
+    <%= will_paginate(@recipes) %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <%= render @recipes %>
+    </div>
+    <%= will_paginate(@recipes) %>
   </div>
-  <%= will_paginate(@recipes) %>
-</div>
 
-<div class="recipe-filters">
-  <h2>Search</h2>
-  <%= render 'filter_set', filter_set: @filter_set %>
+  <aside class="bg-cream-dark/80 rounded-xl p-5 h-fit md:sticky md:top-4 border border-cream-dark">
+    <h2 class="text-lg mb-3 text-ink-light">Search</h2>
+    <%= render 'filter_set', filter_set: @filter_set %>
+  </aside>
 </div>
 
 <% content_for(:page_title, home_page_title(@filter_set)) %>

@@ -28,6 +28,8 @@
 
   <%= filter.input :author %>
 
-  <%= filter.button :submit %>
-  <%= link_to('Clear filters', root_path) %>
+  <div class="flex items-center gap-3 mt-4">
+    <%= filter.button :submit, class: 'bg-terra text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-terra-dark transition-colors cursor-pointer border-0' %>
+    <%= link_to('Clear filters', root_path, class: 'text-sm text-ink-muted hover:text-terra no-underline hover:underline') %>
+  </div>
 <% end %>

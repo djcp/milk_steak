@@ -1,7 +1,7 @@
 <% if recipe.send(attribute.to_sym).present? -%>
   <aside>
-    <h3><%= attribute.titleize %></h3>
-    <div class="<%= attribute %>">
+    <h3 class="text-xs uppercase tracking-wider text-ink-muted mb-2 font-body font-semibold"><%= attribute.titleize %></h3>
+    <div class="<%= attribute %> flex flex-wrap gap-1.5">
       <%= render recipe.send(attribute.to_sym), attribute: attribute -%>
     </div>
   </aside>
