@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe 'app/views/recipes/_form.html.erb' do
+  before do
+    allow(view).to receive(:current_user).and_return(build(:user))
+  end
+
   it 'has correct multi autocompletes' do
     assign(:recipe, build(:recipe))
     render partial: 'recipes/form'
@@ -26,5 +30,30 @@ describe 'app/views/recipes/_form.html.erb' do
     expect(rendered).to have_css(
       '#recipe_recipe_ingredients_attributes_0_ingredient_attributes_name.autocomplete_single'
     )
+  end
+
+  context 'when user is admin' do
+    before do
+      allow(view).to receive(:current_user).and_return(build(:user, :admin))
+    end
+
+    it 'shows admin fields' do
+      assign(:recipe, build(:recipe))
+      render partial: 'recipes/form'
+
+      expect(rendered).to have_css('#admin_fields')
+      expect(rendered).to have_field('recipe[status]')
+      expect(rendered).to have_field('recipe[source_url]')
+      expect(rendered).to have_field('recipe[source_text]')
+    end
+  end
+
+  context 'when user is not admin' do
+    it 'does not show admin fields' do
+      assign(:recipe, build(:recipe))
+      render partial: 'recipes/form'
+
+      expect(rendered).not_to have_css('#admin_fields')
+    end
   end
 end

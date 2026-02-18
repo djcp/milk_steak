@@ -4,10 +4,11 @@ class RecipesController < ApplicationController
     only: [:new, :update, :create, :edit]
   before_action :find_recipe, only: [:show, :edit, :update]
   before_action :can_update, only: [:edit, :update]
+  before_action :ensure_visible, only: [:show]
 
   def index
     @filter_set = FilterSet.new(params.fetch(:filter_set, {}))
-    @recipes = Recipe.includes(:images).recent.paginate(
+    @recipes = Recipe.published.includes(:images).recent.paginate(
       page: page_param,
       per_page: per_page_param
     )
@@ -32,7 +33,7 @@ class RecipesController < ApplicationController
   end
 
   def create
-    @recipe = Recipe.new(recipe_params.merge(user: current_user))
+    @recipe = Recipe.new(recipe_params.merge(user: current_user, status: 'published'))
     begin
       @recipe.save!
       flash[:notice] = t('created')
@@ -54,7 +55,7 @@ class RecipesController < ApplicationController
   private
 
   def recipe_params
-    params.require(:recipe).permit(
+    permitted = [
       :name,
       :description,
       :preparation_time,
@@ -67,24 +68,13 @@ class RecipesController < ApplicationController
       :cultural_influence_list,
       :course_list,
       :dietary_restriction_list,
-      images_attributes: [
-        :_destroy,
-        :id,
-        :caption,
-        :featured,
-        :image
-      ],
-      recipe_ingredients_attributes: [
-        :_destroy,
-        :id,
-        :quantity,
-        :unit,
-        ingredient_attributes: [
-          :id,
-          :name
-        ]
-      ],
-    )
+      { images_attributes: [:_destroy, :id, :caption, :featured, :image],
+        recipe_ingredients_attributes: [:_destroy, :id, :quantity, :unit,
+                                        { ingredient_attributes: [:id, :name] }] }
+    ]
+    permitted.push(:source_url, :source_text, :status) if current_user&.admin?
+
+    params.require(:recipe).permit(*permitted)
   end
 
   def set_up_form_for(recipe)
@@ -107,9 +97,19 @@ class RecipesController < ApplicationController
   end
 
   def can_update
+    return if current_user&.admin?
+
     if @recipe.user != current_user
       redirect_to new_user_session_path and return
     end
+  end
+
+  def ensure_visible
+    return if @recipe.status == 'published'
+    return if current_user&.admin?
+    return if @recipe.user == current_user
+
+    redirect_to root_path, alert: 'Recipe not found'
   end
 
   def page_param
