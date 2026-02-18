@@ -8,6 +8,7 @@ describe RecipeIngredient do
   it { should accept_nested_attributes_for(:ingredient) }
   it { should validate_length_of(:quantity).is_at_most(10) }
   it { should validate_length_of(:unit).is_at_most(255) }
+  it { should validate_length_of(:section).is_at_most(255) }
 
   it "delegates name to ingredient" do
     recipe_ingredient = build(:recipe_ingredient)

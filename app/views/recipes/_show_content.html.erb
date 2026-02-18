@@ -13,9 +13,16 @@
       </blockquote>
     <% end %>
 
-    <ul class="recipe_ingredients bg-white rounded-xl px-6 py-4 mb-6 list-none shadow-sm">
-      <%= render recipe.recipe_ingredients.order('id') %>
-    </ul>
+    <div class="recipe_ingredients bg-white rounded-xl px-6 py-4 mb-6 shadow-sm">
+      <% recipe.recipe_ingredients.order(:position).group_by(&:section).each do |section, ingredients| %>
+        <% if section.present? %>
+          <h3 class="font-semibold text-ink mt-4 mb-1 first:mt-0"><%= section %></h3>
+        <% end %>
+        <ul class="list-none">
+          <%= render ingredients %>
+        </ul>
+      <% end %>
+    </div>
 
     <div class="directions leading-relaxed text-ink-light">
       <%= sanitize(markdown_format(recipe.directions)) if recipe.directions? %>

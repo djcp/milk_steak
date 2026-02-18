@@ -33,7 +33,7 @@
     <legend class="text-xl font-display px-3 py-1 bg-cream-dark rounded-md text-ink">Ingredients</legend>
     <div id="ingredients_container">
       <p class="text-sm text-ink-muted mb-3">An ingredient needs to have either a quantity or a unit, along with a name.</p>
-      <div class="ingredient grid grid-cols-[1fr_2fr_2fr_7fr] gap-2 items-start">
+      <div class="ingredient grid grid-cols-[1fr_2fr_2fr_2fr_7fr] gap-2 items-start">
         <div class="recipe_recipe_ingredients__destroy header font-semibold text-xs text-ink-muted uppercase tracking-wide">
           Remove
         </div>
@@ -43,12 +43,15 @@
         <div class="recipe_recipe_ingredients_unit header font-semibold text-xs text-ink-muted uppercase tracking-wide">
           Unit
         </div>
+        <div class="recipe_recipe_ingredients_section header font-semibold text-xs text-ink-muted uppercase tracking-wide">
+          Section
+        </div>
         <div class="recipe_recipe_ingredients_ingredient_name header font-semibold text-xs text-ink-muted uppercase tracking-wide">
           Name
         </div>
       </div>
       <%= f.simple_fields_for :recipe_ingredients do |ri_form| %>
-        <div class="ingredient grid grid-cols-[1fr_2fr_2fr_7fr] gap-2 items-start" data-ingredient-index="<%= ri_form.index %>">
+        <div class="ingredient grid grid-cols-[1fr_2fr_2fr_2fr_7fr] gap-2 items-start" data-ingredient-index="<%= ri_form.index %>">
           <% if ri_form.object.persisted? %>
             <%= ri_form.input :_destroy, as: :boolean, label: false %>
           <% else %>
@@ -59,6 +62,7 @@
             class: 'autocomplete_single',
             'data-target' => autocompletes_ingredient_units_path
           }%>
+          <%= ri_form.input :section, label: false %>
           <%= ri_form.simple_fields_for :ingredient do |i_form| %>
             <%= i_form.input :name, required: false, label: false, input_html: {
               class: 'autocomplete_single',
