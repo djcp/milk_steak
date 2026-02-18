@@ -11,10 +11,14 @@ test:
   database: milk_steak_test
 
 production:
-  adapter: postgresql
-  encoding: utf8
-  database: <%= ENV['RDS_DB_NAME'] %>
-  username: <%= ENV['RDS_USERNAME'] %>
-  password: <%= ENV['RDS_PASSWORD'] %>
-  host: <%= ENV['RDS_HOSTNAME'] %>
-  port: <%= ENV['RDS_PORT'] %>
+  primary:
+    url: <%= ENV["DATABASE_URL"] %>
+    adapter: postgresql
+    encoding: utf8
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+  queue:
+    url: <%= ENV["DATABASE_URL"] %>
+    adapter: postgresql
+    encoding: utf8
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+    migrations_paths: db/queue_migrate

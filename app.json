@@ -16,10 +16,58 @@
       "required": true
     },
     "SECRET_KEY_BASE": {
+      "generator": "secret"
+    },
+    "HOST": {
+      "description": "The hostname for the app (e.g. eclecticrecip.es)",
       "required": true
+    },
+    "ANTHROPIC_API_KEY": {
+      "description": "API key for AI recipe extraction",
+      "required": false
+    },
+    "SMTP_ADDRESS": {
+      "description": "SMTP server address (e.g. smtp.sendgrid.net)",
+      "required": false
+    },
+    "SMTP_DOMAIN": {
+      "description": "SMTP domain",
+      "required": false
+    },
+    "SMTP_USERNAME": {
+      "description": "SMTP username",
+      "required": false
+    },
+    "SMTP_PASSWORD": {
+      "description": "SMTP password",
+      "required": false
+    },
+    "AWS_ACCESS_KEY_ID": {
+      "description": "AWS access key for S3 file storage",
+      "required": false
+    },
+    "AWS_SECRET_ACCESS_KEY": {
+      "description": "AWS secret key for S3 file storage",
+      "required": false
+    },
+    "S3_BUCKET_NAME": {
+      "description": "S3 bucket name for file storage",
+      "required": false
+    },
+    "AWS_REGION": {
+      "description": "AWS region for S3",
+      "required": false
     }
   },
   "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    },
+    "worker": {
+      "quantity": 1,
+      "size": "basic"
+    }
   },
   "addons": [
     "heroku-postgresql"
