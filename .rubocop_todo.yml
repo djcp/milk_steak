@@ -44,6 +44,7 @@ Layout/EmptyLinesAfterModuleInclusion:
 Layout/EmptyLinesAroundBlockBody:
   Exclude:
     - 'lib/tasks/brakeman.rake'
+    - 'spec/controllers/admin/recipes_controller_spec.rb'
     - 'spec/support/factories.rb'
 
 # Offense count: 1
@@ -84,6 +85,7 @@ Layout/LineLength:
   Exclude:
     - 'config/initializers/devise.rb'
     - 'db/seeds.rb'
+    - 'spec/models/featured_image_chooser_spec.rb'
 
 # Offense count: 5
 # This cop supports safe autocorrection (--autocorrect).
@@ -193,6 +195,10 @@ Naming/AccessorMethodName:
   Exclude:
     - 'app/controllers/recipes_controller.rb'
 
+Naming/PredicateMethod:
+  Exclude:
+    - 'spec/support/page_objects/recipe_on_page.rb'
+
 # Offense count: 1
 # Configuration parameters: ExpectMatchingDefinition, CheckDefinitionPathHierarchy, CheckDefinitionPathHierarchyRoots, Regex, IgnoreExecutableScripts, AllowedAcronyms.
 # CheckDefinitionPathHierarchyRoots: lib, spec, test, src
@@ -258,6 +264,10 @@ RSpec/EmptyExampleGroup:
 RSpec/EmptyLineAfterHook:
   Exclude:
     - 'spec/support/factories.rb'
+
+RSpec/EmptyLineAfterSubject:
+  Exclude:
+    - 'spec/models/recipe_spec.rb'
 
 # Offense count: 2
 # Configuration parameters: Max, CountAsOne.
@@ -377,10 +387,12 @@ Rails/HasManyOrHasOneDependent:
 # Offense count: 7
 Rails/I18nLocaleTexts:
   Exclude:
-    - 'app/models/image.rb'
     - 'app/controllers/admin/base_controller.rb'
     - 'app/controllers/admin/magic_recipes_controller.rb'
     - 'app/controllers/admin/recipes_controller.rb'
+    - 'app/controllers/recipes_controller.rb'
+    - 'app/models/image.rb'
+    - 'app/models/recipe.rb'
 
 # Offense count: 2
 # This cop supports unsafe autocorrection (--autocorrect-all).
@@ -555,6 +567,10 @@ Style/RedundantSelf:
   Exclude:
     - 'app/models/filter_set.rb'
 
+Style/RegexpLiteral:
+  Exclude:
+    - 'app/models/recipe.rb'
+
 # Offense count: 2
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: Mode.
@@ -617,6 +633,10 @@ Style/TrailingCommaInArguments:
 Style/TrailingCommaInArrayLiteral:
   Exclude:
     - 'db/seeds.rb'
+
+Style/TrailingUnderscoreVariable:
+  Exclude:
+    - 'spec/models/featured_image_chooser_spec.rb'
 
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).

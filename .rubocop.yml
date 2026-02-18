@@ -10,7 +10,9 @@ AllCops:
   NewCops: enable
   Exclude:
     - 'bin/**/*'
+    - 'config/puma.rb'
     - 'db/schema.rb'
+    - 'db/queue_schema.rb'
     - 'db/migrate/**/*'
     - 'vendor/**/*'
     - 'node_modules/**/*'
