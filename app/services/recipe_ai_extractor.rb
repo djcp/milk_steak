@@ -13,7 +13,7 @@ class RecipeAiExtractor
       "servings": null or integer,
       "serving_units": "e.g. servings, cups, pieces" or null,
       "ingredients": [
-        {"quantity": "1", "unit": "cup", "name": "flour"}
+        {"quantity": "1", "unit": "cup", "name": "flour", "section": "Crust"}
       ],
       "cooking_methods": ["bake", "saute"],
       "cultural_influences": ["italian"],
@@ -27,6 +27,7 @@ class RecipeAiExtractor
     - Tags (cooking_methods, cultural_influences, courses, dietary_restrictions) should be lowercase
     - Only include dietary_restrictions that actually apply
     - Directions should be clear numbered steps, no life stories or filler text
+    - If a recipe has distinct ingredient groups (e.g. "Crust", "Filling", "Sauce", "Dressing"), set the "section" field to the group name for each ingredient. Use null for ingredients that don't belong to a named section. Only use sections when the recipe clearly organizes ingredients into groups.
     - Return ONLY valid JSON, no JSON markdown code fences, no explanation
   PROMPT
 

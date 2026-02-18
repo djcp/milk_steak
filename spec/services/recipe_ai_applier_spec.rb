@@ -13,8 +13,9 @@ describe RecipeAiApplier do
       'servings' => 8,
       'serving_units' => 'slices',
       'ingredients' => [
-        { 'quantity' => '2', 'unit' => 'cups', 'name' => 'flour' },
-        { 'quantity' => '1', 'unit' => 'cup', 'name' => 'sugar' }
+        { 'quantity' => '2', 'unit' => 'cups', 'name' => 'flour', 'section' => 'Dry' },
+        { 'quantity' => '1', 'unit' => 'cup', 'name' => 'sugar', 'section' => 'Dry' },
+        { 'quantity' => '2', 'unit' => 'large', 'name' => 'eggs', 'section' => 'Wet' }
       ],
       'cooking_methods' => ['bake'],
       'cultural_influences' => ['american'],
@@ -41,14 +42,14 @@ describe RecipeAiApplier do
       described_class.apply(recipe, data)
 
       recipe.reload
-      expect(recipe.recipe_ingredients.count).to eq(2)
-      expect(recipe.ingredients.map(&:name)).to contain_exactly('flour', 'sugar')
+      expect(recipe.recipe_ingredients.count).to eq(3)
+      expect(recipe.ingredients.map(&:name)).to contain_exactly('flour', 'sugar', 'eggs')
     end
 
     it 'creates missing ingredients' do
       expect do
         described_class.apply(recipe, data)
-      end.to change(Ingredient, :count).by(2)
+      end.to change(Ingredient, :count).by(3)
     end
 
     it 'reuses existing ingredients' do
@@ -56,7 +57,15 @@ describe RecipeAiApplier do
 
       expect do
         described_class.apply(recipe, data)
-      end.to change(Ingredient, :count).by(1)
+      end.to change(Ingredient, :count).by(2)
+    end
+
+    it 'assigns sections to recipe ingredients' do
+      described_class.apply(recipe, data)
+
+      recipe.reload
+      sections = recipe.recipe_ingredients.order(:position).map(&:section)
+      expect(sections).to eq(%w[Dry Dry Wet])
     end
 
     it 'sets tag lists' do

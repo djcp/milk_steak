@@ -13,8 +13,9 @@ describe MagicRecipeJob do
       'servings' => 8,
       'serving_units' => 'slices',
       'ingredients' => [
-        { 'quantity' => '2', 'unit' => 'cups', 'name' => 'flour' },
-        { 'quantity' => '1', 'unit' => 'cup', 'name' => 'sugar' }
+        { 'quantity' => '2', 'unit' => 'cups', 'name' => 'flour', 'section' => 'Dry' },
+        { 'quantity' => '1', 'unit' => 'cup', 'name' => 'sugar', 'section' => 'Dry' },
+        { 'quantity' => '2', 'unit' => 'large', 'name' => 'eggs', 'section' => 'Wet' }
       ],
       'cooking_methods' => ['bake'],
       'cultural_influences' => ['american'],
@@ -42,7 +43,7 @@ describe MagicRecipeJob do
 
     recipe.reload
     ingredient_names = recipe.recipe_ingredients.includes(:ingredient).map(&:name)
-    expect(ingredient_names).to contain_exactly('flour', 'sugar')
+    expect(ingredient_names).to contain_exactly('flour', 'sugar', 'eggs')
   end
 
   it 'sets tags' do
