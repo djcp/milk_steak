@@ -15,8 +15,11 @@ describe Recipe do
 
   it { should validate_length_of(:serving_units).is_at_most(255) }
 
-  it { should validate_presence_of(:directions) }
-  it { should validate_length_of(:directions).is_at_most(8.kilobytes) }
+  context 'when published' do
+    subject { build(:recipe, status: 'published') }
+    it { should validate_presence_of(:directions) }
+    it { should validate_length_of(:directions).is_at_most(8.kilobytes) }
+  end
 
   it { should validate_numericality_of(:preparation_time) }
   it { should validate_numericality_of(:cooking_time) }

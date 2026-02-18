@@ -26,10 +26,12 @@ if Rails.env == 'development'
   if admin.new_record?
     admin.password = 'asdASD123!@#'
     admin.skip_confirmation!
-    admin.save!
   end
+  admin.admin = true
+  admin.save!
 
   recipe = Recipe.create!(
+    status: 'published',
     name: 'Ice',
     cooking_method_list: 'freezing',
     cultural_influence_list: 'all the world',
@@ -51,6 +53,7 @@ if Rails.env == 'development'
   attach_seed_image(recipe, 'ice.jpg', caption: 'Ice cubes')
 
   recipe = Recipe.create!(
+    status: 'published',
     name: 'Marinara Sauce',
     cooking_method_list: 'simmer, saute',
     cultural_influence_list: 'italian',
@@ -98,6 +101,7 @@ Pour in tomatoes and stir quickly into garlic oil. Bring to a boil and reduce he
   attach_seed_image(recipe, 'marinara_sauce.jpg', caption: 'Homemade marinara sauce')
 
   recipe = Recipe.create!(
+    status: 'published',
     name: 'Chicken Tikka Masala',
     cooking_method_list: 'roast, simmer, marinate',
     cultural_influence_list: 'indian',
@@ -133,6 +137,7 @@ Stir in cream and the roasted chicken. Simmer 10 minutes. Finish with fresh cila
   attach_seed_image(recipe, 'chicken_tikka_masala.jpg', caption: 'Chicken tikka masala with rice')
 
   recipe = Recipe.create!(
+    status: 'published',
     name: 'Guacamole',
     cooking_method_list: 'raw, mixing',
     cultural_influence_list: 'mexican',
@@ -162,6 +167,7 @@ Serve immediately with tortilla chips or as a topping.',
   attach_seed_image(recipe, 'guacamole.jpg', caption: 'Fresh guacamole with chips')
 
   recipe = Recipe.create!(
+    status: 'published',
     name: 'Cacio e Pepe',
     cooking_method_list: 'boil, toss',
     cultural_influence_list: 'italian, roman',
@@ -187,6 +193,7 @@ Add the drained pasta and toss vigorously. Remove from heat and add Pecorino Rom
   attach_seed_image(recipe, 'cacio_e_pepe.jpg', caption: 'Cacio e pepe with fresh pepper')
 
   recipe = Recipe.create!(
+    status: 'published',
     name: 'Chana Masala',
     cooking_method_list: 'saute, simmer',
     cultural_influence_list: 'indian, punjabi',
@@ -221,6 +228,7 @@ Add drained chickpeas and 1 cup water. Simmer 20 minutes until sauce thickens. S
   attach_seed_image(recipe, 'chana_masala.jpg', caption: 'Chana masala with naan')
 
   recipe = Recipe.create!(
+    status: 'published',
     name: 'Carnitas',
     cooking_method_list: 'braise, roast',
     cultural_influence_list: 'mexican, michoacan',
@@ -254,6 +262,7 @@ Alternatively, spread shredded pork on a sheet pan and broil 3-5 minutes until e
   attach_seed_image(recipe, 'carnitas.jpg', caption: 'Crispy carnitas tacos')
 
   recipe = Recipe.create!(
+    status: 'published',
     name: 'Palak Paneer',
     cooking_method_list: 'saute, blanch, blend',
     cultural_influence_list: 'indian, north indian',
@@ -289,6 +298,7 @@ Add the spinach puree and simmer 5 minutes. Stir in cream and the fried paneer. 
   attach_seed_image(recipe, 'palak_paneer.jpg', caption: 'Palak paneer with rice')
 
   recipe = Recipe.create!(
+    status: 'published',
     name: 'Enchiladas Rojas',
     cooking_method_list: 'bake, simmer, fry',
     cultural_influence_list: 'mexican',
@@ -322,6 +332,7 @@ Pour remaining sauce over enchiladas, top with crumbled queso fresco, and bake a
   attach_seed_image(recipe, 'enchiladas_rojas.jpg', caption: 'Enchiladas rojas with queso fresco')
 
   recipe = Recipe.create!(
+    status: 'published',
     name: 'Risotto alla Milanese',
     cooking_method_list: 'saute, simmer, stir',
     cultural_influence_list: 'italian, milanese',
@@ -353,6 +364,7 @@ Stir in the saffron broth, remaining butter, and Parmigiano-Reggiano. Season wit
   attach_seed_image(recipe, 'risotto.jpg', caption: 'Saffron risotto alla milanese')
 
   recipe = Recipe.create!(
+    status: 'published',
     name: 'Dal Tadka',
     cooking_method_list: 'boil, simmer, temper',
     cultural_influence_list: 'indian, north indian',
@@ -389,6 +401,7 @@ Pour the tadka over the cooked dal and stir well. Simmer together 5 minutes. Fin
   attach_seed_image(recipe, 'dal_tadka.jpg', caption: 'Dal tadka with tempered spices')
 
   recipe = Recipe.create!(
+    status: 'published',
     name: 'Elote (Mexican Street Corn)',
     cooking_method_list: 'grill, char',
     cultural_influence_list: 'mexican',
@@ -417,6 +430,7 @@ Roll corn in crumbled cotija cheese, then dust with chili powder. Sprinkle with 
   attach_seed_image(recipe, 'elote.jpg', caption: 'Grilled Mexican street corn')
 
   recipe = Recipe.create!(
+    status: 'published',
     name: 'Penne alla Vodka',
     cooking_method_list: 'boil, saute, simmer',
     cultural_influence_list: 'italian, italian-american',
@@ -449,6 +463,7 @@ Reduce heat to low and stir in heavy cream. Add the drained pasta and toss, addi
   attach_seed_image(recipe, 'penne_alla_vodka.jpg', caption: 'Penne alla vodka with basil')
 
   recipe = Recipe.create!(
+    status: 'published',
     name: 'Pozole Rojo',
     cooking_method_list: 'simmer, toast, blend',
     cultural_influence_list: 'mexican, guerrero',

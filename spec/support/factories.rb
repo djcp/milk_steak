@@ -25,12 +25,41 @@ FactoryBot.define do
     email
     password { 'asdASD123!@#' }
     confirmed_at { Time.current }
+
+    trait :admin do
+      admin { true }
+    end
   end
 
   factory :recipe do
     name
     directions { "Do stuff" }
+    status { 'published' }
     user
+
+    trait :draft do
+      status { 'draft' }
+      directions { nil }
+    end
+
+    trait :processing do
+      status { 'processing' }
+      directions { nil }
+    end
+
+    trait :processing_failed do
+      status { 'processing_failed' }
+      directions { nil }
+      ai_error { 'AI extraction failed' }
+    end
+
+    trait :review do
+      status { 'review' }
+    end
+
+    trait :magic do
+      source_url { 'https://example.com/recipe' }
+    end
 
     factory :full_recipe do
       after(:build) do |recipe|
