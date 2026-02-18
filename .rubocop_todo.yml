@@ -164,7 +164,6 @@ Lint/SymbolConversion:
 # Configuration parameters: IgnoreEmptyBlocks, AllowUnusedKeywordArguments.
 Lint/UnusedBlockArgument:
   Exclude:
-    - 'config/unicorn.rb'
     - 'lib/tasks/brakeman.rake'
 
 # Offense count: 3
@@ -383,18 +382,8 @@ Rails/I18nLocaleTexts:
     - 'app/controllers/admin/magic_recipes_controller.rb'
     - 'app/controllers/admin/recipes_controller.rb'
 
-# Offense count: 1
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Rails/OrderArguments:
-  Exclude:
-    - 'app/models/recipe.rb'
-
 # Offense count: 2
 # This cop supports unsafe autocorrection (--autocorrect-all).
-Rails/Output:
-  Exclude:
-    - 'config/unicorn.rb'
-
 # Offense count: 2
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Rails/RakeEnvironment:
@@ -515,7 +504,6 @@ Style/IfUnlessModifier:
     - 'app/controllers/recipes_controller.rb'
     - 'app/models/filter_set.rb'
     - 'config/initializers/rack_timeout.rb'
-    - 'config/unicorn.rb'
     - 'lib/tasks/bundle-audit.rake'
     - 'spec/models/factories_spec.rb'
 

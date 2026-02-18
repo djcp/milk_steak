@@ -10,8 +10,4 @@ Rails.application.configure do
     policy.frame_ancestors :self
     policy.base_uri :self
   end
-
-  # Start in report-only mode so violations are logged but not blocked.
-  # Switch to enforcing mode once verified clean in production.
-  config.content_security_policy_report_only = true
 end

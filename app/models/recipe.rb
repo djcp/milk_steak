@@ -7,7 +7,7 @@ class Recipe < ApplicationRecord
   belongs_to :user
 
   def self.recent
-    order('created_at desc')
+    order(created_at: :desc)
   end
 
   scope :published, -> { where(status: 'published') }

@@ -1,5 +1,3 @@
-require 'active_support/core_ext/integer/time'
-
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -35,7 +33,7 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: ENV.fetch('HOST', 'localhost:3000') }
 
   # Print deprecation notices to the Rails logger.
-  config.active_support.deprecation = :log
+  config.active_support.report_deprecations = true
 
   # Raise exceptions for disallowed deprecations.
   config.active_support.disallowed_deprecation = :raise

@@ -10,11 +10,9 @@ gem 'base64'
 
 gem 'email_validator'
 gem 'flutie'
-gem 'high_voltage'
 gem 'image_processing', '~> 1.2'
 gem 'active_storage_validations'
 gem 'pg', '~> 1.1'
-gem 'recipient_interceptor'
 gem 'propshaft'
 gem 'tailwindcss-rails', '~> 4.0'
 gem 'simple_form'
@@ -24,8 +22,6 @@ gem 'acts_as_list'
 gem 'acts-as-taggable-on', '~> 13.0'
 gem 'will_paginate'
 gem 'redcarpet'
-gem 'rails-controller-testing'
-gem 'responders'
 gem 'aws-sdk-s3', require: false
 gem 'solid_queue'
 gem 'anthropic'
@@ -50,6 +46,7 @@ group :development, :test do
 end
 
 group :test do
+  gem 'rails-controller-testing'
   gem 'selenium-webdriver'
   gem 'capybara'
   gem 'database_cleaner-active_record'

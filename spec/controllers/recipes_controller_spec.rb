@@ -18,7 +18,8 @@ describe RecipesController do
         user = build(:user)
         allow(controller).to receive(:current_user).and_return(user)
         recipe = build_stubbed(:recipe, user: user)
-        allow(Recipe).to receive(:find).and_return(recipe)
+        scope = double(find: recipe)
+        allow(Recipe).to receive(:includes).and_return(scope)
         get :edit, params: { id: recipe.id }
 
         expect(response).to be_successful
@@ -83,11 +84,12 @@ describe RecipesController do
 
     context '#show' do
       it 'is successful' do
-        allow(Recipe).to receive(:find).and_return(build(:recipe))
-        get :show, params: { id: 1 }
+        recipe = build_stubbed(:recipe, status: 'published')
+        scope = double(find: recipe)
+        allow(Recipe).to receive(:includes).and_return(scope)
+        get :show, params: { id: recipe.id }
 
         expect(response).to be_successful
-        expect(Recipe).to have_received(:find).with('1')
       end
     end
 

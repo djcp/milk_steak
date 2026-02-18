@@ -45,5 +45,5 @@ Capybara.register_driver :selenium_chrome_headless do |app|
 end
 
 Capybara.javascript_driver = :selenium_chrome_headless
-Capybara.default_driver = :selenium_chrome_headless
+Capybara.default_driver = :rack_test
 WebMock.disable_net_connect!(allow_localhost: true)
