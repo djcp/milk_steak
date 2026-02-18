@@ -1,0 +1,60 @@
+<div class="max-w-6xl mx-auto p-4 md:p-6">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-3xl text-ink">Admin: Recipes</h1>
+    <%= link_to 'New Magic Recipe', new_admin_magic_recipe_path, class: 'bg-terra text-white px-4 py-2 rounded-lg no-underline hover:bg-terra-dark transition-colors' %>
+  </div>
+
+  <div class="flex flex-wrap gap-2 mb-6">
+    <%= link_to "All (#{@status_counts.values.sum})", admin_recipes_path,
+        class: "px-3 py-1.5 rounded-full text-sm no-underline #{params[:status].blank? ? 'bg-terra text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" %>
+    <% Recipe::STATUSES.each do |s| %>
+      <%= link_to "#{s.titleize} (#{@status_counts[s] || 0})", admin_recipes_path(status: s),
+          class: "px-3 py-1.5 rounded-full text-sm no-underline #{params[:status] == s ? 'bg-terra text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" %>
+    <% end %>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 text-left">
+        <tr>
+          <th class="px-4 py-3 font-semibold text-ink">Name</th>
+          <th class="px-4 py-3 font-semibold text-ink">Author</th>
+          <th class="px-4 py-3 font-semibold text-ink">Status</th>
+          <th class="px-4 py-3 font-semibold text-ink">Created</th>
+          <th class="px-4 py-3 font-semibold text-ink">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% @recipes.each do |recipe| %>
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-3">
+              <%= link_to recipe.name, recipe_path(recipe), class: 'text-terra hover:underline no-underline' %>
+              <% if recipe.magic? %>
+                <span class="text-xs text-purple-600">(magic)</span>
+              <% end %>
+            </td>
+            <td class="px-4 py-3 text-ink-light"><%= recipe.user_email %></td>
+            <td class="px-4 py-3"><%= render 'status_badge', status: recipe.status %></td>
+            <td class="px-4 py-3 text-ink-light"><%= l(recipe.created_at, format: :default) %></td>
+            <td class="px-4 py-3 space-x-2">
+              <% if recipe.publishable? %>
+                <%= button_to 'Publish', publish_admin_recipe_path(recipe), method: :patch, class: 'text-green-700 hover:underline bg-transparent border-0 cursor-pointer p-0 text-sm' %>
+                <%= button_to 'Reject', reject_admin_recipe_path(recipe), method: :patch, class: 'text-red-700 hover:underline bg-transparent border-0 cursor-pointer p-0 text-sm' %>
+              <% end %>
+              <% if recipe.reprocessable? %>
+                <%= button_to 'Reprocess', reprocess_admin_recipe_path(recipe), method: :patch, class: 'text-orange-700 hover:underline bg-transparent border-0 cursor-pointer p-0 text-sm' %>
+              <% end %>
+              <%= link_to 'Edit', edit_recipe_path(recipe), class: 'text-terra hover:underline text-sm' %>
+              <%= button_to 'Delete', admin_recipe_path(recipe), method: :delete, class: 'text-red-700 hover:underline bg-transparent border-0 cursor-pointer p-0 text-sm', data: { confirm: 'Are you sure?' } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-4">
+    <%= will_paginate @recipes %>
+  </div>
+</div>
+<% content_for(:page_title, 'Admin: Recipes') %>

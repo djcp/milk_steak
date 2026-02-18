@@ -319,12 +319,13 @@ RSpec/MetadataStyle:
     - 'spec/features/user_views_homepage_spec.rb'
     - 'spec/support/database_cleaner.rb'
 
-# Offense count: 2
+# Offense count: 3
 # Configuration parameters: Max.
 RSpec/MultipleExpectations:
   Exclude:
     - 'spec/features/user_filters_recipes_spec.rb'
     - 'spec/features/user_manages_recipes_spec.rb'
+    - 'spec/services/recipe_ai_applier_spec.rb'
 
 # Offense count: 3
 # Configuration parameters: EnforcedStyle, IgnoreSharedExamples.
@@ -374,10 +375,13 @@ Rails/HasManyOrHasOneDependent:
   Exclude:
     - 'app/models/user.rb'
 
-# Offense count: 2
+# Offense count: 7
 Rails/I18nLocaleTexts:
   Exclude:
     - 'app/models/image.rb'
+    - 'app/controllers/admin/base_controller.rb'
+    - 'app/controllers/admin/magic_recipes_controller.rb'
+    - 'app/controllers/admin/recipes_controller.rb'
 
 # Offense count: 1
 # This cop supports unsafe autocorrection (--autocorrect-all).
