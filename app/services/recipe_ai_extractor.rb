@@ -7,9 +7,9 @@ class RecipeAiExtractor
     {
       "name": "Recipe name",
       "description": "Brief description (1-2 sentences)",
-      "directions": "Clear, numbered cooking steps in markdown. Remove narrative fluff, ads, life stories. Keep only actionable cooking instructions.",
-      "preparation_time": null or integer (minutes),
-      "cooking_time": null or integer (minutes),
+      "directions": "Clear, numbered cooking steps in markdown.",
+      "preparation_time": null or integer (minutes, prep only — chopping, measuring, marinating),
+      "cooking_time": null or integer (minutes, total time on heat including baking, simmering, resting),
       "servings": null or integer,
       "serving_units": "e.g. servings, cups, pieces" or null,
       "ingredients": [
@@ -21,14 +21,36 @@ class RecipeAiExtractor
       "dietary_restrictions": ["vegetarian"]
     }
 
-    Rules:
-    - Ingredient names should be lowercase and simple, strip specific brand names when possible
-    - Quantity should be a string that can include fractions like "1/2"
-    - Tags (cooking_methods, cultural_influences, courses, dietary_restrictions) should be lowercase
+    Ingredients:
+    - Names should be lowercase and simple, strip specific brand names
+    - Include preparation modifiers in the name (e.g. "onion, diced", "garlic, minced") rather than the unit
+    - Quantity should be a string that can include fractions like "1/2". Use "to taste" when no specific amount is given
+    - Unit should be a standard measurement (cup, tbsp, tsp, oz, lb, etc.) or empty string when not applicable (e.g. "2" "large" "eggs")
+    - Every ingredient in the list MUST be referenced in the directions. If the source text mentions an ingredient only in the directions but not in the ingredient list, add it to the ingredients list
+
+    Sections:
+    - If a recipe has distinct ingredient groups (e.g. "Crust", "Filling", "Sauce", "Dressing", "Spice Mixture"), set the "section" field for each ingredient in that group
+    - Use short, title-cased section names (e.g. "Crust" not "For the crust")
+    - Use null for ingredients that don't belong to a named section
+    - Only use sections when the recipe clearly organizes ingredients into groups
+
+    Description:
+    - 1-2 sentences describing the dish itself — what it is and what makes it good
+    - Do NOT include personal stories, anecdotes, recipe origin stories, or blog filler
+    - Do NOT include tips, variations, serving suggestions, or storage instructions
+
+    Directions:
+    - Clear numbered steps — ONLY actionable cooking instructions
+    - Strip out completely: life stories, personal anecdotes, blog filler, ads, "notes" sections, variation suggestions ("you could also use..."), storage/reheating tips, and serving suggestions
+    - Reference ingredients by the same name used in the ingredients list for consistency
+    - When sections exist, the directions should reference which component is being prepared (e.g. "For the crust, combine...")
+    - Combine trivially small sub-steps into single steps where it makes sense
+
+    Tags:
+    - cooking_methods, cultural_influences, courses, dietary_restrictions should all be lowercase
     - Only include dietary_restrictions that actually apply
-    - Directions should be clear numbered steps, no life stories or filler text
-    - If a recipe has distinct ingredient groups (e.g. "Crust", "Filling", "Sauce", "Dressing"), set the "section" field to the group name for each ingredient. Use null for ingredients that don't belong to a named section. Only use sections when the recipe clearly organizes ingredients into groups.
-    - Return ONLY valid JSON, no JSON markdown code fences, no explanation
+
+    Return ONLY valid JSON, no JSON markdown code fences, no explanation.
   PROMPT
 
   def self.extract(text)
