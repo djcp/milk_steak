@@ -7,6 +7,8 @@ class Ingredient < ApplicationRecord
     length: { maximum: 1.kilobyte }
 
   def self.unique_names
-    select(:name).distinct
+    joins(recipe_ingredients: :recipe)
+      .where(recipes: { status: %w[published draft] })
+      .select(:name).distinct
   end
 end

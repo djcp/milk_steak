@@ -54,17 +54,20 @@ class Recipe < ApplicationRecord
   end
 
   def self.unique_serving_units
-    select(:serving_units).distinct
+    published_or_draft.select(:serving_units).distinct
   end
 
   def self.fuzzy_autocomplete_for(context, query)
     ActsAsTaggableOn::Tagging.includes(:tag).where(
       context: context,
-      taggable_type: 'Recipe'
+      taggable_type: 'Recipe',
+      taggable_id: published_or_draft.select(:id)
     ).joins(:tag).where(
       'tags.name like ?', "%#{query}%"
     ).distinct
   end
+
+  scope :published_or_draft, -> { where(status: %w[published draft]) }
 
   def featured_image?
     featured_image.present?

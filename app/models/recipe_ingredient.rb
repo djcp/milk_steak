@@ -21,6 +21,8 @@ class RecipeIngredient < ApplicationRecord
   delegate :name, to: :ingredient
 
   def self.unique_units
-    select(:unit).distinct
+    joins(:recipe)
+      .where(recipes: { status: %w[published draft] })
+      .select(:unit).distinct
   end
 end
