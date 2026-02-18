@@ -11,7 +11,15 @@ module MilkSteak
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.0
 
-    config.active_record.strict_loading_by_default = true
+    config.active_record.strict_loading_by_default = false
+    config.active_job.queue_adapter = :solid_queue
+    config.solid_queue.connects_to = { database: { writing: :primary } }
+
+    # Solid Queue models use lazy-loaded associations internally;
+    # exempt them from strict loading.
+    config.after_initialize do
+      SolidQueue::Record.strict_loading_by_default = false
+    end
 
     config.middleware.use Rack::Deflater
 

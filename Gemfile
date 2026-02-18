@@ -27,6 +27,8 @@ gem 'redcarpet'
 gem 'rails-controller-testing'
 gem 'responders'
 gem 'aws-sdk-s3', require: false
+gem 'solid_queue'
+gem 'anthropic'
 
 group :development do
   gem 'better_errors'
