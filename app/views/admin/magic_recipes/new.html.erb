@@ -1,0 +1,56 @@
+<div class="max-w-2xl mx-auto p-4 md:p-6">
+  <h1 class="text-3xl text-ink mb-6">New Magic Recipe</h1>
+
+  <% if flash[:alert].present? %>
+    <div class="bg-red-50 text-red-700 p-4 rounded-lg mb-6"><%= flash[:alert] %></div>
+  <% end %>
+
+  <%= form_tag admin_magic_recipes_path, method: :post, class: 'space-y-6' do %>
+    <div>
+      <p class="text-ink-light mb-4">Paste a recipe URL or raw recipe text. AI will extract the structured recipe data for your review.</p>
+    </div>
+
+    <div id="source-toggle" class="flex gap-2 mb-4">
+      <button type="button" data-target="url-input" class="source-toggle-btn px-4 py-2 rounded-lg text-sm bg-terra text-white border-0 cursor-pointer">From URL</button>
+      <button type="button" data-target="text-input" class="source-toggle-btn px-4 py-2 rounded-lg text-sm bg-gray-100 text-gray-700 border-0 cursor-pointer">From Text</button>
+    </div>
+
+    <div id="url-input">
+      <label for="source_url" class="block text-sm font-semibold text-ink mb-1">Recipe URL</label>
+      <input type="url" name="source_url" id="source_url" placeholder="https://example.com/recipe" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-terra/50 focus:border-terra" />
+    </div>
+
+    <div id="text-input" class="hidden">
+      <label for="source_text" class="block text-sm font-semibold text-ink mb-1">Recipe Text</label>
+      <textarea name="source_text" id="source_text" rows="12" placeholder="Paste the recipe text here..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-terra/50 focus:border-terra"></textarea>
+    </div>
+
+    <div>
+      <input type="submit" value="Create Magic Recipe" class="bg-terra text-white px-6 py-3 rounded-lg border-0 cursor-pointer hover:bg-terra-dark transition-colors font-semibold" />
+    </div>
+  <% end %>
+</div>
+
+<script>
+  document.querySelectorAll('.source-toggle-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var target = this.getAttribute('data-target');
+      document.getElementById('url-input').classList.toggle('hidden', target !== 'url-input');
+      document.getElementById('text-input').classList.toggle('hidden', target !== 'text-input');
+
+      document.querySelectorAll('.source-toggle-btn').forEach(function(b) {
+        b.classList.remove('bg-terra', 'text-white');
+        b.classList.add('bg-gray-100', 'text-gray-700');
+      });
+      this.classList.remove('bg-gray-100', 'text-gray-700');
+      this.classList.add('bg-terra', 'text-white');
+
+      if (target === 'url-input') {
+        document.getElementById('source_text').value = '';
+      } else {
+        document.getElementById('source_url').value = '';
+      }
+    });
+  });
+</script>
+<% content_for(:page_title, 'New Magic Recipe') %>

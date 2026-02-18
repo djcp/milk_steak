@@ -2,9 +2,6 @@ require 'spec_helper'
 
 feature 'User views homepage', js: true do
   include RecipeGenerator
-  before do
-    page.driver.allow_url('googleapis.com')
-  end
 
   scenario 'sees a paginated list of recipes' do
     user_logs_in

@@ -1,10 +1,6 @@
 require 'spec_helper'
 
 feature 'User manages recipes', js: true do
-  before do
-    page.driver.allow_url('googleapis.com')
-  end
-
   scenario 'can add arbitrary numbers of ingredients' do
     user_logs_in
 

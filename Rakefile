@@ -14,4 +14,4 @@ if defined?(RSpec)
   task spec: :factory_specs
 end
 task(:default).clear
-task :default => ['brakeman:run', 'bundle:audit', :spec]
+task :default => ['brakeman:run', 'bundle:audit', :rubocop, :spec]

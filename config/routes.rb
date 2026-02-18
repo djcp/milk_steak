@@ -1,5 +1,16 @@
-MilkSteak::Application.routes.draw do
+Rails.application.routes.draw do
   devise_for :users
+
+  namespace :admin do
+    resources :recipes, only: [:index, :destroy] do
+      member do
+        patch :publish
+        patch :reject
+        patch :reprocess
+      end
+    end
+    resources :magic_recipes, only: [:new, :create]
+  end
 
   resources :recipes, only: [:index, :new, :create, :show, :edit, :update] do
     member do
@@ -19,4 +30,7 @@ MilkSteak::Application.routes.draw do
   end
 
   root to: 'recipes#index'
+
+  # Health check endpoint for Rails 8
+  get 'up' => 'rails/health#show', as: :rails_health_check
 end

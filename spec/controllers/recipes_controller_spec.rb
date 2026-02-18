@@ -18,8 +18,9 @@ describe RecipesController do
         user = build(:user)
         allow(controller).to receive(:current_user).and_return(user)
         recipe = build_stubbed(:recipe, user: user)
-        allow(Recipe).to receive(:find).and_return(recipe)
-        get :edit, id: recipe.id
+        scope = double(find: recipe)
+        allow(Recipe).to receive(:includes).and_return(scope)
+        get :edit, params: { id: recipe.id }
 
         expect(response).to be_successful
       end
@@ -34,7 +35,7 @@ describe RecipesController do
         it 'redirects to the new recipe' do
           recipe = create_stubbed_recipe
 
-          post :create, {recipe: {name: 'foo'}}
+          post :create, params: { recipe: { name: 'foo' } }
 
           expect(response).to redirect_to(recipe_path(recipe))
         end
@@ -42,7 +43,7 @@ describe RecipesController do
         it 'sends save!' do
           recipe = create_stubbed_recipe
 
-          post :create, {recipe: {name: 'foo'}}
+          post :create, params: { recipe: { name: 'foo' } }
 
           expect(recipe).to have_received(:save!)
         end
@@ -50,7 +51,7 @@ describe RecipesController do
         it 'sets a logical flash message' do
           create_stubbed_recipe
 
-          post :create, {recipe: {name: 'foo'}}
+          post :create, params: { recipe: { name: 'foo' } }
 
           expect(flash[:notice]).to eq I18n.t('created')
         end
@@ -58,13 +59,13 @@ describe RecipesController do
 
       context 'invalid recipe' do
         it 'sets a logical flash message' do
-          post :create, {recipe: {name: 'foo'}}
+          post :create, params: { recipe: { name: 'foo' } }
 
           expect(flash[:error]).to include I18n.t('ui.recipes.invalid_creation')
         end
 
         it 'does not error' do
-          post :create, {recipe: {name: 'foo'}}
+          post :create, params: { recipe: { name: 'foo' } }
 
           expect(response).to be_successful
         end
@@ -83,17 +84,18 @@ describe RecipesController do
 
     context '#show' do
       it 'is successful' do
-        allow(Recipe).to receive(:find).and_return(build(:recipe))
-        get :show, id: 1
+        recipe = build_stubbed(:recipe, status: 'published')
+        scope = double(find: recipe)
+        allow(Recipe).to receive(:includes).and_return(scope)
+        get :show, params: { id: recipe.id }
 
         expect(response).to be_successful
-        expect(Recipe).to have_received(:find).with('1')
       end
     end
 
     context '#edit' do
       it 'is redirected to the sign-up form' do
-        get :edit, id: 1
+        get :edit, params: { id: 1 }
 
         expect(response).to redirect_to(new_user_session_path)
       end
@@ -101,7 +103,7 @@ describe RecipesController do
 
     context '#update' do
       it 'is redirected to the sign-up form' do
-        post :update, id: 1
+        post :update, params: { id: 1 }
 
         expect(response).to redirect_to(new_user_session_path)
       end
@@ -115,7 +117,7 @@ describe RecipesController do
       end
 
       it 'has a logical message' do
-        post :create, {recipe: {name: 'foo'}}
+        post :create, params: { recipe: { name: 'foo' } }
 
         expect(response).to redirect_to(new_user_session_path)
       end

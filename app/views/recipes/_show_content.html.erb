@@ -1,0 +1,60 @@
+<article class="<%= dom_class(recipe) %> grid grid-cols-1 md:grid-cols-[2fr_1fr] lg:grid-cols-[3fr_1fr] gap-6 p-4 md:p-6" id="<%= dom_id(recipe) %>">
+  <div class="recipe-narrative">
+    <h1 class="col-span-full text-3xl md:text-4xl mb-4 text-ink">
+      <%= recipe.name %>
+      <% if current_user == recipe.user %>
+        <%= link_to('edit', edit_recipe_path(recipe), class: 'text-base align-super text-terra hover:underline') %>
+      <% end %>
+    </h1>
+
+    <% if recipe.description? %>
+      <blockquote class="description col-span-full border-l-4 border-terra/30 pl-5 pr-4 mb-6 text-ink-light italic">
+        <%= sanitize(markdown_format(recipe.description)) %>
+      </blockquote>
+    <% end %>
+
+    <div class="recipe_ingredients bg-white rounded-xl px-6 py-4 mb-6 shadow-sm">
+      <% recipe.recipe_ingredients.order(:position).group_by(&:section).each do |section, ingredients| %>
+        <% if section.present? %>
+          <h3 class="font-semibold text-ink mt-4 mb-1 first:mt-0"><%= section %></h3>
+        <% end %>
+        <ul class="list-none">
+          <%= render ingredients %>
+        </ul>
+      <% end %>
+    </div>
+
+    <div class="directions leading-relaxed text-ink-light">
+      <%= sanitize(markdown_format(recipe.directions)) if recipe.directions? %>
+    </div>
+  </div>
+
+  <div class="tags bg-warm-white p-5 rounded-xl border-l-4 border-terra/40 max-md:border-l-0 max-md:border-t-4 text-sm space-y-4">
+    <div class="metadata space-y-2 pb-4 border-b border-cream-dark">
+      <% if recipe.preparation_time? %>
+        <div><span class="font-semibold text-ink">Prep time:</span> <%= recipe.preparation_time %> minutes</div>
+      <% end %>
+      <% if recipe.cooking_time? %>
+        <div><span class="font-semibold text-ink">Total Cooking time:</span> <%= recipe.cooking_time %> minutes</div>
+      <% end %>
+      <% if recipe.servings? || recipe.serving_units? %>
+        <div><span class="font-semibold text-ink">Makes:</span> <%= recipe.servings %> <%= recipe.serving_units %></div>
+      <% end %>
+      <div><span class="font-semibold text-ink">Created:</span> <%= l(recipe.created_at, format: :default) %></div>
+      <% if recipe.user_email.present? %>
+        <div class="user">
+          by: <span class="badge inline-block bg-terra-faint text-terra-dark px-3 py-0.5 rounded-full text-xs font-medium"><%= link_to(recipe.user_email, root_path(filter_set: { author: recipe.user_email }), class: 'text-terra-dark no-underline hover:underline') %></span>
+        </div>
+      <% end %>
+    </div>
+    <%= render 'recipes/tagged_attributes', recipe: recipe, attribute: 'cooking_methods' %>
+    <%= render 'recipes/tagged_attributes', recipe: recipe, attribute: 'cultural_influences' %>
+    <%= render 'recipes/tagged_attributes', recipe: recipe, attribute: 'courses' %>
+    <%= render 'recipes/tagged_attributes', recipe: recipe, attribute: 'dietary_restrictions' %>
+  </div>
+
+  <div class="images col-span-full mt-4 grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-4" id="image_list">
+    <%= render recipe.images.order('id') %>
+  </div>
+
+</article>

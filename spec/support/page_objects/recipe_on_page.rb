@@ -107,5 +107,6 @@ class RecipeOnPage
 
   def submit
     find('input[type="submit"]').click
+    has_css?('article.recipe h1', wait: 10)
   end
 end

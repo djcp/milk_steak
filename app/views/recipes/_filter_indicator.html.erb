@@ -1,9 +1,12 @@
 <% if filter_set.active_filters.present? %>
-  <div class="filter_indicator">
-    <span class="label">Filtering by:</span>
-    <ul class="active_filters">
+  <div class="filter_indicator flex items-center gap-2 flex-wrap px-1 pb-3 text-sm font-body">
+    <span class="font-semibold text-ink-light">Filtering by:</span>
+    <ul class="active_filters flex flex-wrap gap-2 list-none p-0 m-0">
       <% filter_set.active_filters.map do |filter| %>
-        <li><span class="remove_filter" data-filter-name="<%= filter %>">☒</span><%= filter.to_s.humanize %> :: <%= filter_set.send(filter) %></li>
+        <li class="inline-flex items-center gap-1 bg-terra-faint text-terra-dark px-3 py-1 rounded-full text-xs font-medium">
+          <span class="remove_filter cursor-pointer opacity-60 hover:opacity-100 transition-opacity" data-filter-name="<%= filter %>">&#x2715;</span>
+          <%= filter.to_s.humanize %> :: <%= filter_set.send(filter) %>
+        </li>
       <% end %>
     </ul>
   </div>

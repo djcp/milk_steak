@@ -5,15 +5,18 @@
     <meta name="ROBOTS" content="NOODP" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= page_title(app_name: ENV.fetch('APP_NAME', 'Recipes')) %></title>
-    <%= stylesheet_link_tag :application, :media => 'all' %>
+    <%= stylesheet_link_tag "tailwind", :media => 'all' %>
+    <%= stylesheet_link_tag "jquery-ui.min", :media => 'all' %>
     <%= csrf_meta_tags %>
   </head>
   <body class="<%= body_class %>">
-    <div class="main-container">
-      <header class="site">
-        <h1><%= link_to(ENV.fetch('APP_NAME', 'Recipes'), root_path) %></h1>
+    <div class="max-w-5xl mx-auto">
+      <header class="bg-terra/90 backdrop-blur-md">
+        <h1 class="m-0 py-2 px-4 text-center text-white text-4xl md:text-6xl lg:text-7xl tracking-tight">
+          <%= link_to(ENV.fetch('APP_NAME', 'Recipes'), root_path, class: 'text-white no-underline hover:text-white/80 hover:no-underline') %>
+        </h1>
       </header>
-      <div class="body-container">
+      <div class="max-w-5xl mx-auto bg-cream/95 backdrop-blur-sm min-h-screen">
         <%= render 'nav' -%>
         <%= render 'flashes' -%>
         <div id="main_content">

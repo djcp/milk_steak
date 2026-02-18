@@ -1,3 +1,12 @@
-<span class="badge <%= dom_class(tag)%>" id="<%= dom_id(tag) %>">
-  <%= link_to(tag.name, root_path(filter_set: { attribute => tag.name })) %>
+<%
+  tag_colors = {
+    'cooking_methods'      => 'bg-tag-method text-tag-method-text',
+    'cultural_influences'  => 'bg-tag-culture text-tag-culture-text',
+    'courses'              => 'bg-tag-course text-tag-course-text',
+    'dietary_restrictions'  => 'bg-tag-diet text-tag-diet-text'
+  }
+  color_class = tag_colors[attribute] || 'bg-gray-100 text-gray-700'
+%>
+<span class="badge inline-block px-3 py-1 rounded-full text-xs font-medium <%= color_class %>" id="<%= dom_id(tag) %>">
+  <%= link_to(tag.name, root_path(filter_set: { attribute => tag.name }), class: 'no-underline hover:underline', style: 'color: inherit') %>
 </span>
