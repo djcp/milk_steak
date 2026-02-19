@@ -1,12 +1,14 @@
 source 'https://rubygems.org'
+ruby '4.0.1'
 
 gem 'rails', '~> 8.0.0'
 
-# Required for Ruby 3.4 compatibility
+# Required for Ruby 4.0 compatibility
 gem 'mutex_m'
 gem 'bigdecimal'
 gem 'drb'
 gem 'base64'
+gem 'rdoc', '>= 7.2.0'
 
 gem 'email_validator'
 gem 'flutie'
@@ -28,7 +30,7 @@ gem 'anthropic'
 
 group :development do
   gem 'better_errors'
-  gem 'binding_of_caller'
+  gem 'binding_of_caller', '~> 2.0'
   gem 'foreman'
   gem 'bundler-audit'
 end

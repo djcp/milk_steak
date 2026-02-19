@@ -6,7 +6,7 @@ MilkSteak is a recipe tracker Rails app. Users can create recipes with ingredien
 
 ## Tech Stack
 
-- **Ruby 3.4.1** / **Rails 8.0**
+- **Ruby 4.0.1** / **Rails 8.0**
 - **PostgreSQL 16+** (dev: `milk_steak_development`, test: `milk_steak_test`)
 - **Propshaft** asset pipeline with vendored jQuery/jQuery UI
 - **Tailwind CSS v4** via `tailwindcss-rails` (no Node.js required)
@@ -157,4 +157,4 @@ Development uses `dotenv-rails` with a `.env` file (see `.sample.env` for requir
 
 ## CI
 
-GitHub Actions on push to master and all PRs. Runs PostgreSQL 16 service container, Ruby 3.4.1, and `bundle exec rake`.
+GitHub Actions on push to master and all PRs. Runs PostgreSQL 16 service container, Ruby 4.0.1, and `bundle exec rake`.
