@@ -28,7 +28,7 @@ MilkSteak is a recipe tracker web application built with love.
 
 ## Requirements
 
-- **Ruby 3.4.1**
+- **Ruby 4.0.1**
 - **PostgreSQL 16+**
 - **libvips** for image processing
   - macOS: `brew install vips`
@@ -95,7 +95,7 @@ The CI suite runs on GitHub Actions against PostgreSQL 16 for every push to `mas
 
 ## Tech Stack
 
-- **Ruby 3.4.1** / **Rails 8.0**
+- **Ruby 4.0.1** / **Rails 8.0**
 - **PostgreSQL** with foreign key constraints
 - **Propshaft** asset pipeline
 - **Tailwind CSS v4** via `tailwindcss-rails` (no Node.js required)

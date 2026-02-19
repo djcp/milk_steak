@@ -1,8 +1,9 @@
 source 'https://rubygems.org'
+ruby '4.0.1'
 
 gem 'rails', '~> 8.0.0'
 
-# Required for Ruby 3.4 compatibility
+# Required for Ruby 4.0 compatibility
 gem 'mutex_m'
 gem 'bigdecimal'
 gem 'drb'
