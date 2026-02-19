@@ -8,6 +8,7 @@ gem 'mutex_m'
 gem 'bigdecimal'
 gem 'drb'
 gem 'base64'
+gem 'rdoc', '>= 7.2.0'
 
 gem 'email_validator'
 gem 'flutie'
@@ -29,7 +30,7 @@ gem 'anthropic'
 
 group :development do
   gem 'better_errors'
-  gem 'binding_of_caller'
+  gem 'binding_of_caller', '~> 2.0'
   gem 'foreman'
   gem 'bundler-audit'
 end
