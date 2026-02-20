@@ -80,5 +80,6 @@ FactoryBot.define do
   factory :recipe_ingredient do
     recipe
     ingredient
+    descriptor { nil }
   end
 end

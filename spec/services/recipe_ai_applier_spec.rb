@@ -13,7 +13,7 @@ describe RecipeAiApplier do
       'servings' => 8,
       'serving_units' => 'slices',
       'ingredients' => [
-        { 'quantity' => '2', 'unit' => 'cups', 'name' => 'flour', 'section' => 'Dry' },
+        { 'quantity' => '2', 'unit' => 'cups', 'name' => 'flour', 'descriptor' => 'sifted', 'section' => 'Dry' },
         { 'quantity' => '1', 'unit' => 'cup', 'name' => 'sugar', 'section' => 'Dry' },
         { 'quantity' => '2', 'unit' => 'large', 'name' => 'eggs', 'section' => 'Wet' }
       ],
@@ -66,6 +66,16 @@ describe RecipeAiApplier do
       recipe.reload
       sections = recipe.recipe_ingredients.order(:position).map(&:section)
       expect(sections).to eq(%w[Dry Dry Wet])
+    end
+
+    it 'assigns descriptors to recipe ingredients' do
+      described_class.apply(recipe, data)
+
+      recipe.reload
+      flour_ri = recipe.recipe_ingredients.joins(:ingredient).find_by(ingredients: { name: 'flour' })
+      sugar_ri = recipe.recipe_ingredients.joins(:ingredient).find_by(ingredients: { name: 'sugar' })
+      expect(flour_ri.descriptor).to eq('sifted')
+      expect(sugar_ri.descriptor).to be_nil
     end
 
     it 'sets tag lists' do

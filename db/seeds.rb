@@ -21,6 +21,15 @@ def attach_seed_image(recipe, filename, caption: nil, featured: true)
   image.save!
 end
 
+def ri(name, quantity:, unit:, descriptor: nil)
+  RecipeIngredient.new(
+    quantity: quantity,
+    unit: unit,
+    descriptor: descriptor,
+    ingredient: Ingredient.where(name: name).first_or_create!
+  )
+end
+
 if Rails.env == 'development'
   admin = User.find_or_initialize_by(email: 'admin@example.com')
   if admin.new_record?
@@ -44,10 +53,7 @@ if Rails.env == 'development'
     directions: 'Pour water in ice cube tray. Freeze',
     user: admin,
     recipe_ingredients: [
-      RecipeIngredient.new(
-        quantity: 1, unit: 'quart',
-        ingredient: Ingredient.where(name: 'water').first_or_create!
-      )
+      ri('water', quantity: 1, unit: 'quart')
     ]
   )
   attach_seed_image(recipe, 'ice.jpg', caption: 'Ice cubes')
@@ -68,34 +74,13 @@ Saute garlic for 5 minutes until it starts to get sticky.
 Pour in tomatoes and stir quickly into garlic oil. Bring to a boil and reduce heat to low. Put in all spices and simmer until done, 1/2 hour to an hour. Serve over pasta or use in other recipes.',
     user: admin,
     recipe_ingredients: [
-      RecipeIngredient.new(
-        quantity: 6, unit: 'cloves',
-        ingredient: Ingredient.where(name: 'Garlic').first_or_create!
-      ),
-      RecipeIngredient.new(
-        quantity: 1, unit: '22 oz can',
-        ingredient: Ingredient.where(name: 'Crushed tomatoes').first_or_create!
-      ),
-      RecipeIngredient.new(
-        quantity: 0.25, unit: 'cup',
-        ingredient: Ingredient.where(name: 'Chopped basil').first_or_create!
-      ),
-      RecipeIngredient.new(
-        quantity: 0.125, unit: 'cup',
-        ingredient: Ingredient.where(name: 'Chopped oregano').first_or_create!
-      ),
-      RecipeIngredient.new(
-        quantity: 1, unit: 'tsp',
-        ingredient: Ingredient.where(name: 'salt').first_or_create!
-      ),
-      RecipeIngredient.new(
-        quantity: 0.5, unit: 'tsp',
-        ingredient: Ingredient.where(name: 'ground black pepper').first_or_create!
-      ),
-      RecipeIngredient.new(
-        quantity: 0.125, unit: 'tsp',
-        ingredient: Ingredient.where(name: 'cayenne pepper').first_or_create!
-      ),
+      ri('garlic', quantity: 6, unit: 'cloves'),
+      ri('tomatoes', quantity: 1, unit: '22 oz can', descriptor: 'crushed'),
+      ri('basil', quantity: 0.25, unit: 'cup', descriptor: 'chopped'),
+      ri('oregano', quantity: 0.125, unit: 'cup', descriptor: 'chopped'),
+      ri('salt', quantity: 1, unit: 'tsp'),
+      ri('black pepper', quantity: 0.5, unit: 'tsp', descriptor: 'ground'),
+      ri('cayenne pepper', quantity: 0.125, unit: 'tsp'),
     ]
   )
   attach_seed_image(recipe, 'marinara_sauce.jpg', caption: 'Homemade marinara sauce')
@@ -120,18 +105,18 @@ In a large skillet, heat butter and saute onion until soft. Add garlic and ginge
 Stir in cream and the roasted chicken. Simmer 10 minutes. Finish with fresh cilantro and serve over basmati rice.',
     user: admin,
     recipe_ingredients: [
-      RecipeIngredient.new(quantity: 1.5, unit: 'lbs', ingredient: Ingredient.where(name: 'boneless chicken thighs').first_or_create!),
-      RecipeIngredient.new(quantity: 0.75, unit: 'cup', ingredient: Ingredient.where(name: 'plain yogurt').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tbsp', ingredient: Ingredient.where(name: 'lemon juice').first_or_create!),
-      RecipeIngredient.new(quantity: 2, unit: 'tsp', ingredient: Ingredient.where(name: 'garam masala').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tsp', ingredient: Ingredient.where(name: 'ground cumin').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'large', ingredient: Ingredient.where(name: 'yellow onion').first_or_create!),
-      RecipeIngredient.new(quantity: 3, unit: 'cloves', ingredient: Ingredient.where(name: 'Garlic').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tbsp', ingredient: Ingredient.where(name: 'fresh ginger').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: '14 oz can', ingredient: Ingredient.where(name: 'Crushed tomatoes').first_or_create!),
-      RecipeIngredient.new(quantity: 0.75, unit: 'cup', ingredient: Ingredient.where(name: 'heavy cream').first_or_create!),
-      RecipeIngredient.new(quantity: 2, unit: 'tbsp', ingredient: Ingredient.where(name: 'butter').first_or_create!),
-      RecipeIngredient.new(quantity: 0.25, unit: 'cup', ingredient: Ingredient.where(name: 'fresh cilantro').first_or_create!),
+      ri('chicken thighs', quantity: 1.5, unit: 'lbs', descriptor: 'boneless'),
+      ri('yogurt', quantity: 0.75, unit: 'cup', descriptor: 'plain'),
+      ri('lemon juice', quantity: 1, unit: 'tbsp'),
+      ri('garam masala', quantity: 2, unit: 'tsp'),
+      ri('cumin', quantity: 1, unit: 'tsp', descriptor: 'ground'),
+      ri('yellow onion', quantity: 1, unit: 'large'),
+      ri('garlic', quantity: 3, unit: 'cloves'),
+      ri('ginger', quantity: 1, unit: 'tbsp', descriptor: 'fresh'),
+      ri('tomatoes', quantity: 1, unit: '14 oz can', descriptor: 'crushed'),
+      ri('heavy cream', quantity: 0.75, unit: 'cup'),
+      ri('butter', quantity: 2, unit: 'tbsp'),
+      ri('cilantro', quantity: 0.25, unit: 'cup', descriptor: 'fresh'),
     ]
   )
   attach_seed_image(recipe, 'chicken_tikka_masala.jpg', caption: 'Chicken tikka masala with rice')
@@ -154,14 +139,14 @@ Fold in diced onion, tomato, jalapeno, cilantro, and lime juice. Season with sal
 Serve immediately with tortilla chips or as a topping.',
     user: admin,
     recipe_ingredients: [
-      RecipeIngredient.new(quantity: 3, unit: 'medium', ingredient: Ingredient.where(name: 'ripe avocados').first_or_create!),
-      RecipeIngredient.new(quantity: 0.5, unit: 'small', ingredient: Ingredient.where(name: 'white onion').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'medium', ingredient: Ingredient.where(name: 'roma tomato').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'small', ingredient: Ingredient.where(name: 'jalapeno').first_or_create!),
-      RecipeIngredient.new(quantity: 0.25, unit: 'cup', ingredient: Ingredient.where(name: 'fresh cilantro').first_or_create!),
-      RecipeIngredient.new(quantity: 2, unit: 'tbsp', ingredient: Ingredient.where(name: 'lime juice').first_or_create!),
-      RecipeIngredient.new(quantity: 0.5, unit: 'tsp', ingredient: Ingredient.where(name: 'salt').first_or_create!),
-      RecipeIngredient.new(quantity: 0.25, unit: 'tsp', ingredient: Ingredient.where(name: 'ground cumin').first_or_create!),
+      ri('avocados', quantity: 3, unit: 'medium', descriptor: 'ripe'),
+      ri('white onion', quantity: 0.5, unit: 'small'),
+      ri('roma tomato', quantity: 1, unit: 'medium'),
+      ri('jalapeno', quantity: 1, unit: 'small'),
+      ri('cilantro', quantity: 0.25, unit: 'cup', descriptor: 'fresh'),
+      ri('lime juice', quantity: 2, unit: 'tbsp'),
+      ri('salt', quantity: 0.5, unit: 'tsp'),
+      ri('cumin', quantity: 0.25, unit: 'tsp', descriptor: 'ground'),
     ]
   )
   attach_seed_image(recipe, 'guacamole.jpg', caption: 'Fresh guacamole with chips')
@@ -184,10 +169,10 @@ Toast freshly cracked black pepper in a dry skillet over medium heat for 1-2 min
 Add the drained pasta and toss vigorously. Remove from heat and add Pecorino Romano a handful at a time, tossing constantly and adding splashes of pasta water to create a creamy sauce. Serve immediately with extra cheese and pepper.',
     user: admin,
     recipe_ingredients: [
-      RecipeIngredient.new(quantity: 1, unit: 'lb', ingredient: Ingredient.where(name: 'spaghetti').first_or_create!),
-      RecipeIngredient.new(quantity: 2, unit: 'cups', ingredient: Ingredient.where(name: 'Pecorino Romano').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tbsp', ingredient: Ingredient.where(name: 'whole black peppercorns').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tsp', ingredient: Ingredient.where(name: 'salt').first_or_create!),
+      ri('spaghetti', quantity: 1, unit: 'lb'),
+      ri('pecorino romano', quantity: 2, unit: 'cups'),
+      ri('black peppercorns', quantity: 1, unit: 'tbsp', descriptor: 'whole'),
+      ri('salt', quantity: 1, unit: 'tsp'),
     ]
   )
   attach_seed_image(recipe, 'cacio_e_pepe.jpg', caption: 'Cacio e pepe with fresh pepper')
@@ -210,19 +195,19 @@ Stir in cumin, coriander, turmeric, garam masala, and chili powder. Toast spices
 Add drained chickpeas and 1 cup water. Simmer 20 minutes until sauce thickens. Stir in lemon juice and cilantro. Season with salt. Serve with rice or naan.',
     user: admin,
     recipe_ingredients: [
-      RecipeIngredient.new(quantity: 2, unit: '15 oz cans', ingredient: Ingredient.where(name: 'chickpeas').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'large', ingredient: Ingredient.where(name: 'yellow onion').first_or_create!),
-      RecipeIngredient.new(quantity: 4, unit: 'cloves', ingredient: Ingredient.where(name: 'Garlic').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tbsp', ingredient: Ingredient.where(name: 'fresh ginger').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'small', ingredient: Ingredient.where(name: 'serrano pepper').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: '14 oz can', ingredient: Ingredient.where(name: 'diced tomatoes').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tsp', ingredient: Ingredient.where(name: 'ground cumin').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tsp', ingredient: Ingredient.where(name: 'ground coriander').first_or_create!),
-      RecipeIngredient.new(quantity: 0.5, unit: 'tsp', ingredient: Ingredient.where(name: 'ground turmeric').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tsp', ingredient: Ingredient.where(name: 'garam masala').first_or_create!),
-      RecipeIngredient.new(quantity: 2, unit: 'tbsp', ingredient: Ingredient.where(name: 'vegetable oil').first_or_create!),
-      RecipeIngredient.new(quantity: 2, unit: 'tbsp', ingredient: Ingredient.where(name: 'lemon juice').first_or_create!),
-      RecipeIngredient.new(quantity: 0.25, unit: 'cup', ingredient: Ingredient.where(name: 'fresh cilantro').first_or_create!),
+      ri('chickpeas', quantity: 2, unit: '15 oz cans'),
+      ri('yellow onion', quantity: 1, unit: 'large'),
+      ri('garlic', quantity: 4, unit: 'cloves'),
+      ri('ginger', quantity: 1, unit: 'tbsp', descriptor: 'fresh'),
+      ri('serrano pepper', quantity: 1, unit: 'small'),
+      ri('tomatoes', quantity: 1, unit: '14 oz can', descriptor: 'diced'),
+      ri('cumin', quantity: 1, unit: 'tsp', descriptor: 'ground'),
+      ri('coriander', quantity: 1, unit: 'tsp', descriptor: 'ground'),
+      ri('turmeric', quantity: 0.5, unit: 'tsp', descriptor: 'ground'),
+      ri('garam masala', quantity: 1, unit: 'tsp'),
+      ri('vegetable oil', quantity: 2, unit: 'tbsp'),
+      ri('lemon juice', quantity: 2, unit: 'tbsp'),
+      ri('cilantro', quantity: 0.25, unit: 'cup', descriptor: 'fresh'),
     ]
   )
   attach_seed_image(recipe, 'chana_masala.jpg', caption: 'Chana masala with naan')
@@ -247,16 +232,16 @@ Uncover, increase heat to medium-high, and cook until liquid evaporates and pork
 Alternatively, spread shredded pork on a sheet pan and broil 3-5 minutes until edges are crispy. Serve in warm tortillas with onion, cilantro, and salsa verde.',
     user: admin,
     recipe_ingredients: [
-      RecipeIngredient.new(quantity: 3, unit: 'lbs', ingredient: Ingredient.where(name: 'pork shoulder').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'large', ingredient: Ingredient.where(name: 'yellow onion').first_or_create!),
-      RecipeIngredient.new(quantity: 5, unit: 'cloves', ingredient: Ingredient.where(name: 'Garlic').first_or_create!),
-      RecipeIngredient.new(quantity: 0.5, unit: 'cup', ingredient: Ingredient.where(name: 'orange juice').first_or_create!),
-      RecipeIngredient.new(quantity: 2, unit: 'tbsp', ingredient: Ingredient.where(name: 'lime juice').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tbsp', ingredient: Ingredient.where(name: 'ground cumin').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tbsp', ingredient: Ingredient.where(name: 'dried oregano').first_or_create!),
-      RecipeIngredient.new(quantity: 2, unit: 'whole', ingredient: Ingredient.where(name: 'bay leaves').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tsp', ingredient: Ingredient.where(name: 'salt').first_or_create!),
-      RecipeIngredient.new(quantity: 0.5, unit: 'tsp', ingredient: Ingredient.where(name: 'ground black pepper').first_or_create!),
+      ri('pork shoulder', quantity: 3, unit: 'lbs'),
+      ri('yellow onion', quantity: 1, unit: 'large'),
+      ri('garlic', quantity: 5, unit: 'cloves'),
+      ri('orange juice', quantity: 0.5, unit: 'cup'),
+      ri('lime juice', quantity: 2, unit: 'tbsp'),
+      ri('cumin', quantity: 1, unit: 'tbsp', descriptor: 'ground'),
+      ri('oregano', quantity: 1, unit: 'tbsp', descriptor: 'dried'),
+      ri('bay leaves', quantity: 2, unit: 'whole'),
+      ri('salt', quantity: 1, unit: 'tsp'),
+      ri('black pepper', quantity: 0.5, unit: 'tsp', descriptor: 'ground'),
     ]
   )
   attach_seed_image(recipe, 'carnitas.jpg', caption: 'Crispy carnitas tacos')
@@ -281,18 +266,18 @@ In the same pan, heat butter. Add cumin seeds and let them sputter. Add onion an
 Add the spinach puree and simmer 5 minutes. Stir in cream and the fried paneer. Cook 5 minutes more. Season with salt and serve with naan or rice.',
     user: admin,
     recipe_ingredients: [
-      RecipeIngredient.new(quantity: 1, unit: 'lb', ingredient: Ingredient.where(name: 'fresh spinach').first_or_create!),
-      RecipeIngredient.new(quantity: 8, unit: 'oz', ingredient: Ingredient.where(name: 'paneer').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'medium', ingredient: Ingredient.where(name: 'yellow onion').first_or_create!),
-      RecipeIngredient.new(quantity: 3, unit: 'cloves', ingredient: Ingredient.where(name: 'Garlic').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'inch piece', ingredient: Ingredient.where(name: 'fresh ginger').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'small', ingredient: Ingredient.where(name: 'green chili').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tsp', ingredient: Ingredient.where(name: 'ground cumin').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tsp', ingredient: Ingredient.where(name: 'ground coriander').first_or_create!),
-      RecipeIngredient.new(quantity: 0.5, unit: 'tsp', ingredient: Ingredient.where(name: 'ground turmeric').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tsp', ingredient: Ingredient.where(name: 'garam masala').first_or_create!),
-      RecipeIngredient.new(quantity: 2, unit: 'tbsp', ingredient: Ingredient.where(name: 'butter').first_or_create!),
-      RecipeIngredient.new(quantity: 0.25, unit: 'cup', ingredient: Ingredient.where(name: 'heavy cream').first_or_create!),
+      ri('spinach', quantity: 1, unit: 'lb', descriptor: 'fresh'),
+      ri('paneer', quantity: 8, unit: 'oz'),
+      ri('yellow onion', quantity: 1, unit: 'medium'),
+      ri('garlic', quantity: 3, unit: 'cloves'),
+      ri('ginger', quantity: 1, unit: 'inch piece', descriptor: 'fresh'),
+      ri('green chili', quantity: 1, unit: 'small'),
+      ri('cumin', quantity: 1, unit: 'tsp', descriptor: 'ground'),
+      ri('coriander', quantity: 1, unit: 'tsp', descriptor: 'ground'),
+      ri('turmeric', quantity: 0.5, unit: 'tsp', descriptor: 'ground'),
+      ri('garam masala', quantity: 1, unit: 'tsp'),
+      ri('butter', quantity: 2, unit: 'tbsp'),
+      ri('heavy cream', quantity: 0.25, unit: 'cup'),
     ]
   )
   attach_seed_image(recipe, 'palak_paneer.jpg', caption: 'Palak paneer with rice')
@@ -317,16 +302,16 @@ Shred cooked chicken and mix with half the sauce and diced onion. Briefly fry co
 Pour remaining sauce over enchiladas, top with crumbled queso fresco, and bake at 375F for 20 minutes. Garnish with cilantro and crema.',
     user: admin,
     recipe_ingredients: [
-      RecipeIngredient.new(quantity: 2, unit: 'cups', ingredient: Ingredient.where(name: 'shredded chicken').first_or_create!),
-      RecipeIngredient.new(quantity: 6, unit: 'whole', ingredient: Ingredient.where(name: 'dried guajillo chiles').first_or_create!),
-      RecipeIngredient.new(quantity: 2, unit: 'whole', ingredient: Ingredient.where(name: 'dried ancho chiles').first_or_create!),
-      RecipeIngredient.new(quantity: 3, unit: 'cloves', ingredient: Ingredient.where(name: 'Garlic').first_or_create!),
-      RecipeIngredient.new(quantity: 12, unit: 'whole', ingredient: Ingredient.where(name: 'corn tortillas').first_or_create!),
-      RecipeIngredient.new(quantity: 0.5, unit: 'cup', ingredient: Ingredient.where(name: 'queso fresco').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tsp', ingredient: Ingredient.where(name: 'ground cumin').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tsp', ingredient: Ingredient.where(name: 'dried oregano').first_or_create!),
-      RecipeIngredient.new(quantity: 0.5, unit: 'medium', ingredient: Ingredient.where(name: 'white onion').first_or_create!),
-      RecipeIngredient.new(quantity: 3, unit: 'tbsp', ingredient: Ingredient.where(name: 'vegetable oil').first_or_create!),
+      ri('chicken', quantity: 2, unit: 'cups', descriptor: 'shredded'),
+      ri('guajillo chiles', quantity: 6, unit: 'whole', descriptor: 'dried'),
+      ri('ancho chiles', quantity: 2, unit: 'whole', descriptor: 'dried'),
+      ri('garlic', quantity: 3, unit: 'cloves'),
+      ri('corn tortillas', quantity: 12, unit: 'whole'),
+      ri('queso fresco', quantity: 0.5, unit: 'cup'),
+      ri('cumin', quantity: 1, unit: 'tsp', descriptor: 'ground'),
+      ri('oregano', quantity: 1, unit: 'tsp', descriptor: 'dried'),
+      ri('white onion', quantity: 0.5, unit: 'medium'),
+      ri('vegetable oil', quantity: 3, unit: 'tbsp'),
     ]
   )
   attach_seed_image(recipe, 'enchiladas_rojas.jpg', caption: 'Enchiladas rojas with queso fresco')
@@ -351,14 +336,14 @@ Add wine and stir until absorbed. Add warm broth one ladle at a time, stirring f
 Stir in the saffron broth, remaining butter, and Parmigiano-Reggiano. Season with salt and pepper. Cover and rest 2 minutes before serving.',
     user: admin,
     recipe_ingredients: [
-      RecipeIngredient.new(quantity: 1.5, unit: 'cups', ingredient: Ingredient.where(name: 'arborio rice').first_or_create!),
-      RecipeIngredient.new(quantity: 5, unit: 'cups', ingredient: Ingredient.where(name: 'vegetable broth').first_or_create!),
-      RecipeIngredient.new(quantity: 0.25, unit: 'tsp', ingredient: Ingredient.where(name: 'saffron threads').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'small', ingredient: Ingredient.where(name: 'yellow onion').first_or_create!),
-      RecipeIngredient.new(quantity: 0.5, unit: 'cup', ingredient: Ingredient.where(name: 'dry white wine').first_or_create!),
-      RecipeIngredient.new(quantity: 3, unit: 'tbsp', ingredient: Ingredient.where(name: 'butter').first_or_create!),
-      RecipeIngredient.new(quantity: 0.75, unit: 'cup', ingredient: Ingredient.where(name: 'Parmigiano-Reggiano').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tsp', ingredient: Ingredient.where(name: 'salt').first_or_create!),
+      ri('arborio rice', quantity: 1.5, unit: 'cups'),
+      ri('vegetable broth', quantity: 5, unit: 'cups'),
+      ri('saffron threads', quantity: 0.25, unit: 'tsp'),
+      ri('yellow onion', quantity: 1, unit: 'small'),
+      ri('dry white wine', quantity: 0.5, unit: 'cup'),
+      ri('butter', quantity: 3, unit: 'tbsp'),
+      ri('parmigiano-reggiano', quantity: 0.75, unit: 'cup'),
+      ri('salt', quantity: 1, unit: 'tsp'),
     ]
   )
   attach_seed_image(recipe, 'risotto.jpg', caption: 'Saffron risotto alla milanese')
@@ -383,19 +368,19 @@ Add diced onion and cook until golden. Add garlic, ginger, and tomato, cook 3 mi
 Pour the tadka over the cooked dal and stir well. Simmer together 5 minutes. Finish with fresh cilantro and a squeeze of lemon. Serve over rice.',
     user: admin,
     recipe_ingredients: [
-      RecipeIngredient.new(quantity: 1, unit: 'cup', ingredient: Ingredient.where(name: 'toor dal').first_or_create!),
-      RecipeIngredient.new(quantity: 3, unit: 'cups', ingredient: Ingredient.where(name: 'water').first_or_create!),
-      RecipeIngredient.new(quantity: 0.5, unit: 'tsp', ingredient: Ingredient.where(name: 'ground turmeric').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tsp', ingredient: Ingredient.where(name: 'mustard seeds').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tsp', ingredient: Ingredient.where(name: 'cumin seeds').first_or_create!),
-      RecipeIngredient.new(quantity: 2, unit: 'whole', ingredient: Ingredient.where(name: 'dried red chiles').first_or_create!),
-      RecipeIngredient.new(quantity: 8, unit: 'leaves', ingredient: Ingredient.where(name: 'curry leaves').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'medium', ingredient: Ingredient.where(name: 'yellow onion').first_or_create!),
-      RecipeIngredient.new(quantity: 3, unit: 'cloves', ingredient: Ingredient.where(name: 'Garlic').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tbsp', ingredient: Ingredient.where(name: 'fresh ginger').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'medium', ingredient: Ingredient.where(name: 'roma tomato').first_or_create!),
-      RecipeIngredient.new(quantity: 2, unit: 'tbsp', ingredient: Ingredient.where(name: 'vegetable oil').first_or_create!),
-      RecipeIngredient.new(quantity: 0.25, unit: 'cup', ingredient: Ingredient.where(name: 'fresh cilantro').first_or_create!),
+      ri('toor dal', quantity: 1, unit: 'cup'),
+      ri('water', quantity: 3, unit: 'cups'),
+      ri('turmeric', quantity: 0.5, unit: 'tsp', descriptor: 'ground'),
+      ri('mustard seeds', quantity: 1, unit: 'tsp'),
+      ri('cumin seeds', quantity: 1, unit: 'tsp'),
+      ri('red chiles', quantity: 2, unit: 'whole', descriptor: 'dried'),
+      ri('curry leaves', quantity: 8, unit: 'leaves'),
+      ri('yellow onion', quantity: 1, unit: 'medium'),
+      ri('garlic', quantity: 3, unit: 'cloves'),
+      ri('ginger', quantity: 1, unit: 'tbsp', descriptor: 'fresh'),
+      ri('roma tomato', quantity: 1, unit: 'medium'),
+      ri('vegetable oil', quantity: 2, unit: 'tbsp'),
+      ri('cilantro', quantity: 0.25, unit: 'cup', descriptor: 'fresh'),
     ]
   )
   attach_seed_image(recipe, 'dal_tadka.jpg', caption: 'Dal tadka with tempered spices')
@@ -418,13 +403,13 @@ Mix mayonnaise and crema together. While corn is still hot, brush generously wit
 Roll corn in crumbled cotija cheese, then dust with chili powder. Sprinkle with fresh cilantro and serve immediately with lime wedges.',
     user: admin,
     recipe_ingredients: [
-      RecipeIngredient.new(quantity: 4, unit: 'ears', ingredient: Ingredient.where(name: 'corn on the cob').first_or_create!),
-      RecipeIngredient.new(quantity: 0.25, unit: 'cup', ingredient: Ingredient.where(name: 'mayonnaise').first_or_create!),
-      RecipeIngredient.new(quantity: 0.25, unit: 'cup', ingredient: Ingredient.where(name: 'Mexican crema').first_or_create!),
-      RecipeIngredient.new(quantity: 0.5, unit: 'cup', ingredient: Ingredient.where(name: 'cotija cheese').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tsp', ingredient: Ingredient.where(name: 'chili powder').first_or_create!),
-      RecipeIngredient.new(quantity: 2, unit: 'tbsp', ingredient: Ingredient.where(name: 'lime juice').first_or_create!),
-      RecipeIngredient.new(quantity: 2, unit: 'tbsp', ingredient: Ingredient.where(name: 'fresh cilantro').first_or_create!),
+      ri('corn on the cob', quantity: 4, unit: 'ears'),
+      ri('mayonnaise', quantity: 0.25, unit: 'cup'),
+      ri('mexican crema', quantity: 0.25, unit: 'cup'),
+      ri('cotija cheese', quantity: 0.5, unit: 'cup'),
+      ri('chili powder', quantity: 1, unit: 'tsp'),
+      ri('lime juice', quantity: 2, unit: 'tbsp'),
+      ri('cilantro', quantity: 2, unit: 'tbsp', descriptor: 'fresh'),
     ]
   )
   attach_seed_image(recipe, 'elote.jpg', caption: 'Grilled Mexican street corn')
@@ -448,16 +433,16 @@ Pour in vodka carefully and cook until reduced by half, about 2 minutes. Add cru
 Reduce heat to low and stir in heavy cream. Add the drained pasta and toss, adding pasta water as needed. Finish with Parmigiano-Reggiano and fresh basil.',
     user: admin,
     recipe_ingredients: [
-      RecipeIngredient.new(quantity: 1, unit: 'lb', ingredient: Ingredient.where(name: 'penne').first_or_create!),
-      RecipeIngredient.new(quantity: 2, unit: 'tbsp', ingredient: Ingredient.where(name: 'olive oil').first_or_create!),
-      RecipeIngredient.new(quantity: 3, unit: 'cloves', ingredient: Ingredient.where(name: 'Garlic').first_or_create!),
-      RecipeIngredient.new(quantity: 0.5, unit: 'tsp', ingredient: Ingredient.where(name: 'red pepper flakes').first_or_create!),
-      RecipeIngredient.new(quantity: 3, unit: 'tbsp', ingredient: Ingredient.where(name: 'tomato paste').first_or_create!),
-      RecipeIngredient.new(quantity: 0.5, unit: 'cup', ingredient: Ingredient.where(name: 'vodka').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: '14 oz can', ingredient: Ingredient.where(name: 'Crushed tomatoes').first_or_create!),
-      RecipeIngredient.new(quantity: 0.75, unit: 'cup', ingredient: Ingredient.where(name: 'heavy cream').first_or_create!),
-      RecipeIngredient.new(quantity: 0.5, unit: 'cup', ingredient: Ingredient.where(name: 'Parmigiano-Reggiano').first_or_create!),
-      RecipeIngredient.new(quantity: 0.25, unit: 'cup', ingredient: Ingredient.where(name: 'Chopped basil').first_or_create!),
+      ri('penne', quantity: 1, unit: 'lb'),
+      ri('olive oil', quantity: 2, unit: 'tbsp'),
+      ri('garlic', quantity: 3, unit: 'cloves'),
+      ri('red pepper flakes', quantity: 0.5, unit: 'tsp'),
+      ri('tomato paste', quantity: 3, unit: 'tbsp'),
+      ri('vodka', quantity: 0.5, unit: 'cup'),
+      ri('tomatoes', quantity: 1, unit: '14 oz can', descriptor: 'crushed'),
+      ri('heavy cream', quantity: 0.75, unit: 'cup'),
+      ri('parmigiano-reggiano', quantity: 0.5, unit: 'cup'),
+      ri('basil', quantity: 0.25, unit: 'cup', descriptor: 'fresh'),
     ]
   )
   attach_seed_image(recipe, 'penne_alla_vodka.jpg', caption: 'Penne alla vodka with basil')
@@ -482,16 +467,16 @@ In the pot, heat oil and fry the chile sauce for 5 minutes. Add reserved broth, 
 Serve in bowls with shredded cabbage, sliced radishes, diced onion, dried oregano, lime wedges, and tostadas.',
     user: admin,
     recipe_ingredients: [
-      RecipeIngredient.new(quantity: 2, unit: 'lbs', ingredient: Ingredient.where(name: 'pork shoulder').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: '29 oz can', ingredient: Ingredient.where(name: 'hominy').first_or_create!),
-      RecipeIngredient.new(quantity: 5, unit: 'whole', ingredient: Ingredient.where(name: 'dried guajillo chiles').first_or_create!),
-      RecipeIngredient.new(quantity: 2, unit: 'whole', ingredient: Ingredient.where(name: 'dried ancho chiles').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'large', ingredient: Ingredient.where(name: 'white onion').first_or_create!),
-      RecipeIngredient.new(quantity: 5, unit: 'cloves', ingredient: Ingredient.where(name: 'Garlic').first_or_create!),
-      RecipeIngredient.new(quantity: 2, unit: 'whole', ingredient: Ingredient.where(name: 'bay leaves').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tsp', ingredient: Ingredient.where(name: 'ground cumin').first_or_create!),
-      RecipeIngredient.new(quantity: 1, unit: 'tbsp', ingredient: Ingredient.where(name: 'dried oregano').first_or_create!),
-      RecipeIngredient.new(quantity: 2, unit: 'tbsp', ingredient: Ingredient.where(name: 'vegetable oil').first_or_create!),
+      ri('pork shoulder', quantity: 2, unit: 'lbs'),
+      ri('hominy', quantity: 1, unit: '29 oz can'),
+      ri('guajillo chiles', quantity: 5, unit: 'whole', descriptor: 'dried'),
+      ri('ancho chiles', quantity: 2, unit: 'whole', descriptor: 'dried'),
+      ri('white onion', quantity: 1, unit: 'large'),
+      ri('garlic', quantity: 5, unit: 'cloves'),
+      ri('bay leaves', quantity: 2, unit: 'whole'),
+      ri('cumin', quantity: 1, unit: 'tsp', descriptor: 'ground'),
+      ri('oregano', quantity: 1, unit: 'tbsp', descriptor: 'dried'),
+      ri('vegetable oil', quantity: 2, unit: 'tbsp'),
     ]
   )
   attach_seed_image(recipe, 'pozole_rojo.jpg', caption: 'Pozole rojo with garnishes')

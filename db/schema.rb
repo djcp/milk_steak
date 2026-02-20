@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_18_193729) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_20_163302) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -69,6 +69,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_18_193729) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string "section", limit: 255
+    t.string "descriptor", limit: 255
     t.index ["ingredient_id"], name: "index_recipe_ingredients_on_ingredient_id"
     t.index ["position"], name: "index_recipe_ingredients_on_position"
     t.index ["recipe_id", "ingredient_id"], name: "index_recipe_ingredients_on_recipe_id_and_ingredient_id"

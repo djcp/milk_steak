@@ -8,7 +8,7 @@ describe RecipeAiExtractor do
       {
         'name' => 'Chocolate Cake',
         'directions' => '1. Mix ingredients',
-        'ingredients' => [{ 'quantity' => '2', 'unit' => 'cups', 'name' => 'flour' }]
+        'ingredients' => [{ 'quantity' => '2', 'unit' => 'cups', 'name' => 'flour', 'descriptor' => 'sifted' }]
       }
     end
 

@@ -14,6 +14,9 @@ class RecipeIngredient < ApplicationRecord
   validates :section,
     allow_blank: true,
     length: { maximum: 255 }
+  validates :descriptor,
+    allow_blank: true,
+    length: { maximum: 255 }
 
   accepts_nested_attributes_for :ingredient,
     reject_if: ->(attr) { attr['name'].blank? }

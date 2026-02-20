@@ -13,7 +13,7 @@ class RecipeAiExtractor
       "servings": null or integer,
       "serving_units": "e.g. servings, cups, pieces" or null,
       "ingredients": [
-        {"quantity": "1", "unit": "cup", "name": "flour", "section": "Crust"}
+        {"quantity": "1", "unit": "cup", "name": "flour", "descriptor": "sifted", "section": "Crust"}
       ],
       "cooking_methods": ["bake", "saute"],
       "cultural_influences": ["italian"],
@@ -22,8 +22,8 @@ class RecipeAiExtractor
     }
 
     Ingredients:
-    - Names should be lowercase and simple, strip specific brand names
-    - Include preparation modifiers in the name (e.g. "onion, diced", "garlic, minced") rather than the unit
+    - Names should be the plain canonical ingredient only, lowercase (e.g. "onion", "garlic", "tomato"). No prep verbs, no quality adjectives, strip specific brand names
+    - Put any preparation method or quality descriptor in the separate `descriptor` field, lowercase (e.g. "diced", "minced", "ripe", "fresh", "crushed"). Omit the field (or use null) if there is no descriptor
     - Quantity should be a string that can include fractions like "1/2". Use "to taste" when no specific amount is given
     - Unit should be a standard measurement (cup, tbsp, tsp, oz, lb, etc.) or empty string when not applicable (e.g. "2" "large" "eggs")
     - Every ingredient in the list MUST be referenced in the directions. If the source text mentions an ingredient only in the directions but not in the ingredient list, add it to the ingredients list

@@ -47,7 +47,7 @@
           Section
         </div>
         <div class="recipe_recipe_ingredients_ingredient_name header font-semibold text-xs text-ink-muted uppercase tracking-wide">
-          Name
+          Name &amp; Descriptor
         </div>
       </div>
       <%= f.simple_fields_for :recipe_ingredients do |ri_form| %>
@@ -63,12 +63,23 @@
             'data-target' => autocompletes_ingredient_units_path
           }%>
           <%= ri_form.input :section, label: false %>
-          <%= ri_form.simple_fields_for :ingredient do |i_form| %>
-            <%= i_form.input :name, required: false, label: false, input_html: {
-              class: 'autocomplete_single',
-              'data-target' => autocompletes_ingredient_names_path
-            }%>
-          <% end %>
+          <div class="flex gap-1 items-start">
+            <div class="flex-auto min-w-0">
+              <%= ri_form.simple_fields_for :ingredient do |i_form| %>
+                <%= i_form.input :name, required: false, label: false, input_html: {
+                  class: 'autocomplete_single',
+                  placeholder: 'tomato, cheddar cheese, bread flour . . .',
+                  'data-target' => autocompletes_ingredient_names_path
+                }%>
+              <% end %>
+            </div>
+            <div class="w-2/5 shrink-0">
+              <%= ri_form.input :descriptor, label: false, input_html: {
+                placeholder: 'shredded, ripe, minced . . .',
+                class: 'text-ink-muted'
+              } %>
+            </div>
+          </div>
         </div>
       <% end %>
     </div>
