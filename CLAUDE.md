@@ -43,6 +43,9 @@ bin/dev
 # Database setup
 bin/setup
 rails db:prepare
+
+# Update README screenshots (requires bin/dev to be running)
+bin/screenshots
 ```
 
 ## Project Structure

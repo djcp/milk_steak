@@ -1,0 +1,84 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Captures README screenshots using headless Chrome.
+#
+# Requires the dev server to be running (bin/dev) and an admin user to exist
+# in the development database.
+#
+# Usage:
+#   bin/screenshots
+#   bin/screenshots admin@example.com        # specify admin email
+#   bin/screenshots admin@example.com s3cr3t # specify email + password
+
+require 'selenium-webdriver'
+
+HOST     = 'http://localhost:3000'
+OUT_DIR  = File.expand_path('../docs/screenshots', __dir__)
+PASSWORD = 'asdASD123!@#'
+
+admin_email    = ARGV[0]
+admin_password = ARGV[1] || PASSWORD
+
+# Resolve admin email from the database if not provided
+unless admin_email
+  require_relative '../config/environment'
+  admin_email = User.find_by(admin: true)&.email
+  abort 'No admin user found in the development database.' unless admin_email
+  puts "Using admin: #{admin_email}"
+end
+
+# Check the server is up
+require 'net/http'
+begin
+  Net::HTTP.get(URI("#{HOST}/up"))
+rescue Errno::ECONNREFUSED
+  abort "Dev server is not running. Start it with: bin/dev"
+end
+
+options = Selenium::WebDriver::Chrome::Options.new
+options.add_argument('--headless')
+options.add_argument('--no-sandbox')
+options.add_argument('--disable-dev-shm-usage')
+options.add_argument('--window-size=1400,900')
+options.add_argument('--force-device-scale-factor=2')
+
+driver = Selenium::WebDriver.for(:chrome, options: options)
+driver.manage.window.resize_to(1400, 900)
+
+FileUtils.mkdir_p(OUT_DIR)
+
+begin
+  # 1. Homepage (no login required)
+  driver.get(HOST)
+  sleep 1
+  driver.save_screenshot(File.join(OUT_DIR, 'homepage.png'))
+  puts 'homepage.png saved'
+
+  # Log in as admin for authenticated screenshots
+  driver.get("#{HOST}/users/sign_in")
+  sleep 0.5
+  driver.find_element(id: 'user_email').send_keys(admin_email)
+  driver.find_element(id: 'user_password').send_keys(admin_password)
+  driver.find_element(css: 'form#new_user input[type="submit"]').click
+  sleep 1
+
+  # 2. Recipe detail — first recipe on the homepage (shows control panel)
+  driver.get(HOST)
+  sleep 0.5
+  driver.find_element(css: 'div.recipe a').click
+  sleep 1
+  driver.save_screenshot(File.join(OUT_DIR, 'recipe_detail.png'))
+  puts 'recipe_detail.png saved'
+
+  # 3. Admin recipe index (shows restyled status bar)
+  driver.get("#{HOST}/admin/recipes")
+  sleep 1
+  driver.save_screenshot(File.join(OUT_DIR, 'admin_index.png'))
+  puts 'admin_index.png saved'
+
+ensure
+  driver.quit
+end
+
+puts "Done. Screenshots saved to #{OUT_DIR}"
