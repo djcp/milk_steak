@@ -163,3 +163,5 @@ Development uses `dotenv-rails` with a `.env` file (see `.sample.env` for requir
 ## CI
 
 GitHub Actions on push to master and all PRs. Runs PostgreSQL 16 service container, Ruby 4.0.1, and `bundle exec rake`.
+
+Always run `bin/rake` locally and confirm it passes before creating a PR.
