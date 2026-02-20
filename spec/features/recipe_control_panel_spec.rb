@@ -43,15 +43,22 @@ feature 'Recipe control panel' do
 
   context 'when logged in as an admin' do
     let(:admin) { create(:user, :admin) }
+
     before { log_in_as(admin) }
 
-    scenario 'shows the status badge and edit/delete for a published recipe' do
+    scenario 'shows the status badge, edit, and delete for a published recipe' do
       visit recipe_path(recipe)
       within('#control-panel') do
         expect(page).to have_text('Status:')
         expect(page).to have_text('published')
         expect(page).to have_link('Edit', href: edit_recipe_path(recipe))
         expect(page).to have_button('Delete')
+      end
+    end
+
+    scenario 'does not show workflow buttons for a published recipe' do
+      visit recipe_path(recipe)
+      within('#control-panel') do
         expect(page).not_to have_button('Publish')
         expect(page).not_to have_button('Reject')
         expect(page).not_to have_button('Reprocess')

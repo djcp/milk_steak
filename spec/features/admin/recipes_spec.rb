@@ -2,6 +2,7 @@ require 'spec_helper'
 
 feature 'Admin recipe management' do
   let(:admin) { create(:user, :admin) }
+
   before { log_in_as(admin) }
 
   scenario 'status bar includes a link to create a magic recipe' do
