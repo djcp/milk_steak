@@ -1,5 +1,5 @@
 <li class="<%= dom_class(recipe_ingredient) %> py-1.5 border-b border-cream-dark/50 last:border-b-0" id="<%= dom_id(recipe_ingredient) %>">
   <span class="quantity font-semibold text-ink"><%= recipe_ingredient.quantity.to_s.sub(/\.0$/,'') %></span>
   <span class="unit text-ink-muted"><%= recipe_ingredient.unit %></span>
-  <span class="name text-ink-light"><%= link_to(recipe_ingredient.name, root_path(filter_set: { ingredients: recipe_ingredient.name }), class: 'text-ink-light no-underline hover:text-terra hover:underline') %></span>
+  <span class="name text-ink-light"><%= link_to(recipe_ingredient.name, root_path(filter_set: { ingredients: recipe_ingredient.name }), class: 'text-ink-light no-underline hover:text-terra hover:underline') %><% if recipe_ingredient.descriptor.present? %><span class="text-ink-muted">, <%= recipe_ingredient.descriptor %></span><% end %></span>
 </li>
