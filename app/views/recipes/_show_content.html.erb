@@ -53,7 +53,11 @@
   </div>
 
   <div class="images col-span-full mt-4 grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-4" id="image_list">
-    <%= render recipe.images.order('id') %>
+    <% if recipe.images.none? %>
+      <%= image_tag 'recipe_placeholder.svg', class: 'w-full rounded-lg object-cover aspect-4/3', alt: '' %>
+    <% else %>
+      <%= render recipe.images.order('id') %>
+    <% end %>
   </div>
 
 </article>

@@ -3,7 +3,7 @@
     <%= render 'homepage_image', image: recipe.featured_image %>
   <% else %>
     <div class="image not_featured">
-      <%= link_to(image_tag('no_photo.png', class: 'w-full aspect-4/3 object-cover'), url_to_recipe(recipe)) %>
+      <%= link_to(image_tag('recipe_placeholder.svg', class: 'w-full aspect-4/3 object-cover'), url_to_recipe(recipe)) %>
     </div>
   <% end %>
   <h2 class="text-center text-sm px-3 py-3"><%= link_to(recipe.name, url_to_recipe(recipe), class: 'text-ink no-underline hover:text-terra hover:underline') %></h2>
