@@ -1,5 +1,12 @@
 module Features
   module SessionHelpers
+    def log_in_as(user)
+      visit new_user_session_path
+      fill_in 'Email', with: user.email
+      fill_in 'Password', with: user.password
+      within('form#new_user') { click_on 'Log in' }
+    end
+
     def user_logs_in
       # TODO - create user in the main thread
       # This right here is why the build fails on integration specs sometimes

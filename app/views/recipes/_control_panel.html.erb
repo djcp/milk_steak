@@ -1,0 +1,32 @@
+<% is_owner = current_user == recipe.user %>
+<% is_admin = current_user&.admin? %>
+<% if is_owner || is_admin %>
+  <div id="control-panel" class="col-span-full flex flex-wrap items-center gap-x-4 gap-y-2 bg-white rounded-xl px-5 py-3 shadow-sm border border-cream-dark text-sm">
+    <% if is_admin %>
+      <div class="flex items-center gap-2">
+        <span class="text-ink-light font-medium">Status:</span>
+        <%= render 'admin/recipes/status_badge', status: recipe.status %>
+      </div>
+      <span class="text-cream-dark">|</span>
+    <% end %>
+
+    <%= link_to 'Edit', edit_recipe_path(recipe), class: 'text-terra hover:underline no-underline font-medium' %>
+
+    <% if is_admin %>
+      <% if recipe.publishable? %>
+        <%= button_to 'Publish', publish_admin_recipe_path(recipe), method: :patch,
+            class: 'text-green-700 hover:underline bg-transparent border-0 cursor-pointer p-0 font-medium' %>
+        <%= button_to 'Reject', reject_admin_recipe_path(recipe), method: :patch,
+            class: 'text-red-700 hover:underline bg-transparent border-0 cursor-pointer p-0 font-medium' %>
+      <% end %>
+      <% if recipe.reprocessable? %>
+        <%= button_to 'Reprocess', reprocess_admin_recipe_path(recipe), method: :patch,
+            class: 'text-orange-700 hover:underline bg-transparent border-0 cursor-pointer p-0 font-medium' %>
+      <% end %>
+      <span class="text-cream-dark">|</span>
+      <%= button_to 'Delete', admin_recipe_path(recipe), method: :delete,
+          class: 'text-red-700 hover:underline bg-transparent border-0 cursor-pointer p-0 font-medium',
+          data: { confirm: 'Are you sure you want to delete this recipe?' } %>
+    <% end %>
+  </div>
+<% end %>

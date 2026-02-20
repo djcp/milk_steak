@@ -1,10 +1,9 @@
 <article class="<%= dom_class(recipe) %> grid grid-cols-1 md:grid-cols-[2fr_1fr] lg:grid-cols-[3fr_1fr] gap-6 p-4 md:p-6" id="<%= dom_id(recipe) %>">
+  <%= render 'control_panel', recipe: recipe %>
+
   <div class="recipe-narrative">
     <h1 class="col-span-full text-3xl md:text-4xl mb-4 text-ink">
       <%= recipe.name %>
-      <% if current_user == recipe.user %>
-        <%= link_to('edit', edit_recipe_path(recipe), class: 'text-base align-super text-terra hover:underline') %>
-      <% end %>
     </h1>
 
     <% if recipe.description? %>
