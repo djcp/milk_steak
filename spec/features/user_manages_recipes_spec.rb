@@ -34,7 +34,7 @@ feature 'User manages recipes', js: true do
 
     click_on 'Test recipe'
 
-    click_on 'edit'
+    click_on 'Edit'
 
     recipe_on_page.fill_in_main_form_with(
       'Name' => 'Updated Test recipe'

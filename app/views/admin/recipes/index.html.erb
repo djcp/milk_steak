@@ -1,15 +1,22 @@
 <div class="max-w-6xl mx-auto p-4 md:p-6">
-  <div class="flex items-center justify-between mb-6">
-    <h1 class="text-3xl text-ink">Admin: Recipes</h1>
-    <%= link_to 'New Magic Recipe', new_admin_magic_recipe_path, class: 'bg-terra text-white px-4 py-2 rounded-lg no-underline hover:bg-terra-dark transition-colors' %>
-  </div>
+  <h1 class="text-3xl text-ink mb-6">Admin: Recipes</h1>
 
-  <div class="flex flex-wrap gap-2 mb-6">
+  <div class="flex items-center gap-x-3 overflow-x-auto bg-white rounded-xl px-5 py-3 shadow-sm border border-cream-dark text-sm mb-6">
+    <% all_active = params[:status].blank? %>
     <%= link_to "All (#{@status_counts.values.sum})", admin_recipes_path,
-        class: "px-3 py-1.5 rounded-full text-sm no-underline #{params[:status].blank? ? 'bg-terra text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" %>
+        class: ['font-medium no-underline px-2 py-0.5 rounded-md',
+                all_active ? 'text-terra bg-terra-faint' : 'text-ink-light hover:text-terra hover:underline'].join(' ') %>
     <% Recipe::STATUSES.each do |s| %>
-      <%= link_to "#{s.titleize} (#{@status_counts[s] || 0})", admin_recipes_path(status: s),
-          class: "px-3 py-1.5 rounded-full text-sm no-underline #{params[:status] == s ? 'bg-terra text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" %>
+      <% active = params[:status] == s %>
+      <% count = @status_counts[s] || 0 %>
+      <%= link_to "#{s.titleize} (#{count})", admin_recipes_path(status: s),
+          class: ['font-medium no-underline px-2 py-0.5 rounded-md',
+                  active ? 'text-terra bg-terra-faint' : 'text-ink-light hover:text-terra hover:underline',
+                  count.zero? && !active ? 'opacity-50' : nil].compact.join(' ') %>
+    <% end %>
+    <span class="text-cream-dark">|</span>
+    <%= link_to new_admin_magic_recipe_path, class: 'inline-flex items-center gap-1.5 bg-terra-dark text-white px-3 py-1 rounded-lg no-underline hover:bg-terra font-medium transition-colors' do %>
+      <span class="text-[1.5em] leading-none">🪄</span> New Magic Recipe
     <% end %>
   </div>
 
