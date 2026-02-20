@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <!-- Background: ~30% lighter than original cream (#fdf6ee mixed 30% toward white) -->
+  <rect width="400" height="300" fill="#fef9f3"/>
+
+  <!-- Subtle plate shadow -->
+  <ellipse cx="200" cy="180" rx="112" ry="13" fill="#c9ad94" opacity="0.2"/>
+
+  <!-- Plate -->
+  <circle cx="200" cy="150" r="112" fill="#faf3ea" stroke="#e4d0ba" stroke-width="2.5"/>
+
+  <!-- Plate inner decorative ring -->
+  <circle cx="200" cy="150" r="89" fill="none" stroke="#ecdcca" stroke-width="1.5"/>
+
+  <!--
+    Fork: translate to (111,158), rotate -14° for visual interest.
+    Local coords: 0,0 at centre of fork.
+    Tines: four rects, 3.5px wide, 2.5px gaps — proportioned like a table fork.
+    Shoulder: filled path that widens as tines merge into the shank.
+    Handle: rounded rect below.
+  -->
+  <g transform="translate(111,158) rotate(-14)" opacity="0.42" fill="#8b7355">
+    <!-- Tines (top to bottom: y=-47 to y=-12, 50% shorter than original 70px) -->
+    <rect x="-11"  y="-47" width="3.5" height="35" rx="1.8"/>
+    <rect x="-5"   y="-47" width="3.5" height="35" rx="1.8"/>
+    <rect x="1.5"  y="-47" width="3.5" height="35" rx="1.8"/>
+    <rect x="7.5"  y="-47" width="3.5" height="35" rx="1.8"/>
+    <!-- Shoulder: tines converge into the wider shank -->
+    <path d="M-12,-13 Q-13,0 -7,8 L7,8 Q13,0 14,-13 Z"/>
+    <!-- Handle -->
+    <rect x="-6.5" y="8" width="13" height="86" rx="6.5"/>
+  </g>
+
+  <!--
+    Knife: translate to (289,175), rotate +10°.
+    Blade cutting edge faces LEFT (toward plate interior).
+    Left side of blade bows out — this is the cutting/sharpened edge.
+    Right side is the spine (gently curved, thicker back).
+    Tip sits at upper-centre, where spine and edge meet.
+  -->
+  <g transform="translate(289,175) rotate(10)" opacity="0.38" fill="#8b7355">
+    <!-- Handle -->
+    <rect x="-5.5" y="22" width="11" height="82" rx="5.5"/>
+    <!-- Bolster (slightly wider, separates handle from blade) -->
+    <rect x="-7"   y="11" width="14" height="13" rx="2"/>
+    <!-- Blade: cutting edge on LEFT bows toward plate; spine on RIGHT is more upright -->
+    <path d="M-5.5,11 C-9,-5 -9,-45 1,-74 C2,-72 6,-45 6,11 Z"/>
+  </g>
+</svg>
