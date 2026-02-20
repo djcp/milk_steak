@@ -69,7 +69,7 @@ class RecipesController < ApplicationController
       :course_list,
       :dietary_restriction_list,
       { images_attributes: [:_destroy, :id, :caption, :featured, :image],
-        recipe_ingredients_attributes: [:_destroy, :id, :quantity, :unit, :section,
+        recipe_ingredients_attributes: [:_destroy, :id, :quantity, :unit, :section, :descriptor,
                                         { ingredient_attributes: [:id, :name] }] }
     ]
     permitted.push(:source_url, :source_text, :status) if current_user&.admin?

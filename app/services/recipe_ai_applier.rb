@@ -39,6 +39,7 @@ class RecipeAiApplier
         quantity: ing_data['quantity'],
         unit: ing_data['unit'],
         section: ing_data['section'],
+        descriptor: ing_data['descriptor'],
         position: index + 1
       )
     end
