@@ -72,6 +72,10 @@ rails db:prepare
 ### Jobs
 - `app/jobs/magic_recipe_job.rb` — Background job for AI recipe processing pipeline
 
+### Key Views / Partials
+- `app/views/recipes/_control_panel.html.erb` — Role-aware action bar on recipe#show; renders for the recipe owner (Edit) or any admin (status badge + Edit + Publish/Reject/Reprocess/Delete gated on workflow state)
+- `app/views/admin/recipes/index.html.erb` — Admin recipe list with unified status-filter/action bar
+
 ### Config
 - `config/initializers/content_security_policy.rb` — CSP enforced
 - `config/initializers/acts_as_taggable_on.rb` — Force lowercase tags, auto-cleanup unused tags
@@ -101,6 +105,7 @@ Recipes have a `status` field with values: `draft`, `processing`, `processing_fa
 - Factories in `spec/support/factories.rb`, validated via `spec/models/factories_spec.rb`
 - Shared examples in `spec/support/shared_examples/`
 - Feature specs use Selenium headless Chrome (`js: true`); default driver is `rack_test`
+- `user_logs_in` (in `Features::SessionHelpers`) creates and logs in a regular user; `log_in_as(user)` logs in a pre-created user (use this when you need to supply your own user, e.g. an admin)
 - WebMock disables external network calls in tests
 - `strict_loading_by_default` enabled in test environment to catch N+1 queries
 - Prefer `build_stubbed` over `create` in unit/controller specs for performance
