@@ -13,9 +13,10 @@ describe RecipeAiExtractor do
 
   describe '.extract' do
     context 'with the anthropic adapter (default)' do
-      before { ENV['ANTHROPIC_API_KEY'] = 'test-key' }
-
-      after { ENV.delete('RECIPE_AI_ADAPTER') }
+      before do
+        ENV['ANTHROPIC_API_KEY'] = 'test-key'
+        ENV.delete('RECIPE_AI_ADAPTER')
+      end
 
       it 'sends text to Claude API and returns parsed JSON' do
         mock_content = double('content', text: json_response.to_json)
@@ -68,6 +69,7 @@ describe RecipeAiExtractor do
         ENV['OLLAMA_URL'] = 'http://localhost:11434'
         ENV['OLLAMA_MODEL'] = 'llama3.2'
         example.run
+      ensure
         ENV.delete('RECIPE_AI_ADAPTER')
         ENV.delete('OLLAMA_URL')
         ENV.delete('OLLAMA_MODEL')

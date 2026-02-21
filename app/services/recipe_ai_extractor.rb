@@ -117,7 +117,7 @@ class RecipeAiExtractor
       req = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json')
       req.body = body
 
-      res = Net::HTTP.start(uri.hostname, uri.port) { |http| http.request(req) }
+      res = Net::HTTP.start(uri.hostname, uri.port, read_timeout: 600, open_timeout: 60) { |http| http.request(req) }
       raise "Ollama request failed (#{res.code}): #{res.body}" unless res.is_a?(Net::HTTPSuccess)
 
       JSON.parse(res.body).dig('message', 'content')
