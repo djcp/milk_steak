@@ -62,26 +62,75 @@ class RecipeAiExtractor
   end
 
   def extract
-    client = Anthropic::Client.new(api_key: ENV.fetch('ANTHROPIC_API_KEY'))
-
-    response = client.messages.create(
-      model: 'claude-sonnet-4-5-20250929',
-      max_tokens: 4096,
-      system: SYSTEM_PROMPT,
-      messages: [
-        { role: 'user', content: "Extract the recipe from this text:\n\n#{@text}" }
-      ]
-    )
-
-    json_text = response.content.first.text
+    json_text = adapter.complete(SYSTEM_PROMPT, user_message)
     JSON.parse(normalize_json(json_text))
   end
 
   private
 
+  def user_message
+    "Extract the recipe from this text:\n\n#{@text}"
+  end
+
+  def adapter
+    case ENV.fetch('RECIPE_AI_ADAPTER', 'anthropic')
+    when 'ollama' then OllamaAdapter.new
+    else               AnthropicAdapter.new
+    end
+  end
+
   def normalize_json(text)
     text = text.strip
     text = text.gsub(/\A```(?:json)?\s*\n?/, '').gsub(/\n?\s*```\z/, '')
     text.strip
+  end
+
+  # ---------------------------------------------------------------------------
+
+  class AnthropicAdapter
+    def complete(system_prompt, user_message)
+      client = Anthropic::Client.new(api_key: ENV.fetch('ANTHROPIC_API_KEY'))
+      response = client.messages.create(
+        model: 'claude-sonnet-4-5-20250929',
+        max_tokens: 4096,
+        system: system_prompt,
+        messages: [{ role: 'user', content: user_message }]
+      )
+      response.content.first.text
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+
+  class OllamaAdapter
+    def complete(system_prompt, user_message)
+      uri = URI("#{base_url}/api/chat")
+      body = {
+        model: model,
+        stream: false,
+        messages: [
+          { role: 'system', content: system_prompt },
+          { role: 'user',   content: user_message }
+        ]
+      }.to_json
+
+      req = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json')
+      req.body = body
+
+      res = Net::HTTP.start(uri.hostname, uri.port) { |http| http.request(req) }
+      raise "Ollama request failed (#{res.code}): #{res.body}" unless res.is_a?(Net::HTTPSuccess)
+
+      JSON.parse(res.body).dig('message', 'content')
+    end
+
+    private
+
+    def base_url
+      ENV.fetch('OLLAMA_URL', 'http://localhost:11434')
+    end
+
+    def model
+      ENV.fetch('OLLAMA_MODEL', 'llama3.2')
+    end
   end
 end
