@@ -6,15 +6,15 @@ class MagicRecipeJob < ApplicationJob
   def perform(recipe_id)
     recipe = Recipe.find(recipe_id)
     recipe.strict_loading!(false)
-    recipe.update!(status: 'processing', ai_error: nil)
+    recipe.update!(status: 'processing')
 
     text = extract_text(recipe)
-    data = RecipeAiExtractor.extract(text)
+    data = RecipeAiExtractor.extract(text, recipe: recipe)
     RecipeAiApplier.apply(recipe, data)
 
     recipe.update!(status: 'review')
-  rescue StandardError => e
-    recipe&.update_columns(status: 'processing_failed', ai_error: e.message) # rubocop:disable Rails/SkipsModelValidations
+  rescue StandardError
+    recipe&.update_columns(status: 'processing_failed') # rubocop:disable Rails/SkipsModelValidations
     raise
   end
 
@@ -22,7 +22,7 @@ class MagicRecipeJob < ApplicationJob
 
   def extract_text(recipe)
     if recipe.source_url.present?
-      RecipeTextExtractor.from_url(recipe.source_url)
+      RecipeTextExtractor.from_url(recipe.source_url, recipe: recipe)
     else
       recipe.source_text
     end

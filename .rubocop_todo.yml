@@ -180,10 +180,12 @@ Lint/UselessAssignment:
 Metrics/AbcSize:
   Max: 29
 
-# Offense count: 1
+# Offense count: 2
 # Configuration parameters: CountComments, CountAsOne.
 Metrics/ClassLength:
   Max: 103
+  Exclude:
+    - 'app/services/recipe_text_extractor.rb'
 
 # Offense count: 5
 # Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.
@@ -242,6 +244,7 @@ RSpec/ContextWording:
     - 'spec/models/recipe_ingredient_spec.rb'
     - 'spec/models/recipe_spec.rb'
     - 'spec/models/user_spec.rb'
+    - 'spec/services/recipe_ai_extractor_spec.rb'
     - 'spec/support/shared_examples/autcomplete_controllers.rb'
 
 # Offense count: 9
@@ -335,6 +338,7 @@ RSpec/MultipleExpectations:
     - 'spec/features/user_filters_recipes_spec.rb'
     - 'spec/features/user_manages_recipes_spec.rb'
     - 'spec/services/recipe_ai_applier_spec.rb'
+    - 'spec/services/recipe_ai_extractor_spec.rb'
 
 # Offense count: 3
 # Configuration parameters: EnforcedStyle, IgnoreSharedExamples.
@@ -387,6 +391,7 @@ Rails/HasManyOrHasOneDependent:
 # Offense count: 7
 Rails/I18nLocaleTexts:
   Exclude:
+    - 'app/controllers/admin/ai_classifier_runs_controller.rb'
     - 'app/controllers/admin/base_controller.rb'
     - 'app/controllers/admin/magic_recipes_controller.rb'
     - 'app/controllers/admin/recipes_controller.rb'

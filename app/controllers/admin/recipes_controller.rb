@@ -7,6 +7,8 @@ module Admin
       @recipes = Recipe.includes(:user, :images).recent
       @recipes = @recipes.by_status(params[:status]) if params[:status].present?
       @recipes = @recipes.paginate(page: params[:page], per_page: 20)
+      recipe_ids  = @recipes.map(&:id)
+      @run_counts = AiClassifierRun.where(recipe_id: recipe_ids).group(:recipe_id).count
     end
 
     def publish

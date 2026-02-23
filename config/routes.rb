@@ -10,6 +10,9 @@ Rails.application.routes.draw do
       end
     end
     resources :magic_recipes, only: [:new, :create]
+    resources :ai_classifier_runs, only: [:index, :show] do
+      member { post :rerun }
+    end
   end
 
   resources :recipes, only: [:index, :new, :create, :show, :edit, :update] do

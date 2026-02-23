@@ -25,7 +25,7 @@ describe MagicRecipeJob do
   end
 
   before do
-    allow(RecipeTextExtractor).to receive(:from_url).and_return('some recipe text')
+    allow(RecipeTextExtractor).to receive(:from_url).with(anything, recipe: anything).and_return('some recipe text')
     allow(RecipeAiExtractor).to receive(:extract).and_return(ai_result)
   end
 
@@ -58,12 +58,12 @@ describe MagicRecipeJob do
     let(:recipe) { create(:recipe, :draft, source_text: 'Some text', directions: nil) }
 
     it 'uses source_text directly' do
-      allow(RecipeAiExtractor).to receive(:extract).with('Some text').and_return(ai_result)
+      allow(RecipeAiExtractor).to receive(:extract).with('Some text', recipe: recipe).and_return(ai_result)
 
       described_class.perform_now(recipe.id)
 
       expect(RecipeTextExtractor).not_to have_received(:from_url)
-      expect(RecipeAiExtractor).to have_received(:extract).with('Some text')
+      expect(RecipeAiExtractor).to have_received(:extract).with('Some text', recipe: recipe)
     end
   end
 
@@ -72,12 +72,11 @@ describe MagicRecipeJob do
       allow(RecipeAiExtractor).to receive(:extract).and_raise(StandardError, 'API error')
     end
 
-    it 'sets ai_error and status to processing_failed' do
+    it 'sets status to processing_failed' do
       described_class.perform_now(recipe.id)
 
       recipe.reload
       expect(recipe.status).to eq('processing_failed')
-      expect(recipe.ai_error).to eq('API error')
     end
   end
 end

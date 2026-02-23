@@ -101,4 +101,47 @@ describe RecipeAiApplier do
       expect(recipe.ingredients.map(&:name)).to eq(['milk'])
     end
   end
+
+  describe 'AiClassifierRun recording' do
+    it 'creates a run with service_class RecipeAiApplier' do
+      expect { described_class.apply(recipe, data) }.to change(AiClassifierRun, :count).by(1)
+
+      run = AiClassifierRun.includes(:recipe).last
+      expect(run.service_class).to eq('RecipeAiApplier')
+      expect(run.recipe).to eq(recipe)
+      expect(run.adapter).to be_nil
+      expect(run.ai_model).to be_nil
+    end
+
+    it 'records a successful run with completed_at' do
+      described_class.apply(recipe, data)
+
+      run = AiClassifierRun.last
+      expect(run.success).to be true
+      expect(run.started_at).not_to be_nil
+      expect(run.completed_at).not_to be_nil
+    end
+
+    it 'stores data as JSON in user_prompt' do
+      described_class.apply(recipe, data)
+
+      run = AiClassifierRun.last
+      expect(run.user_prompt).to eq(data.to_json)
+    end
+
+    context 'when save! raises' do
+      it 'records a failed run and re-raises' do
+        # Stub save! on this specific recipe instance (avoids any_instance interfering with
+        # FactoryBot's lazy let evaluation which also calls save! on Recipe).
+        allow(recipe).to receive(:save!).and_raise(RuntimeError, 'save failed')
+
+        expect { described_class.apply(recipe, data) }.to raise_error(RuntimeError, 'save failed')
+
+        run = AiClassifierRun.last
+        expect(run.success).to be false
+        expect(run.error_class).to eq('RuntimeError')
+        expect(run.completed_at).not_to be_nil
+      end
+    end
+  end
 end
