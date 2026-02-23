@@ -1,7 +1,8 @@
 # Read about factories at https://github.com/thoughtbot/factory_bot
 
 FactoryBot.define do
-  sequence(:email) { |n| "email#{n}@example.com" }
+  sequence(:email)    { |n| "email#{n}@example.com" }
+  sequence(:username) { |n| "user#{n}" }
   sequence(:name) { |n| "Recipe name #{n}" }
   sequence(:ingredient_name) { |n| "Ingredient name #{n}" }
   sequence(:cooking_method) { |n| "method #{n}" }
@@ -23,11 +24,17 @@ FactoryBot.define do
 
   factory :user do
     email
+    username
     password { 'asdASD123!@#' }
     confirmed_at { Time.current }
+    approved { true }
 
     trait :admin do
       admin { true }
+    end
+
+    trait :pending do
+      approved { false }
     end
   end
 

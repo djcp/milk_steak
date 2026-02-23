@@ -2,6 +2,9 @@ Rails.application.routes.draw do
   devise_for :users
 
   namespace :admin do
+    resources :users, only: [:index] do
+      member { patch :approve }
+    end
     resources :recipes, only: [:index, :destroy] do
       member do
         patch :publish

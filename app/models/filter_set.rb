@@ -44,7 +44,7 @@ class FilterSet
     end
     if author.present?
       recipes = recipes.joins(:user).where(
-        'users.email like ?', author.downcase
+        'users.username ilike ?', "%#{author}%"
       )
     end
     recipes.distinct

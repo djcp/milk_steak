@@ -1,0 +1,61 @@
+<div class="max-w-6xl mx-auto p-4 md:p-6">
+  <h1 class="text-3xl text-ink mb-6">Admin: Users</h1>
+
+  <% if @pending_users.any? %>
+    <section class="mb-8">
+      <h2 class="text-xl font-semibold text-ink mb-3">Pending Approval (<%= @pending_users.size %>)</h2>
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50 text-left">
+            <tr>
+              <th class="px-4 py-3 font-semibold text-ink">Username</th>
+              <th class="px-4 py-3 font-semibold text-ink">Email</th>
+              <th class="px-4 py-3 font-semibold text-ink">Signed up</th>
+              <th class="px-4 py-3 font-semibold text-ink">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <% @pending_users.each do |user| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 font-medium text-ink"><%= user.username %></td>
+                <td class="px-4 py-3 text-ink-light"><%= user.email %></td>
+                <td class="px-4 py-3 text-ink-light"><%= l(user.created_at, format: :default) %></td>
+                <td class="px-4 py-3">
+                  <%= button_to 'Approve', approve_admin_user_path(user), method: :patch,
+                        class: 'text-green-700 hover:underline bg-transparent border-0 cursor-pointer p-0 text-sm' %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  <% else %>
+    <p class="text-ink-light mb-8">No users pending approval.</p>
+  <% end %>
+
+  <section>
+    <h2 class="text-xl font-semibold text-ink mb-3">Approved Users (<%= @approved_users.size %>)</h2>
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="bg-gray-50 text-left">
+          <tr>
+            <th class="px-4 py-3 font-semibold text-ink">Username</th>
+            <th class="px-4 py-3 font-semibold text-ink">Email</th>
+            <th class="px-4 py-3 font-semibold text-ink">Signed up</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <% @approved_users.each do |user| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-3 font-medium text-ink"><%= user.username %></td>
+              <td class="px-4 py-3 text-ink-light"><%= user.email %></td>
+              <td class="px-4 py-3 text-ink-light"><%= l(user.created_at, format: :default) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+<% content_for(:page_title, 'Admin: Users') %>

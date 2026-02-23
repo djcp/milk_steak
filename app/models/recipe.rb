@@ -47,7 +47,8 @@ class Recipe < ApplicationRecord
   validates :source_url, format: { with: /\Ahttps?:\/\/\S+\z/i, message: 'must be an HTTP(S) URL' },
                          allow_blank: true
 
-  delegate :email, to: :user, prefix: true, allow_nil: true
+  delegate :email,    to: :user, prefix: true, allow_nil: true
+  delegate :username, to: :user, prefix: true, allow_nil: true
 
   def name_for_url
     name.downcase.gsub(/[^a-z\d ]/i,'').gsub(' ','_')

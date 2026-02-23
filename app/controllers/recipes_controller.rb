@@ -1,7 +1,8 @@
 class RecipesController < ApplicationController
   before_action :redirect_to_login,
-    if: -> {current_user.blank?},
+    if: -> { current_user.blank? },
     only: [:new, :update, :create, :edit]
+  before_action :require_approved!, only: [:new, :create, :edit, :update]
   before_action :find_recipe, only: [:show, :edit, :update]
   before_action :can_update, only: [:edit, :update]
   before_action :ensure_visible, only: [:show]
