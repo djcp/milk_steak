@@ -25,8 +25,8 @@ class RecipeAiExtractor
     - Names should be the plain canonical ingredient only, lowercase (e.g. "onion", "garlic", "tomato"). No prep verbs, no quality adjectives, strip specific brand names
     - Put any preparation method or quality descriptor in the separate `descriptor` field, lowercase (e.g. "diced", "minced", "ripe", "fresh", "crushed"). Omit the field (or use null) if there is no descriptor
     - When the recipe offers a choice between two ingredients (e.g., "1 lb beef or turkey", "chicken or tofu"), list the primary (first-mentioned) option as the ingredient name. Encode the alternative in the descriptor field using the format "or [alternative]" (e.g., name: "beef", descriptor: "or turkey"). Do not create a separate ingredient entry for the alternative.
-    - Quantity should be a string that can include fractions like "1/2". Use "to taste" when no specific amount is given
-    - Unit should be a standard measurement (cup, tbsp, tsp, oz, lb, etc.) or empty string when not applicable (e.g. "2" "large" "eggs")
+    - Quantity is a string — MAXIMUM 10 CHARACTERS. Use only the numeric amount: digits, fractions, and hyphens for ranges (e.g. "1", "1/2", "1 1/2", "2-3", "1/4-1/2"). Never include the unit or any words in this field. Use "to taste" (8 chars) when no specific amount is given. For open-ended amounts use "as needed" (9 chars).
+    - Unit should be a standard abbreviation (cup, tbsp, tsp, oz, lb, g, kg, ml, L, etc.) or empty string when not applicable (e.g. "2" "large" "eggs"). Keep units concise.
     - Every ingredient in the list MUST be referenced in the directions. If the source text mentions an ingredient only in the directions but not in the ingredient list, add it to the ingredients list
 
     Sections:
@@ -36,12 +36,12 @@ class RecipeAiExtractor
     - Only use sections when the recipe clearly organizes ingredients into groups
 
     Description:
-    - 1-2 sentences describing the dish itself — what it is and what makes it good
+    - 1-2 sentences describing the dish itself — what it is and what makes it good. Maximum 2000 characters.
     - Do NOT include personal stories, anecdotes, recipe origin stories, or blog filler
     - Do NOT include tips, variations, serving suggestions, or storage instructions
 
     Directions:
-    - Clear numbered steps — ONLY actionable cooking instructions
+    - Clear numbered steps — ONLY actionable cooking instructions. Maximum 8000 characters total.
     - Strip out completely: life stories, personal anecdotes, blog filler, ads, "notes" sections, after-the-fact variation suggestions ("you could also substitute...", "feel free to swap..."), storage/reheating tips, and serving suggestions — but preserve "X or Y" choices that are stated as part of the original recipe
     - When a step uses an ingredient that has an alternative (where the recipe says "X or Y"), name both options explicitly in that step (e.g., "Brown the beef (or turkey) over medium heat" rather than "Brown the meat")
     - Reference ingredients by the same name used in the ingredients list for consistency
