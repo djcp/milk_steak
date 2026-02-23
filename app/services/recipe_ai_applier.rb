@@ -9,21 +9,35 @@ class RecipeAiApplier
   end
 
   def apply
-    @recipe.strict_loading!(false)
-    @recipe.assign_attributes(
-      name: @data['name'] || @recipe.name,
-      description: @data['description'],
-      directions: @data['directions'],
-      preparation_time: @data['preparation_time'],
-      cooking_time: @data['cooking_time'],
-      servings: @data['servings'],
-      serving_units: @data['serving_units']
+    run = AiClassifierRun.create!(
+      service_class: 'RecipeAiApplier',
+      recipe: @recipe,
+      user_prompt: @data.to_json,
+      started_at: Time.current,
+      success: false
     )
 
-    apply_ingredients
-    apply_tags
+    begin
+      @recipe.strict_loading!(false)
+      @recipe.assign_attributes(
+        name: @data['name'] || @recipe.name,
+        description: @data['description'],
+        directions: @data['directions'],
+        preparation_time: @data['preparation_time'],
+        cooking_time: @data['cooking_time'],
+        servings: @data['servings'],
+        serving_units: @data['serving_units']
+      )
 
-    @recipe.save!
+      apply_ingredients
+      apply_tags
+
+      @recipe.save!
+      run.update!(success: true, completed_at: Time.current)
+    rescue StandardError => e
+      run.update!(success: false, error_class: e.class.name, error_message: e.message, completed_at: Time.current)
+      raise
+    end
   end
 
   private
