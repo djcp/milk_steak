@@ -26,7 +26,7 @@ gem 'will_paginate'
 gem 'redcarpet'
 gem 'aws-sdk-s3', require: false
 gem 'solid_queue'
-gem 'anthropic'
+gem 'ruby_llm'
 
 group :development do
   gem 'better_errors'
