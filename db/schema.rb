@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_20_163302) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_21_190000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,26 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_20_163302) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "ai_classifier_runs", force: :cascade do |t|
+    t.integer "recipe_id"
+    t.string "adapter"
+    t.string "ai_model"
+    t.text "system_prompt"
+    t.text "user_prompt"
+    t.text "raw_response"
+    t.boolean "success", default: false, null: false
+    t.string "error_class"
+    t.text "error_message"
+    t.datetime "started_at"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "service_class", null: false
+    t.index ["created_at"], name: "index_ai_classifier_runs_on_created_at"
+    t.index ["recipe_id"], name: "index_ai_classifier_runs_on_recipe_id"
+    t.index ["success"], name: "index_ai_classifier_runs_on_success"
   end
 
   create_table "images", force: :cascade do |t|
@@ -89,7 +109,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_20_163302) do
     t.string "description", limit: 2048
     t.string "source_url", limit: 2048
     t.text "source_text"
-    t.text "ai_error"
     t.string "status", default: "draft", null: false
     t.index ["status"], name: "index_recipes_on_status"
     t.index ["user_id"], name: "index_recipes_on_user_id"

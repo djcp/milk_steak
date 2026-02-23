@@ -50,7 +50,6 @@ FactoryBot.define do
     trait :processing_failed do
       status { 'processing_failed' }
       directions { nil }
-      ai_error { 'AI extraction failed' }
     end
 
     trait :review do
@@ -81,5 +80,37 @@ FactoryBot.define do
     recipe
     ingredient
     descriptor { nil }
+  end
+
+  factory :ai_classifier_run do
+    service_class { 'RecipeAiExtractor' }
+    adapter       { 'anthropic' }
+    ai_model      { 'claude-sonnet-4-5-20250929' }
+    success       { true }
+    started_at    { 5.seconds.ago }
+    completed_at  { Time.current }
+
+    trait :failed do
+      success       { false }
+      error_class   { 'RuntimeError' }
+      error_message { 'API error' }
+      raw_response  { nil }
+    end
+
+    trait :with_recipe do
+      recipe
+    end
+
+    trait :text_extractor do
+      service_class { 'RecipeTextExtractor' }
+      adapter       { nil }
+      ai_model      { nil }
+    end
+
+    trait :ai_applier do
+      service_class { 'RecipeAiApplier' }
+      adapter       { nil }
+      ai_model      { nil }
+    end
   end
 end
