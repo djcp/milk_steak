@@ -15,6 +15,7 @@
                   count.zero? && !active ? 'opacity-50' : nil].compact.join(' ') %>
     <% end %>
     <div class="ml-auto flex items-center gap-x-3">
+      <%= link_to 'Users', admin_users_path, class: 'text-ink-light hover:text-terra no-underline font-medium text-sm' %>
       <%= link_to 'AI Runs', admin_ai_classifier_runs_path, class: 'text-ink-light hover:text-terra no-underline font-medium text-sm' %>
       <%= link_to new_admin_magic_recipe_path, class: 'inline-flex items-center gap-1.5 bg-terra-dark text-white px-3 py-1 rounded-lg no-underline hover:bg-terra font-medium transition-colors' do %>
         <span class="text-[1.5em] leading-none">🪄</span> New Magic Recipe
@@ -43,7 +44,7 @@
                 <span class="text-xs text-purple-600">(magic)</span>
               <% end %>
             </td>
-            <td class="px-4 py-3 text-ink-light"><%= recipe.user_email %></td>
+            <td class="px-4 py-3 text-ink-light"><%= recipe.user_username %></td>
             <td class="px-4 py-3"><%= render 'status_badge', status: recipe.status %></td>
             <td class="px-4 py-3 text-ink-light">
               <%= link_to @run_counts[recipe.id] || 0,

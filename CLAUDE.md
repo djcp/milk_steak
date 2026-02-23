@@ -4,6 +4,8 @@
 
 MilkSteak is a recipe tracker Rails app. Users can create recipes with ingredients, images, directions, and tags (cooking methods, courses, cultural influences, dietary restrictions). Recipes are browsable with tag-based filtering and pagination. Admins can import recipes from URLs or pasted text via AI extraction (Anthropic Claude).
 
+New users sign up with an email and a unique public username; accounts require admin approval before they can sign in. Admins manage pending users via `/admin/users`.
+
 ## Tech Stack
 
 - **Ruby 4.0.1** / **Rails 8.0**
@@ -51,20 +53,24 @@ bin/screenshots
 ## Project Structure
 
 ### Models
-- `app/models/recipe.rb` — Core model with status workflow, tagging, nested attributes
+- `app/models/recipe.rb` — Core model with status workflow, tagging, nested attributes; delegates `email` and `username` to user (prefix: true)
 - `app/models/image.rb` — Active Storage attachment with type/size validation; variants: `:tiny` (32x32), `:thumb` (187x187), `:large` (800x600)
 - `app/models/ingredient.rb` — Ingredient names, linked to recipes via RecipeIngredient
-- `app/models/recipe_ingredient.rb` — Join model with quantity, unit, section; ordered via `acts_as_list` scoped by recipe and section
-- `app/models/user.rb` — Devise user with `admin?` flag
-- `app/models/filter_set.rb` — PORO (ActiveModel::Model) for compound recipe filtering (tags, name, ingredients, author)
+- `app/models/recipe_ingredient.rb` — Join model with quantity (max 10 chars), unit, descriptor, section; ordered via `acts_as_list` scoped by recipe and section
+- `app/models/user.rb` — Devise user with `username` (unique, 3–30 chars, letters/numbers/underscores), `admin` flag, and `approved` flag. Key methods: `approved?` (always true for admins), `active_for_authentication?` (gates sign-in for unapproved users), `inactive_message` (returns `:pending_approval` symbol for Devise i18n). Pending admins bypass the approval gate — the admin flag is checked first.
+- `app/models/ai_classifier_run.rb` — Persisted record of every AI pipeline call (RecipeTextExtractor, RecipeAiExtractor, RecipeAiApplier); stores adapter, model, system_prompt, user_prompt, raw_response, timing, success/failure
+- `app/models/filter_set.rb` — PORO (ActiveModel::Model) for compound recipe filtering (tags, name, ingredients, author); author filter uses `users.username ilike ?` (case-insensitive partial match)
 - `app/models/featured_image_chooser.rb` — PORO for selecting featured recipe images
 - `app/models/tag_finder.rb` — PORO for querying tags by context
 
 ### Controllers
-- `app/controllers/recipes_controller.rb` — Main CRUD with ownership-based authorization
+- `app/controllers/application_controller.rb` — `configure_permitted_parameters` permits `:username` on Devise sign_up; `require_approved!` signs out and redirects any authenticated user whose `approved?` returns false
+- `app/controllers/recipes_controller.rb` — Main CRUD with ownership-based authorization; `require_approved!` fires before new/create/edit/update
 - `app/controllers/admin/base_controller.rb` — Admin auth via `current_user&.admin?` before_action
 - `app/controllers/admin/recipes_controller.rb` — Admin recipe management (publish, reject, reprocess, destroy)
 - `app/controllers/admin/magic_recipes_controller.rb` — AI recipe import (new, create)
+- `app/controllers/admin/users_controller.rb` — User management: index lists pending and approved non-admin users; approve patches `approved: true`
+- `app/controllers/admin/ai_classifier_runs_controller.rb` — AI run history with filtering, pagination, and per-recipe grouping; rerun action re-enqueues MagicRecipeJob
 - `app/controllers/autocompletes/` — JSON endpoints for tags, ingredients, units, serving units
 
 ### Services
@@ -77,7 +83,11 @@ bin/screenshots
 
 ### Key Views / Partials
 - `app/views/recipes/_control_panel.html.erb` — Role-aware action bar on recipe#show; renders for the recipe owner (Edit) or any admin (status badge + Edit + Publish/Reject/Reprocess/Delete gated on workflow state)
-- `app/views/admin/recipes/index.html.erb` — Admin recipe list with unified status-filter/action bar
+- `app/views/recipes/_show_content.html.erb` — Recipe detail; author shown as `user_username` (not email), linked to author filter
+- `app/views/admin/recipes/index.html.erb` — Admin recipe list with unified status-filter/action bar; nav bar includes Users and AI Runs links
+- `app/views/admin/users/index.html.erb` — Pending and approved user lists with approve buttons
+- `app/views/admin/ai_classifier_runs/` — AI run index (grouped by recipe) and show (full prompt/response detail)
+- `app/views/devise/registrations/new.html.erb` — Custom registration form that includes the username field (Simple Form)
 
 ### Config
 - `config/initializers/content_security_policy.rb` — CSP enforced
@@ -88,8 +98,10 @@ bin/screenshots
 
 - `root` → `recipes#index`
 - `resources :recipes` — index, new, create, show, edit, update (no destroy for non-admin)
+- `admin/users` — index, plus member route: approve (patch)
 - `admin/recipes` — index, destroy, plus member routes: publish, reject, reprocess
 - `admin/magic_recipes` — new, create (AI import)
+- `admin/ai_classifier_runs` — index, show, plus member route: rerun (post)
 - `autocompletes/` — index-only resources for cooking_methods, cultural_influences, courses, dietary_restrictions, serving_units, ingredient_units, ingredient_names
 - `/up` — Rails 8 health check
 
@@ -113,6 +125,8 @@ Recipes have a `status` field with values: `draft`, `processing`, `processing_fa
 - `strict_loading_by_default` enabled in test environment to catch N+1 queries
 - Prefer `build_stubbed` over `create` in unit/controller specs for performance
 - When stubbing `find_recipe`, stub `Recipe.includes` (not `Recipe.find`) since the controller chains `.includes(...).find(id)`
+- User factory defaults: `approved: true`, auto-generated `username` (sequence `user1`, `user2`, …); use the `:pending` trait for `approved: false`; `:admin` trait sets `admin: true`
+- The `sign_in_user` controller helper mocks `current_user` directly — it bypasses Devise auth entirely, so `active_for_authentication?` is not exercised in controller specs
 
 ## Linting & Security
 
@@ -128,6 +142,7 @@ Recipes have a `status` field with values: `draft`, `processing`, `processing_fa
 - Recipes use `acts_as_taggable_on` with four tag contexts, all force-lowercased with auto-cleanup of unused tags
 - Nested attributes: Recipe accepts nested RecipeIngredients and Images
 - RecipeIngredients ordered via `acts_as_list`, scoped by recipe and section
+- `RecipeIngredient#quantity` is max 10 characters — AI prompts must enforce this; use digits/fractions/hyphens only (e.g. `"1 1/2"`, `"2-3"`, `"to taste"`)
 - Image uploads validated for type (JPEG, PNG, WebP, AVIF, HEIC/HEIF) and size (max 10MB)
 - Security headers in `config/application.rb`: X-Frame-Options, X-Content-Type-Options, X-XSS-Protection, Referrer-Policy, Permissions-Policy
 - CSP enforced via `content_security_policy.rb`
@@ -136,6 +151,8 @@ Recipes have a `status` field with values: `draft`, `processing`, `processing_fa
 - Use `Recipe.includes(...)` for eager loading associations (not `Preloader`)
 - Markdown rendered via Redcarpet with `safe_links_only` and `escape_html`
 - Tagging associations exempted from strict loading (gem uses lazy loading internally)
+- Devise approval pattern: override `active_for_authentication?` and `inactive_message` on User; the `:pending_approval` symbol maps to `devise.failure.pending_approval` in `config/locales/devise.en.yml`; admins bypass the gate via `approved?` short-circuiting on `admin?`
+- AI pipeline observability: every call to RecipeTextExtractor, RecipeAiExtractor, and RecipeAiApplier creates an `AiClassifierRun` record before the operation starts (`success: false`), then updates it on completion; viewable at `/admin/ai_classifier_runs`
 
 ## Environment Variables
 

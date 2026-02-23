@@ -11,6 +11,14 @@ en:
       default: '%a, %b %-d, %Y'
       date: '%b %-d, %Y'
       short: '%B %d'
+  activerecord:
+    errors:
+      models:
+        user:
+          attributes:
+            username:
+              format: 'can only contain letters, numbers, and underscores'
+
   ui:
     recipes:
       invalid_creation: We couldn't create that recipe. Please see below.
