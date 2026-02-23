@@ -8,14 +8,16 @@ MilkSteak is a recipe tracker web application built with love.
 
 - Create and edit recipes with ingredients, directions, images, and descriptions
 - Tag recipes across four facets: cooking methods, courses, cultural influences, and dietary restrictions
-- Browse and filter recipes by tags, name, ingredients, and author
+- Browse and filter recipes by tags, name, ingredients, and author username
 - Autocomplete for tags, ingredients, units, and serving units
 - AI-powered recipe import from URLs or pasted text (admin only, via Anthropic Claude)
 - Role-aware control panel on recipe pages: owners see Edit; admins see status badge and workflow actions (Publish, Reject, Reprocess, Delete)
 - Admin workflow for reviewing, publishing, and rejecting recipes
 - Image uploads with automatic variant generation (thumbnails, large)
 - Pagination and SEO-friendly recipe URLs
-- User authentication with Devise
+- User accounts with email confirmation (Devise); new users are pending until an admin approves them
+- Unique public username collected at signup; shown on recipes instead of email address
+- Admin user management: view pending and approved users, approve pending accounts
 
 ## Screenshots
 
@@ -116,7 +118,9 @@ See [docs/models.md](docs/models.md) for the full ER diagram.
 | Component | Description |
 |---|---|
 | `Recipe` | Core model with statuses: `draft`, `processing`, `processing_failed`, `review`, `published`, `rejected` |
-| `FilterSet` | PORO for compound recipe filtering (tags, name, ingredients, author) |
+| `User` | Devise user with username, admin flag, and approval workflow |
+| `FilterSet` | PORO for compound recipe filtering (tags, name, ingredients, author username) |
+| `AiClassifierRun` | Persisted record of every AI pipeline invocation with timing, prompts, and outcome |
 | `MagicRecipeJob` | Background job that extracts recipe data from URLs/text via Claude |
 | `RecipeAiExtractor` | Sends source content to Anthropic API and parses structured response |
 | `RecipeAiApplier` | Applies AI-extracted data to a Recipe (ingredients, tags, directions) |
