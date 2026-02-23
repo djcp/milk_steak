@@ -10,15 +10,37 @@ class RecipeTextExtractor
                     'prepTime' => 'Prep Time', 'cookTime' => 'Cook Time',
                     'recipeYield' => 'Yield' }.freeze
 
-  def self.from_url(url)
-    new(url).extract
+  def self.from_url(url, recipe: nil)
+    new(url, recipe: recipe).extract
   end
 
-  def initialize(url)
-    @url = url
+  def initialize(url, recipe: nil)
+    @url    = url
+    @recipe = recipe
   end
 
   def extract
+    run = AiClassifierRun.create!(
+      service_class: 'RecipeTextExtractor',
+      recipe: @recipe,
+      user_prompt: @url,
+      started_at: Time.current,
+      success: false
+    )
+
+    begin
+      result = fetch_and_parse
+      run.update!(raw_response: result, success: true, completed_at: Time.current)
+      result
+    rescue StandardError => e
+      run.update!(success: false, error_class: e.class.name, error_message: e.message, completed_at: Time.current)
+      raise
+    end
+  end
+
+  private
+
+  def fetch_and_parse
     uri = URI.parse(@url)
     response = Net::HTTP.get_response(uri)
 
@@ -33,8 +55,6 @@ class RecipeTextExtractor
     end
     clean_text(text.to_s)
   end
-
-  private
 
   def strip_non_content!(doc)
     doc.css('script, style, nav, footer, header, iframe, .ad, .ads, .advertisement, [role="navigation"]').remove

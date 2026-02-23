@@ -73,4 +73,51 @@ describe RecipeTextExtractor do
       end.to raise_error(/HTTP 404/)
     end
   end
+
+  describe 'AiClassifierRun recording' do
+    let(:html) { '<html><body><article><p>Some recipe text</p></article></body></html>' }
+
+    before { stub_request(:get, url).to_return(status: 200, body: html) }
+
+    it 'creates a run with service_class RecipeTextExtractor' do
+      expect { described_class.from_url(url) }.to change(AiClassifierRun, :count).by(1)
+
+      run = AiClassifierRun.last
+      expect(run.service_class).to eq('RecipeTextExtractor')
+      expect(run.user_prompt).to eq(url)
+      expect(run.adapter).to be_nil
+      expect(run.ai_model).to be_nil
+    end
+
+    it 'records a successful run with raw_response and completed_at' do
+      described_class.from_url(url)
+
+      run = AiClassifierRun.last
+      expect(run.success).to be true
+      expect(run.raw_response).to include('Some recipe text')
+      expect(run.started_at).not_to be_nil
+      expect(run.completed_at).not_to be_nil
+    end
+
+    it 'associates the run with the provided recipe' do
+      recipe = create(:recipe)
+      described_class.from_url(url, recipe: recipe)
+
+      expect(AiClassifierRun.includes(:recipe).last.recipe).to eq(recipe)
+    end
+
+    context 'when an HTTP error occurs' do
+      before { stub_request(:get, url).to_return(status: 404) }
+
+      it 'records a failed run and re-raises' do
+        expect { described_class.from_url(url) }.to raise_error(/HTTP 404/)
+
+        run = AiClassifierRun.last
+        expect(run.success).to be false
+        expect(run.error_class).to be_present
+        expect(run.error_message).to include('404')
+        expect(run.completed_at).not_to be_nil
+      end
+    end
+  end
 end
