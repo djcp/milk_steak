@@ -14,10 +14,12 @@
                   active ? 'text-terra bg-terra-faint' : 'text-ink-light hover:text-terra hover:underline',
                   count.zero? && !active ? 'opacity-50' : nil].compact.join(' ') %>
     <% end %>
-    <span class="text-cream-dark">|</span>
-    <%= link_to new_admin_magic_recipe_path, class: 'inline-flex items-center gap-1.5 bg-terra-dark text-white px-3 py-1 rounded-lg no-underline hover:bg-terra font-medium transition-colors' do %>
-      <span class="text-[1.5em] leading-none">🪄</span> New Magic Recipe
-    <% end %>
+    <div class="ml-auto flex items-center gap-x-3">
+      <%= link_to 'AI Runs', admin_ai_classifier_runs_path, class: 'text-ink-light hover:text-terra no-underline font-medium text-sm' %>
+      <%= link_to new_admin_magic_recipe_path, class: 'inline-flex items-center gap-1.5 bg-terra-dark text-white px-3 py-1 rounded-lg no-underline hover:bg-terra font-medium transition-colors' do %>
+        <span class="text-[1.5em] leading-none">🪄</span> New Magic Recipe
+      <% end %>
+    </div>
   </div>
 
   <div class="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -27,6 +29,7 @@
           <th class="px-4 py-3 font-semibold text-ink">Name</th>
           <th class="px-4 py-3 font-semibold text-ink">Author</th>
           <th class="px-4 py-3 font-semibold text-ink">Status</th>
+          <th class="px-4 py-3 font-semibold text-ink">Runs</th>
           <th class="px-4 py-3 font-semibold text-ink">Created</th>
           <th class="px-4 py-3 font-semibold text-ink">Actions</th>
         </tr>
@@ -42,6 +45,11 @@
             </td>
             <td class="px-4 py-3 text-ink-light"><%= recipe.user_email %></td>
             <td class="px-4 py-3"><%= render 'status_badge', status: recipe.status %></td>
+            <td class="px-4 py-3 text-ink-light">
+              <%= link_to @run_counts[recipe.id] || 0,
+                  admin_ai_classifier_runs_path(recipe_id: recipe.id),
+                  class: 'text-terra hover:underline' %>
+            </td>
             <td class="px-4 py-3 text-ink-light"><%= l(recipe.created_at, format: :default) %></td>
             <td class="px-4 py-3 space-x-2">
               <% if recipe.publishable? %>
