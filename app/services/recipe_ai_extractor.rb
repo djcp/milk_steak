@@ -24,6 +24,7 @@ class RecipeAiExtractor
     Ingredients:
     - Names should be the plain canonical ingredient only, lowercase (e.g. "onion", "garlic", "tomato"). No prep verbs, no quality adjectives, strip specific brand names
     - Put any preparation method or quality descriptor in the separate `descriptor` field, lowercase (e.g. "diced", "minced", "ripe", "fresh", "crushed"). Omit the field (or use null) if there is no descriptor
+    - When the recipe offers a choice between two ingredients (e.g., "1 lb beef or turkey", "chicken or tofu"), list the primary (first-mentioned) option as the ingredient name. Encode the alternative in the descriptor field using the format "or [alternative]" (e.g., name: "beef", descriptor: "or turkey"). Do not create a separate ingredient entry for the alternative.
     - Quantity should be a string that can include fractions like "1/2". Use "to taste" when no specific amount is given
     - Unit should be a standard measurement (cup, tbsp, tsp, oz, lb, etc.) or empty string when not applicable (e.g. "2" "large" "eggs")
     - Every ingredient in the list MUST be referenced in the directions. If the source text mentions an ingredient only in the directions but not in the ingredient list, add it to the ingredients list
@@ -41,7 +42,8 @@ class RecipeAiExtractor
 
     Directions:
     - Clear numbered steps — ONLY actionable cooking instructions
-    - Strip out completely: life stories, personal anecdotes, blog filler, ads, "notes" sections, variation suggestions ("you could also use..."), storage/reheating tips, and serving suggestions
+    - Strip out completely: life stories, personal anecdotes, blog filler, ads, "notes" sections, after-the-fact variation suggestions ("you could also substitute...", "feel free to swap..."), storage/reheating tips, and serving suggestions — but preserve "X or Y" choices that are stated as part of the original recipe
+    - When a step uses an ingredient that has an alternative (where the recipe says "X or Y"), name both options explicitly in that step (e.g., "Brown the beef (or turkey) over medium heat" rather than "Brown the meat")
     - Reference ingredients by the same name used in the ingredients list for consistency
     - When sections exist, the directions should reference which component is being prepared (e.g. "For the crust, combine...")
     - Combine trivially small sub-steps into single steps where it makes sense
