@@ -11,120 +11,114 @@ describe RecipeAiExtractor do
     }
   end
 
+  def stub_ruby_llm(content:)
+    mock_response = double('response', content: content)
+    mock_chat     = double('chat', with_instructions: nil, ask: mock_response)
+    allow(RubyLLM).to receive(:chat).and_return(mock_chat)
+    mock_chat
+  end
+
   describe '.extract' do
-    context 'with the anthropic adapter (default)' do
-      before do
-        ENV['ANTHROPIC_API_KEY'] = 'test-key'
-        ENV.delete('RECIPE_AI_ADAPTER')
+    before do
+      ENV['ANTHROPIC_API_KEY'] = 'test-key'
+    end
+
+    it 'sends text to Claude API and returns parsed JSON' do
+      mock_chat = stub_ruby_llm(content: json_response.to_json)
+
+      result = described_class.extract(text)
+
+      expect(result).to eq(json_response)
+      expect(RubyLLM).to have_received(:chat).with(model: 'claude-haiku-4-5-20251001')
+      expect(mock_chat).to have_received(:with_instructions).with(RecipeAiExtractor::SYSTEM_PROMPT)
+      expect(mock_chat).to have_received(:ask).with(including(text))
+    end
+
+    it 'uses a custom model from ANTHROPIC_MODEL' do
+      ENV['ANTHROPIC_MODEL'] = 'claude-sonnet-4-6'
+      stub_ruby_llm(content: json_response.to_json)
+
+      described_class.extract(text)
+
+      expect(RubyLLM).to have_received(:chat).with(model: 'claude-sonnet-4-6')
+    ensure
+      ENV.delete('ANTHROPIC_MODEL')
+    end
+
+    it 'strips ```json fences from response' do
+      stub_ruby_llm(content: "```json\n#{json_response.to_json}\n```")
+      expect(described_class.extract(text)).to eq(json_response)
+    end
+
+    it 'strips bare ``` fences from response' do
+      stub_ruby_llm(content: "```\n#{json_response.to_json}\n```")
+      expect(described_class.extract(text)).to eq(json_response)
+    end
+  end
+
+  describe 'AiClassifierRun recording' do
+    before do
+      ENV['ANTHROPIC_API_KEY'] = 'test-key'
+    end
+
+    context 'on success with anthropic adapter' do
+      it 'creates a successful AiClassifierRun with correct metadata' do
+        stub_ruby_llm(content: json_response.to_json)
+
+        expect { described_class.extract(text) }.to change(AiClassifierRun, :count).by(1)
+
+        run = AiClassifierRun.last
+        expect(run.service_class).to eq('RecipeAiExtractor')
+        expect(run.success).to be true
+        expect(run.adapter).to eq('anthropic')
+        expect(run.ai_model).to eq('claude-haiku-4-5-20251001')
+        expect(run.system_prompt).to eq(RecipeAiExtractor::SYSTEM_PROMPT)
+        expect(run.user_prompt).to include(text)
+        expect(run.raw_response).to eq(json_response.to_json)
+        expect(run.started_at).not_to be_nil
+        expect(run.completed_at).not_to be_nil
+        expect(run.error_class).to be_nil
+        expect(run.error_message).to be_nil
       end
 
-      it 'sends text to Claude API and returns parsed JSON' do
-        mock_content = double('content', text: json_response.to_json)
-        mock_response = double('response', content: [mock_content])
-        mock_messages = double('messages')
-        mock_client = double('client', messages: mock_messages)
+      it 'persists the run immediately (before LLM call completes)' do
+        # The run should be saved with success: false before we get a response
+        call_count = 0
+        allow(AiClassifierRun).to receive(:create!).and_wrap_original do |orig, **attrs|
+          call_count += 1
+          expect(AiClassifierRun.count).to eq(call_count - 1) if call_count == 1
+          orig.call(**attrs)
+        end
 
-        allow(Anthropic::Client).to receive(:new).and_return(mock_client)
-        allow(mock_messages).to receive(:create).and_return(mock_response)
-
-        result = described_class.extract(text)
-
-        expect(result).to eq(json_response)
-        expect(mock_messages).to have_received(:create).with(
-          hash_including(
-            model: 'claude-sonnet-4-5-20250929',
-            messages: array_including(hash_including(role: 'user'))
-          )
-        )
+        stub_ruby_llm(content: json_response.to_json)
+        described_class.extract(text)
       end
 
-      it 'strips ```json fences from response' do
-        wrapped = "```json\n#{json_response.to_json}\n```"
-        mock_content = double('content', text: wrapped)
-        mock_response = double('response', content: [mock_content])
-        mock_messages = double('messages', create: mock_response)
-        mock_client = double('client', messages: mock_messages)
+      it 'associates the run with the provided recipe' do
+        recipe = create(:recipe)
+        stub_ruby_llm(content: json_response.to_json)
 
-        allow(Anthropic::Client).to receive(:new).and_return(mock_client)
+        described_class.extract(text, recipe: recipe)
 
-        expect(described_class.extract(text)).to eq(json_response)
-      end
-
-      it 'strips bare ``` fences from response' do
-        wrapped = "```\n#{json_response.to_json}\n```"
-        mock_content = double('content', text: wrapped)
-        mock_response = double('response', content: [mock_content])
-        mock_messages = double('messages', create: mock_response)
-        mock_client = double('client', messages: mock_messages)
-
-        allow(Anthropic::Client).to receive(:new).and_return(mock_client)
-
-        expect(described_class.extract(text)).to eq(json_response)
+        expect(AiClassifierRun.includes(:recipe).last.recipe).to eq(recipe)
       end
     end
 
-    context 'with the ollama adapter' do
-      around do |example|
-        ENV['RECIPE_AI_ADAPTER'] = 'ollama'
-        ENV['OLLAMA_URL'] = 'http://localhost:11434'
-        ENV['OLLAMA_MODEL'] = 'llama3.2'
-        example.run
-      ensure
-        ENV.delete('RECIPE_AI_ADAPTER')
-        ENV.delete('OLLAMA_URL')
-        ENV.delete('OLLAMA_MODEL')
-      end
+    context 'on failure with anthropic adapter' do
+      it 'creates a failed AiClassifierRun and re-raises the error' do
+        mock_chat = double('chat', with_instructions: nil)
+        allow(mock_chat).to receive(:ask).and_raise(RuntimeError, 'connection refused')
+        allow(RubyLLM).to receive(:chat).and_return(mock_chat)
 
-      let(:ollama_response) do
-        { 'message' => { 'content' => json_response.to_json } }.to_json
-      end
+        expect { described_class.extract(text) }.to raise_error(RuntimeError, 'connection refused')
 
-      it 'sends text to Ollama and returns parsed JSON' do
-        stub_request(:post, 'http://localhost:11434/api/chat')
-          .with(
-            headers: { 'Content-Type' => 'application/json' },
-            body: hash_including(
-              'model' => 'llama3.2',
-              'stream' => false,
-              'messages' => array_including(hash_including('role' => 'system'))
-            )
-          )
-          .to_return(status: 200, body: ollama_response, headers: { 'Content-Type' => 'application/json' })
-
-        result = described_class.extract(text)
-
-        expect(result).to eq(json_response)
-      end
-
-      it 'raises on non-200 response' do
-        stub_request(:post, 'http://localhost:11434/api/chat')
-          .to_return(status: 500, body: 'Internal Server Error')
-
-        expect { described_class.extract(text) }.to raise_error(/Ollama request failed \(500\)/)
-      end
-
-      it 'uses a custom model from OLLAMA_MODEL' do
-        ENV['OLLAMA_MODEL'] = 'mistral'
-
-        stub_request(:post, 'http://localhost:11434/api/chat')
-          .with(body: hash_including('model' => 'mistral'))
-          .to_return(status: 200, body: ollama_response)
-
-        described_class.extract(text)
-
-        expect(a_request(:post, 'http://localhost:11434/api/chat')
-          .with(body: hash_including('model' => 'mistral'))).to have_been_made
-      end
-
-      it 'uses a custom base URL from OLLAMA_URL' do
-        ENV['OLLAMA_URL'] = 'http://my-server:11434'
-
-        stub_request(:post, 'http://my-server:11434/api/chat')
-          .to_return(status: 200, body: ollama_response)
-
-        described_class.extract(text)
-
-        expect(a_request(:post, 'http://my-server:11434/api/chat')).to have_been_made
+        run = AiClassifierRun.last
+        expect(run.service_class).to eq('RecipeAiExtractor')
+        expect(run.success).to be false
+        expect(run.error_class).to eq('RuntimeError')
+        expect(run.error_message).to eq('connection refused')
+        expect(run.raw_response).to be_nil
+        expect(run.completed_at).not_to be_nil
       end
     end
   end

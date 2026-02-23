@@ -53,30 +53,45 @@ class RecipeAiExtractor
     Return ONLY valid JSON, no JSON markdown code fences, no explanation.
   PROMPT
 
-  def self.extract(text)
-    new(text).extract
+  def self.extract(text, recipe: nil)
+    new(text, recipe: recipe).extract
   end
 
-  def initialize(text)
-    @text = text
+  def initialize(text, recipe: nil)
+    @text   = text
+    @recipe = recipe
   end
 
   def extract
-    json_text = adapter.complete(SYSTEM_PROMPT, user_message)
-    JSON.parse(normalize_json(json_text))
+    run = AiClassifierRun.create!(
+      service_class: 'RecipeAiExtractor',
+      recipe: @recipe,
+      adapter: current_adapter.adapter_name,
+      ai_model: current_adapter.ai_model,
+      system_prompt: SYSTEM_PROMPT,
+      user_prompt: user_message,
+      started_at: Time.current,
+      success: false
+    )
+
+    begin
+      raw = current_adapter.complete(SYSTEM_PROMPT, user_message)
+      run.update!(raw_response: raw, success: true, completed_at: Time.current)
+      JSON.parse(normalize_json(raw))
+    rescue StandardError => e
+      run.update!(success: false, error_class: e.class.name, error_message: e.message, completed_at: Time.current)
+      raise
+    end
   end
 
   private
 
   def user_message
-    "Extract the recipe from this text:\n\n#{@text}"
+    @user_message ||= "Extract the recipe from this text:\n\n#{@text}"
   end
 
-  def adapter
-    case ENV.fetch('RECIPE_AI_ADAPTER', 'anthropic')
-    when 'ollama' then OllamaAdapter.new
-    else               AnthropicAdapter.new
-    end
+  def current_adapter
+    @current_adapter ||= AnthropicAdapter.new
   end
 
   def normalize_json(text)
@@ -88,49 +103,15 @@ class RecipeAiExtractor
   # ---------------------------------------------------------------------------
 
   class AnthropicAdapter
+    DEFAULT_MODEL = 'claude-haiku-4-5-20251001'.freeze
+
+    def adapter_name = 'anthropic'
+    def ai_model     = ENV.fetch('ANTHROPIC_MODEL', DEFAULT_MODEL)
+
     def complete(system_prompt, user_message)
-      client = Anthropic::Client.new(api_key: ENV.fetch('ANTHROPIC_API_KEY'))
-      response = client.messages.create(
-        model: 'claude-sonnet-4-5-20250929',
-        max_tokens: 4096,
-        system: system_prompt,
-        messages: [{ role: 'user', content: user_message }]
-      )
-      response.content.first.text
-    end
-  end
-
-  # ---------------------------------------------------------------------------
-
-  class OllamaAdapter
-    def complete(system_prompt, user_message)
-      uri = URI("#{base_url}/api/chat")
-      body = {
-        model: model,
-        stream: false,
-        messages: [
-          { role: 'system', content: system_prompt },
-          { role: 'user',   content: user_message }
-        ]
-      }.to_json
-
-      req = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json')
-      req.body = body
-
-      res = Net::HTTP.start(uri.hostname, uri.port, read_timeout: 600, open_timeout: 60) { |http| http.request(req) }
-      raise "Ollama request failed (#{res.code}): #{res.body}" unless res.is_a?(Net::HTTPSuccess)
-
-      JSON.parse(res.body).dig('message', 'content')
-    end
-
-    private
-
-    def base_url
-      ENV.fetch('OLLAMA_URL', 'http://localhost:11434')
-    end
-
-    def model
-      ENV.fetch('OLLAMA_MODEL', 'llama3.2')
+      chat = RubyLLM.chat(model: ai_model)
+      chat.with_instructions(system_prompt)
+      chat.ask(user_message).content
     end
   end
 end

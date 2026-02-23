@@ -145,6 +145,7 @@ Development uses `dotenv-rails` with a `.env` file (see `.sample.env` for requir
 |---|---|---|
 | `SECRET_KEY_BASE` | All | Rails secret key (generate with `bundle exec rake secret`) |
 | `ANTHROPIC_API_KEY` | All | AI recipe import |
+| `ANTHROPIC_MODEL` | All | Claude model for extraction (default: `claude-haiku-4-5-20251001`) |
 | `DEFAULT_SENDER` | All | Devise mailer from address |
 | `APP_NAME` | All | Display name in layout (default: "Recipes") |
 | `HOST` | Dev/Prod | Mailer URL host (default: `localhost:3000`) |
