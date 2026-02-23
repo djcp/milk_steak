@@ -1,0 +1,106 @@
+<div class="max-w-6xl mx-auto p-4 md:p-6">
+  <div class="flex items-center justify-between mb-6">
+    <% if @filtered_recipe %>
+      <div>
+        <h1 class="text-3xl text-ink">AI Runs: <%= @filtered_recipe.name %></h1>
+        <%= link_to '← All recipes', admin_ai_classifier_runs_path, class: 'text-terra hover:underline no-underline text-sm' %>
+      </div>
+    <% else %>
+      <h1 class="text-3xl text-ink">Admin: AI Classifier Runs</h1>
+    <% end %>
+  </div>
+
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-xl shadow-sm border border-cream-dark px-5 py-4 text-center">
+      <div class="text-2xl font-bold text-ink"><%= @total_count %></div>
+      <div class="text-sm text-ink-light mt-1">Total Runs</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-cream-dark px-5 py-4 text-center">
+      <div class="text-2xl font-bold text-green-700"><%= @success_count %></div>
+      <div class="text-sm text-ink-light mt-1">Successes</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-cream-dark px-5 py-4 text-center">
+      <div class="text-2xl font-bold text-red-700"><%= @failure_count %></div>
+      <div class="text-sm text-ink-light mt-1">Failures</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-cream-dark px-5 py-4 text-center">
+      <div class="text-2xl font-bold text-ink"><%= @avg_duration ? "#{(@avg_duration / 1000.0).round(1)}s" : '—' %></div>
+      <div class="text-sm text-ink-light mt-1">Avg Duration</div>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-x-3 overflow-x-auto bg-white rounded-xl px-5 py-3 shadow-sm border border-cream-dark text-sm mb-6">
+    <% all_active = params[:success].blank? %>
+    <%= link_to "All (#{@total_count})", admin_ai_classifier_runs_path(recipe_id: params[:recipe_id]),
+        class: ['font-medium no-underline px-2 py-0.5 rounded-md',
+                all_active ? 'text-terra bg-terra-faint' : 'text-ink-light hover:text-terra hover:underline'].join(' ') %>
+    <%= link_to "Success (#{@success_count})", admin_ai_classifier_runs_path(success: 'true', recipe_id: params[:recipe_id]),
+        class: ['font-medium no-underline px-2 py-0.5 rounded-md',
+                params[:success] == 'true' ? 'text-terra bg-terra-faint' : 'text-ink-light hover:text-terra hover:underline'].join(' ') %>
+    <%= link_to "Failed (#{@failure_count})", admin_ai_classifier_runs_path(success: 'false', recipe_id: params[:recipe_id]),
+        class: ['font-medium no-underline px-2 py-0.5 rounded-md',
+                params[:success] == 'false' ? 'text-terra bg-terra-faint' : 'text-ink-light hover:text-terra hover:underline'].join(' ') %>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm overflow-hidden divide-y divide-gray-100">
+    <% if @recipe_ids.empty? %>
+      <div class="px-4 py-8 text-center text-ink-light">No runs yet.</div>
+    <% end %>
+
+    <% @recipe_ids.each do |recipe_id| %>
+      <% runs = @runs_by_recipe_id[recipe_id] || [] %>
+      <% recipe = runs.first&.recipe %>
+      <% last_run = runs.max_by(&:started_at) %>
+
+      <%# Recipe header row %>
+      <div class="flex items-center justify-between px-4 py-3 bg-gray-50">
+        <div class="flex items-center gap-3">
+          <% if recipe.present? %>
+            <%= link_to recipe.name, recipe_path(recipe), class: 'font-semibold text-terra hover:underline no-underline text-sm' %>
+          <% else %>
+            <em class="text-ink-light text-sm">(recipe deleted)</em>
+          <% end %>
+          <% if last_run&.started_at %>
+            <span class="text-xs text-ink-light">last run <%= last_run.started_at.in_time_zone('America/New_York').strftime('%-d %b %Y %H:%M %Z') %></span>
+          <% end %>
+        </div>
+        <div class="flex items-center gap-3">
+          <% if recipe.present? %>
+            <%= button_to 'Rerun', rerun_admin_ai_classifier_run_path(last_run), method: :post,
+                class: 'text-orange-700 hover:underline bg-transparent border-0 cursor-pointer p-0 text-xs' %>
+          <% end %>
+        </div>
+      </div>
+
+      <%# Per-run rows %>
+      <% runs.each do |run| %>
+        <div class="flex items-center gap-4 pl-8 pr-4 py-2 text-xs border-t border-gray-100 hover:bg-gray-50">
+          <span class="inline-block px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-medium shrink-0"><%= run.service_class %></span>
+
+          <% if run.in_progress? %>
+            <span class="inline-block px-2.5 py-0.5 rounded-full font-medium bg-yellow-100 text-yellow-800">running</span>
+          <% elsif run.success? %>
+            <span class="inline-block px-2.5 py-0.5 rounded-full font-medium bg-green-100 text-green-800">success</span>
+          <% else %>
+            <span class="inline-block px-2.5 py-0.5 rounded-full font-medium bg-red-100 text-red-800">failed</span>
+          <% end %>
+
+          <span class="text-ink-light"><%= run.duration_ms ? "#{(run.duration_ms / 1000.0).round(1)}s" : '—' %></span>
+
+          <% if run.adapter.present? %>
+            <span class="text-ink-light"><%= run.adapter %> / <span class="font-mono"><%= run.ai_model %></span></span>
+          <% end %>
+
+          <span class="text-ink-light ml-auto"><%= run.started_at ? run.started_at.in_time_zone('America/New_York').strftime('%-d %b %Y %H:%M %Z') : '—' %></span>
+
+          <%= link_to 'Show', admin_ai_classifier_run_path(run), class: 'text-terra hover:underline ml-2 shrink-0' %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="mt-4">
+    <%= will_paginate @pagination %>
+  </div>
+</div>
+<% content_for(:page_title, 'Admin: AI Classifier Runs') %>
