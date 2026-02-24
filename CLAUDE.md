@@ -181,8 +181,16 @@ Development uses `dotenv-rails` with a `.env` file (see `.sample.env` for requir
 | `TIMEOUT_IN_SECONDS` | Production | Rack timeout (default: 5) |
 | `RAILS_LOG_LEVEL` | Production | Log verbosity (default: `info`) |
 
+## Before Creating a PR
+
+**Always run the full suite and confirm it passes before pushing or opening a PR:**
+
+```bash
+bin/rake
+```
+
+This runs in order: bundler-audit (with DB update), brakeman, rubocop, rspec. All four must be green. Do not create a PR if any step fails — fix the issue locally first. This catches CVEs, security warnings, lint offenses, and test failures before CI sees them.
+
 ## CI
 
 GitHub Actions on push to master and all PRs. Runs PostgreSQL 16 service container, Ruby 4.0.1, and `bundle exec rake`.
-
-Always run `bin/rake` locally and confirm it passes before creating a PR.
