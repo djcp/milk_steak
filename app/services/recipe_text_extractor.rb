@@ -1,4 +1,6 @@
 class RecipeTextExtractor
+  include AiService
+
   MAX_TEXT_LENGTH = 15_000
 
   MAIN_CONTENT_SELECTORS = %w[
@@ -20,25 +22,13 @@ class RecipeTextExtractor
   end
 
   def extract
-    run = AiClassifierRun.create!(
-      service_class: 'RecipeTextExtractor',
-      recipe: @recipe,
-      user_prompt: @url,
-      started_at: Time.current,
-      success: false
-    )
-
-    begin
-      result = fetch_and_parse
-      run.update!(raw_response: result, success: true, completed_at: Time.current)
-      result
-    rescue StandardError => e
-      run.update!(success: false, error_class: e.class.name, error_message: e.message, completed_at: Time.current)
-      raise
-    end
+    with_classifier_run { fetch_and_parse }
   end
 
   private
+
+  def classifier_run_attributes = { user_prompt: @url }
+  def success_attributes(raw_result) = { raw_response: raw_result }
 
   def fetch_and_parse
     uri = URI.parse(@url)

@@ -1,4 +1,6 @@
 class RecipeAiExtractor
+  include AiService
+
   SYSTEM_PROMPT = <<~PROMPT.freeze
     You are a recipe extraction assistant. Given text from a recipe website or user input,
     extract the structured recipe data and return it as valid JSON.
@@ -65,28 +67,22 @@ class RecipeAiExtractor
   end
 
   def extract
-    run = AiClassifierRun.create!(
-      service_class: 'RecipeAiExtractor',
-      recipe: @recipe,
-      adapter: current_adapter.adapter_name,
-      ai_model: current_adapter.ai_model,
-      system_prompt: SYSTEM_PROMPT,
-      user_prompt: user_message,
-      started_at: Time.current,
-      success: false
-    )
-
-    begin
-      raw = current_adapter.complete(SYSTEM_PROMPT, user_message)
-      run.update!(raw_response: raw, success: true, completed_at: Time.current)
-      JSON.parse(normalize_json(raw))
-    rescue StandardError => e
-      run.update!(success: false, error_class: e.class.name, error_message: e.message, completed_at: Time.current)
-      raise
-    end
+    with_classifier_run { current_adapter.complete(SYSTEM_PROMPT, user_message) }
   end
 
   private
+
+  def classifier_run_attributes
+    {
+      adapter: current_adapter.adapter_name,
+      ai_model: current_adapter.ai_model,
+      system_prompt: SYSTEM_PROMPT,
+      user_prompt: user_message
+    }
+  end
+
+  def success_attributes(raw_result) = { raw_response: raw_result }
+  def transform_result(raw_result) = JSON.parse(normalize_json(raw_result))
 
   def user_message
     @user_message ||= "Extract the recipe from this text:\n\n#{@text}"
