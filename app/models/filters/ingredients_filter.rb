@@ -11,7 +11,7 @@ module Filters
     private
 
     def query_string
-      clauses = @ingredients.map { " lower(ingredients.name) like ? " }
+      clauses = @ingredients.map { ' lower(ingredients.name) like ? ' }
       "( #{clauses.join(' OR ')} )"
     end
 

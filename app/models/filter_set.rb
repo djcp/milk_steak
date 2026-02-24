@@ -55,6 +55,8 @@ class FilterSet
   end
 
   def normalize(value)
-    value&.split(',')&.select(&:present?)&.join(',')
+    return if value.nil?
+
+    value.split(',').compact_blank.join(',')
   end
 end

@@ -23,7 +23,7 @@ describe FilterSet do
       end
     end
 
-    context 'name filter' do
+    context 'when filtering by name' do
       it 'matches on a case-insensitive substring' do
         match    = create(:recipe, name: 'Spaghetti Carbonara')
         no_match = create(:recipe, name: 'Beef Stew')
@@ -35,7 +35,7 @@ describe FilterSet do
       end
     end
 
-    context 'tag filters' do
+    context 'when filtering by tag' do
       it 'filters by cooking method' do
         match    = create(:recipe, cooking_method_list: 'bake')
         no_match = create(:recipe, cooking_method_list: 'fry')
@@ -68,7 +68,7 @@ describe FilterSet do
       end
     end
 
-    context 'ingredients filter' do
+    context 'when filtering by ingredients' do
       it 'matches recipes containing the ingredient' do
         flour    = Ingredient.create!(name: 'flour')
         match    = create(:recipe)
@@ -91,7 +91,7 @@ describe FilterSet do
       end
     end
 
-    context 'author filter' do
+    context 'when filtering by author' do
       it 'matches on a case-insensitive username substring' do
         alice    = create(:user, username: 'alice_cooks')
         bob      = create(:user, username: 'bob_eats')
@@ -105,7 +105,7 @@ describe FilterSet do
       end
     end
 
-    context 'multiple filters combined' do
+    context 'when multiple filters are combined' do
       it 'applies all active filters as AND conditions' do
         user         = create(:user, username: 'chefdan')
         match        = create(:recipe, name: 'Bread', user: user, cooking_method_list: 'bake')
