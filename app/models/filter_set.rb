@@ -1,76 +1,60 @@
 class FilterSet
   include ActiveModel::Model
-  FILTERS = [
-    :cooking_methods,
-    :cultural_influences,
-    :courses,
-    :dietary_restrictions,
-    :name,
-    :ingredients,
-    :author
-  ]
+
+  FILTERS = %i[
+    cooking_methods
+    cultural_influences
+    courses
+    dietary_restrictions
+    name
+    ingredients
+    author
+  ].freeze
+
+  TAG_CONTEXTS = %i[cooking_methods cultural_influences courses dietary_restrictions].freeze
+
   attr_accessor *FILTERS
 
   def initialize(params)
-    @cooking_methods = normalize params[:cooking_methods]
+    @cooking_methods     = normalize params[:cooking_methods]
     @cultural_influences = normalize params[:cultural_influences]
-    @courses = normalize params[:courses]
+    @courses             = normalize params[:courses]
     @dietary_restrictions = normalize params[:dietary_restrictions]
-    @name = normalize params[:name]
-    @ingredients = normalize params[:ingredients]
-    @author = normalize params[:author]
+    @name                = normalize params[:name]
+    @ingredients         = normalize params[:ingredients]
+    @author              = normalize params[:author]
   end
 
   def active_filters
-    FILTERS.find_all { |filter| self.send(filter).present? }
+    FILTERS.select { |filter| send(filter).present? }
   end
 
   def apply_to(recipes)
-    %i|cooking_methods cultural_influences courses dietary_restrictions|.each do |context|
-      if self.send(context).present?
-        tags = self.send(context).split(/,\s*?/).map{ |t| t.strip }
-        recipes = recipes.tagged_with(tags, on: context, any: true)
-      end
-    end
-    if name.present?
-      recipes = recipes.where('lower(recipes.name) like ?', %Q|%#{name.downcase}%|)
-    end
-    if ingredients.present?
-      # TODO: functional postgres index to lowercase this column
-      query = ingredients_query
-      recipes = recipes.joins(:ingredients).where(
-        query[:query_string], *query[:parameters]
-      )
-    end
-    if author.present?
-      recipes = recipes.joins(:user).where(
-        'users.username ilike ?', "%#{author}%"
-      )
-    end
-    recipes.distinct
+    active_strategies.reduce(recipes) { |r, strategy| strategy.apply(r) }.distinct
   end
 
   private
 
+  def active_strategies
+    tag_strategies + scalar_strategies.compact
+  end
+
+  def tag_strategies
+    TAG_CONTEXTS.filter_map do |context|
+      value = send(context)
+      ::Filters::TagFilter.new(context, value) if value.present?
+    end
+  end
+
+  def scalar_strategies
+    [
+      (::Filters::NameFilter.new(name)               if name.present?),
+      (::Filters::IngredientsFilter.new(ingredients) if ingredients.present?),
+      (::Filters::AuthorFilter.new(author)           if author.present?)
+    ]
+  end
+
   def normalize(value)
-    if value
-      value.split(',').find_all{|element| element.present?}.join(',')
-    end
-  end
-
-  def ingredients_query
-    queries = []
-    parameters = []
-    ingredients_list.each do |ingredient|
-      next unless ingredient.present?
-      queries << " lower(ingredients.name) like ? "
-      parameters << "%#{ingredient.downcase}%"
-    end
-    query_string = %Q|( #{queries.join(' OR ')} )|
-    { query_string: query_string, parameters: parameters}
-  end
-
-  def ingredients_list
-    ingredients.split(/,\s*?/).map { |i| i.strip.downcase }
+    value&.split(',')&.select(&:present?)&.join(',')
   end
 end
