@@ -1,4 +1,6 @@
 class RecipeAiApplier
+  include AiService
+
   def self.apply(recipe, data)
     new(recipe, data).apply
   end
@@ -9,15 +11,7 @@ class RecipeAiApplier
   end
 
   def apply
-    run = AiClassifierRun.create!(
-      service_class: 'RecipeAiApplier',
-      recipe: @recipe,
-      user_prompt: @data.to_json,
-      started_at: Time.current,
-      success: false
-    )
-
-    begin
+    with_classifier_run do
       @recipe.strict_loading!(false)
       @recipe.assign_attributes(
         name: @data['name'] || @recipe.name,
@@ -33,14 +27,12 @@ class RecipeAiApplier
       apply_tags
 
       @recipe.save!
-      run.update!(success: true, completed_at: Time.current)
-    rescue StandardError => e
-      run.update!(success: false, error_class: e.class.name, error_message: e.message, completed_at: Time.current)
-      raise
     end
   end
 
   private
+
+  def classifier_run_attributes = { user_prompt: @data.to_json }
 
   def apply_ingredients
     @recipe.recipe_ingredients.destroy_all
