@@ -12,31 +12,23 @@ module Admin
     end
 
     def publish
-      if @recipe.publishable?
-        @recipe.update!(status: 'published')
-        redirect_to recipe_path(@recipe), notice: 'Recipe published.'
-      else
-        redirect_to recipe_path(@recipe), alert: 'Recipe cannot be published from its current status.'
-      end
+      result = RecipeCommands::Publish.new(@recipe).call
+      redirect_to recipe_path(@recipe), result.flash_type => result.message
     end
 
     def reject
-      @recipe.update!(status: 'rejected')
-      redirect_to recipe_path(@recipe), notice: 'Recipe rejected.'
+      result = RecipeCommands::Reject.new(@recipe).call
+      redirect_to recipe_path(@recipe), result.flash_type => result.message
     end
 
     def reprocess
-      if @recipe.reprocessable?
-        MagicRecipeJob.perform_later(@recipe.id)
-        redirect_to recipe_path(@recipe), notice: 'Recipe re-enqueued for processing.'
-      else
-        redirect_to recipe_path(@recipe), alert: 'Recipe cannot be reprocessed from its current status.'
-      end
+      result = RecipeCommands::Reprocess.new(@recipe).call
+      redirect_to recipe_path(@recipe), result.flash_type => result.message
     end
 
     def destroy
-      @recipe.destroy!
-      redirect_to admin_recipes_path, notice: 'Recipe deleted.'
+      result = RecipeCommands::Destroy.new(@recipe).call
+      redirect_to admin_recipes_path, result.flash_type => result.message
     end
 
     private
