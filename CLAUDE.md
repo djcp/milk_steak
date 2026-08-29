@@ -58,7 +58,7 @@ bin/screenshots
 - `app/models/ingredient.rb` — Ingredient names, linked to recipes via RecipeIngredient
 - `app/models/recipe_ingredient.rb` — Join model with quantity (max 10 chars), unit, descriptor, section; ordered via `acts_as_list` scoped by recipe and section
 - `app/models/user.rb` — Devise user with `username` (unique, 3–30 chars, letters/numbers/underscores), `admin` flag, and `approved` flag. Key methods: `approved?` (always true for admins), `active_for_authentication?` (gates sign-in for unapproved users), `inactive_message` (returns `:pending_approval` symbol for Devise i18n). Pending admins bypass the approval gate — the admin flag is checked first. Also `:lockable` (10 failed attempts → lock, email unlock).
-- `app/models/ai_classifier_run.rb` — Persisted record of every AI pipeline call (RecipeTextExtractor, RecipeAiExtractor, RecipeAiApplier); stores adapter, model, system_prompt, user_prompt, raw_response, timing, success/failure
+- `app/models/ai_classifier_run.rb` — Persisted record of every AI pipeline call (RecipeTextExtractor, RecipeAiExtractor, RecipeAiApplier); stores adapter, model, system_prompt, user_prompt, raw_response, timing, success/failure. `belongs_to :recipe, optional: true` (FK `on_delete: :nullify`, so runs survive recipe deletion); `recipe_name` returns `"(recipe deleted)"` when the recipe is gone, and admin index/show views render that fallback instead of a dead link.
 - `app/models/filter_set.rb` — PORO (ActiveModel::Model) for compound recipe filtering (tags, name, ingredients, author); author filter uses `users.username ilike ?` (case-insensitive partial match)
 - `app/models/featured_image_chooser.rb` — PORO for selecting featured recipe images
 - `app/models/tag_finder.rb` — PORO for querying tags by context
@@ -152,6 +152,7 @@ Recipes have a `status` field with values: `draft`, `processing`, `processing_fa
 - Security headers in `config/application.rb`: X-Frame-Options, X-Content-Type-Options, X-XSS-Protection, Referrer-Policy, Permissions-Policy
 - CSP enforced via `content_security_policy.rb`
 - Foreign key constraints on `images`, `recipe_ingredients`, and `recipes` tables
+- Search performance indexes: `pg_trgm` extension enabled with GIN trigram indexes on `recipes(lower(name))`, `ingredients(lower(name))`, and `users(username)` for the substring `like`/`ilike` filter/autocomplete queries (see `FilterSet`, `Recipe.fuzzy_autocomplete_for`, and the autocomplete controllers); composite indexes on `recipes(user_id, status)` and `recipes(status, created_at)`
 - `Rack::Deflater` middleware for gzip compression
 - Use `Recipe.includes(...)` for eager loading associations (not `Preloader`)
 - Markdown rendered via Redcarpet with `safe_links_only` and `escape_html`
