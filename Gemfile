@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 ruby '4.0.1'
 
-gem 'rails', '~> 8.0.0'
+gem 'rails', '~> 8.1.0'
 
 # Required for Ruby 4.0 compatibility
 gem 'mutex_m'
@@ -18,8 +18,8 @@ gem 'pg', '~> 1.1'
 gem 'propshaft'
 gem 'tailwindcss-rails', '~> 4.0'
 gem 'simple_form'
-gem 'puma'
-gem 'devise', '~> 4.9'
+gem 'puma', '~> 7.2'
+gem 'devise', '~> 5.0'
 gem 'acts_as_list'
 gem 'acts-as-taggable-on', '~> 13.0'
 gem 'will_paginate'
