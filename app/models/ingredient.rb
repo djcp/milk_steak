@@ -8,7 +8,7 @@ class Ingredient < ApplicationRecord
 
   def self.unique_names
     joins(recipe_ingredients: :recipe)
-      .where(recipes: { status: %w[published draft] })
+      .where(recipes: { status: 'published' })
       .select(:name).distinct
   end
 end

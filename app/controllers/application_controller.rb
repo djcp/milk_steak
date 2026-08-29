@@ -23,6 +23,16 @@ class ApplicationController < ActionController::Base
     redirect_to new_user_session_path, alert: I18n.t('devise.failure.pending_approval')
   end
 
+  # Returns a safe, lowercased search term for autocomplete endpoints, or nil.
+  # Guards against nil and array params (e.g. ?q[]=a), which would otherwise
+  # raise NoMethodError / SQL type errors and return 500s.
+  def autocomplete_query
+    q = params[:q]
+    return nil unless q.is_a?(String)
+
+    q.strip.presence
+  end
+
   def forbidden
     render plain: 'forbidden', status: :forbidden
   end

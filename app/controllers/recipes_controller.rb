@@ -71,11 +71,19 @@ class RecipesController < ApplicationController
       :dietary_restriction_list,
       { images_attributes: [:_destroy, :id, :caption, :featured, :image],
         recipe_ingredients_attributes: [:_destroy, :id, :quantity, :unit, :section, :descriptor,
-                                        { ingredient_attributes: [:id, :name] }] }
+                                        { ingredient_attributes: ingredient_attributes }] }
     ]
     permitted.push(:source_url, :source_text, :status) if current_user&.admin?
 
     params.require(:recipe).permit(*permitted)
+  end
+
+  # Ingredients are a global, shared table. Only admins may pass an existing
+  # ingredient's `:id` (which lets ActiveRecord update that shared record).
+  # Regular users may only create-or-match by name, so they can never rename a
+  # shared ingredient that appears on other users' recipes.
+  def ingredient_attributes
+    current_user&.admin? ? [:id, :name] : [:name]
   end
 
   def set_up_form_for(recipe)
@@ -106,14 +114,16 @@ class RecipesController < ApplicationController
     return if current_user&.admin?
     return if @recipe.user == current_user
 
-    redirect_to root_path, alert: 'Recipe not found'
+    # Return the same 404 as a missing record so anonymous users cannot
+    # distinguish draft/review/rejected recipes from nonexistent ones.
+    raise ActiveRecord::RecordNotFound
   end
 
   def page_param
-    params.fetch(:page, 1)
+    [1, params.fetch(:page, 1).to_i].max
   end
 
   def per_page_param
-    params.fetch(:per_page, 12)
+    params.fetch(:per_page, 12).to_i.clamp(1, 48)
   end
 end

@@ -3,6 +3,12 @@ require 'spec_helper'
 describe RecipeTextExtractor do
   let(:url) { 'https://example.com/recipe' }
 
+  # Real DNS resolution is not available in CI (network is disabled); stub the
+  # SSRF resolver to a public address so these tests only exercise extraction.
+  before do
+    allow(SafeUrlFetcher).to receive(:addresses_for).with('example.com').and_return(['93.184.216.34'])
+  end
+
   describe '.from_url' do
     it 'extracts text from a recipe page' do
       html = <<~HTML

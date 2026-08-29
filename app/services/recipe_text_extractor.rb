@@ -31,8 +31,7 @@ class RecipeTextExtractor
   def success_attributes(raw_result) = { raw_response: raw_result }
 
   def fetch_and_parse
-    uri = URI.parse(@url)
-    response = Net::HTTP.get_response(uri)
+    response = SafeUrlFetcher.fetch(@url)
 
     raise "HTTP #{response.code}: Failed to fetch #{@url}" unless response.is_a?(Net::HTTPSuccess)
 

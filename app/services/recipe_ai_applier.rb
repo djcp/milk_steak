@@ -37,7 +37,7 @@ class RecipeAiApplier
   def apply_ingredients
     @recipe.recipe_ingredients.destroy_all
 
-    Array(@data['ingredients']).each_with_index do |ing_data, index|
+    Array(@data['ingredients']).first(200).each_with_index do |ing_data, index|
       ingredient = Ingredient.where(name: ing_data['name']).first_or_create!
 
       @recipe.recipe_ingredients.build(

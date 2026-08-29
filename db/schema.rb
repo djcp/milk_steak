@@ -297,18 +297,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_30_000000) do
     t.string "current_sign_in_ip", limit: 255
     t.string "email", limit: 255, default: "", null: false
     t.string "encrypted_password", limit: 255, default: "", null: false
+    t.integer "failed_attempts", default: 0, null: false
     t.datetime "last_sign_in_at"
     t.string "last_sign_in_ip", limit: 255
+    t.datetime "locked_at"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token", limit: 255
     t.integer "sign_in_count", default: 0, null: false
     t.string "unconfirmed_email"
+    t.string "unlock_token"
     t.datetime "updated_at"
     t.string "username", default: "", null: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 

@@ -15,6 +15,7 @@ en:
       not_found_in_database: "Invalid email or password."
       pending_approval: "Your account is pending admin approval. You will be able to sign in once approved."
       timeout: "Your session expired. Please sign in again to continue."
+      too_many_requests: "Too many attempts. Please try again later."
       unauthenticated: "You need to sign in or sign up before continuing."
       unconfirmed: "You have to confirm your account before continuing."
     mailer:
