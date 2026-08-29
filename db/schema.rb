@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_29_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_30_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -49,8 +49,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_29_000000) do
     t.datetime "created_at", null: false
     t.string "error_class"
     t.text "error_message"
+    t.integer "input_tokens"
+    t.integer "output_tokens"
     t.text "raw_response"
     t.integer "recipe_id"
+    t.string "request_id"
     t.string "service_class", null: false
     t.datetime "started_at"
     t.boolean "success", default: false, null: false
@@ -59,6 +62,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_29_000000) do
     t.text "user_prompt"
     t.index ["created_at"], name: "index_ai_classifier_runs_on_created_at"
     t.index ["recipe_id"], name: "index_ai_classifier_runs_on_recipe_id"
+    t.index ["request_id"], name: "index_ai_classifier_runs_on_request_id"
     t.index ["success"], name: "index_ai_classifier_runs_on_success"
   end
 

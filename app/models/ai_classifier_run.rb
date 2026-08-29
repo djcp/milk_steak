@@ -25,6 +25,12 @@ class AiClassifierRun < ApplicationRecord
     ((completed_at - started_at) * 1000).round
   end
 
+  def total_tokens
+    return nil unless input_tokens || output_tokens
+
+    [input_tokens, output_tokens].compact.sum
+  end
+
   def recipe_name
     recipe&.name || '(recipe deleted)'
   end

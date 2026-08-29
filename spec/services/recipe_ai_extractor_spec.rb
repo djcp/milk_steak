@@ -11,8 +11,9 @@ describe RecipeAiExtractor do
     }
   end
 
-  def stub_ruby_llm(content:)
-    mock_response = double('response', content: content)
+  def stub_ruby_llm(content:, tokens: nil, request_id: nil)
+    raw_response  = request_id && double('faraday-response', body: { 'id' => request_id })
+    mock_response = double('response', content: content, tokens: tokens, raw: raw_response)
     mock_chat     = double('chat', with_instructions: nil, ask: mock_response)
     allow(RubyLLM).to receive(:chat).and_return(mock_chat)
     mock_chat
@@ -75,10 +76,25 @@ describe RecipeAiExtractor do
         expect(run.system_prompt).to eq(RecipeAiExtractor::SYSTEM_PROMPT)
         expect(run.user_prompt).to include(text)
         expect(run.raw_response).to eq(json_response.to_json)
+        expect(run.input_tokens).to be_nil
+        expect(run.output_tokens).to be_nil
+        expect(run.request_id).to be_nil
         expect(run.started_at).not_to be_nil
         expect(run.completed_at).not_to be_nil
         expect(run.error_class).to be_nil
         expect(run.error_message).to be_nil
+      end
+
+      it 'records input/output tokens and request id from the LLM response' do
+        token_response = double('tokens', input: 125, output: 42)
+        stub_ruby_llm(content: json_response.to_json, tokens: token_response, request_id: 'msg_abc123')
+
+        described_class.extract(text)
+
+        run = AiClassifierRun.last
+        expect(run.input_tokens).to eq(125)
+        expect(run.output_tokens).to eq(42)
+        expect(run.request_id).to eq('msg_abc123')
       end
 
       it 'persists the run immediately (before LLM call completes)' do

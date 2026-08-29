@@ -81,8 +81,16 @@ class RecipeAiExtractor
     }
   end
 
-  def success_attributes(raw_result) = { raw_response: raw_result }
-  def transform_result(raw_result) = JSON.parse(normalize_json(raw_result))
+  def success_attributes(message)
+    {
+      raw_response: message.content,
+      input_tokens: message.tokens&.input,
+      output_tokens: message.tokens&.output,
+      request_id: message.raw&.body&.dig('id')
+    }
+  end
+
+  def transform_result(message) = JSON.parse(normalize_json(message.content))
 
   def user_message
     @user_message ||= "Extract the recipe from this text:\n\n#{@text}"
@@ -109,7 +117,7 @@ class RecipeAiExtractor
     def complete(system_prompt, user_message)
       chat = RubyLLM.chat(model: ai_model)
       chat.with_instructions(system_prompt)
-      chat.ask(user_message).content
+      chat.ask(user_message)
     end
   end
 end

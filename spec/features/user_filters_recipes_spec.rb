@@ -23,6 +23,10 @@ feature 'User filters recipes', js: true do
     visit '/'
 
     fill_in 'Cooking methods', with: 'deep fried'
+    # Dismiss the jQuery UI autocomplete menu (Escape) before submitting.
+    # An open menu can race the page navigation in Selenium and raise
+    # "Node with given id does not belong to the document".
+    find('#filter_set_cooking_methods').send_keys(:escape)
     click_on 'Apply'
 
     expect(page).to have_content 'French fries'
