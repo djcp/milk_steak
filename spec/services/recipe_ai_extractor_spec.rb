@@ -12,7 +12,7 @@ describe RecipeAiExtractor do
   end
 
   def stub_ruby_llm(content:, tokens: nil, request_id: nil)
-    raw_response  = request_id && { 'id' => request_id }
+    raw_response  = request_id && double('faraday-response', body: { 'id' => request_id })
     mock_response = double('response', content: content, tokens: tokens, raw: raw_response)
     mock_chat     = double('chat', with_instructions: nil, ask: mock_response)
     allow(RubyLLM).to receive(:chat).and_return(mock_chat)

@@ -86,7 +86,7 @@ class RecipeAiExtractor
       raw_response: message.content,
       input_tokens: message.tokens&.input,
       output_tokens: message.tokens&.output,
-      request_id: message.raw&.dig('id')
+      request_id: message.raw&.body&.dig('id')
     }
   end
 
