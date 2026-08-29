@@ -8,13 +8,13 @@ New users sign up with an email and a unique public username; accounts require a
 
 ## Tech Stack
 
-- **Ruby 4.0.1** / **Rails 8.0**
+- **Ruby 4.0.1** / **Rails 8.1**
 - **PostgreSQL 16+** (dev: `milk_steak_development`, test: `milk_steak_test`)
 - **Propshaft** asset pipeline with vendored jQuery/jQuery UI
 - **Tailwind CSS v4** via `tailwindcss-rails` (no Node.js required)
-- **Devise** for authentication (database_authenticatable, registerable, recoverable, rememberable, trackable, validatable, confirmable)
+- **Devise 5** for authentication (database_authenticatable, registerable, recoverable, rememberable, trackable, validatable, confirmable)
 - **Active Storage** with S3 in production, local disk in dev/test
-- **Solid Queue** for background jobs (separate queue database in production)
+- **Solid Queue** (1.7) for background jobs (separate queue database in production; batch tables via `db/queue_schema.rb`)
 - **Anthropic Claude** for AI recipe extraction
 - **Simple Form** for form rendering
 - **Redcarpet** for Markdown rendering (safe links, escaped HTML, autolinks)
