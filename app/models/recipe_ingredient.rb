@@ -25,7 +25,7 @@ class RecipeIngredient < ApplicationRecord
 
   def self.unique_units
     joins(:recipe)
-      .where(recipes: { status: %w[published draft] })
+      .where(recipes: { status: 'published' })
       .select(:unit).distinct
   end
 end

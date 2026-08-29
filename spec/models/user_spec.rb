@@ -70,4 +70,26 @@ describe User do
       expect(user.active_for_authentication?).to be true
     end
   end
+
+  context "lockable" do
+    it "is not locked by default" do
+      expect(build(:user).access_locked?).to be false
+    end
+
+    it "locks the account after exceeding the maximum failed attempts" do
+      user = create(:user)
+      Devise.maximum_attempts.times do
+        user.valid_for_authentication? { false }
+      end
+
+      expect(user.reload.access_locked?).to be true
+    end
+
+    it "does not lock a valid account" do
+      user = create(:user)
+      user.valid_for_authentication? { true }
+
+      expect(user.reload.access_locked?).to be false
+    end
+  end
 end

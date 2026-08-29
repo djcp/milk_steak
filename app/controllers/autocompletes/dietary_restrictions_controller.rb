@@ -1,5 +1,7 @@
 class Autocompletes::DietaryRestrictionsController < ApplicationController
   def index
-    render json: Recipe.fuzzy_autocomplete_for(:dietary_restrictions, params[:q]).pluck(:name)
+    return render(json: []) if autocomplete_query.nil?
+
+    render json: Recipe.fuzzy_autocomplete_for(:dietary_restrictions, autocomplete_query).pluck(:name)
   end
 end

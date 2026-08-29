@@ -55,6 +55,32 @@ describe RecipeAiExtractor do
       stub_ruby_llm(content: "```\n#{json_response.to_json}\n```")
       expect(described_class.extract(text)).to eq(json_response)
     end
+
+    it 'wraps the untrusted text in explicit delimiters for the LLM' do
+      message = described_class.new('sneaky text').send(:user_message)
+
+      expect(message).to include('<untrusted_recipe_text>')
+      expect(message).to include('sneaky text')
+      expect(message).to include('</untrusted_recipe_text>')
+    end
+
+    it 'treats embedded instructions as data (delimiter is present in the prompt)' do
+      expect(RecipeAiExtractor::SYSTEM_PROMPT).to include('<untrusted_recipe_text>')
+      expect(RecipeAiExtractor::SYSTEM_PROMPT).to include('</untrusted_recipe_text>')
+    end
+
+    it 'rejects a response missing required fields' do
+      stub_ruby_llm(content: { 'name' => 'No directions here' }.to_json)
+
+      expect { described_class.extract(text) }.to raise_error(/missing required fields: directions/)
+    end
+
+    it 'rejects a response whose ingredients are not an array' do
+      bad = json_response.merge('ingredients' => 'not-an-array')
+      stub_ruby_llm(content: bad.to_json)
+
+      expect { described_class.extract(text) }.to raise_error(/ingredients must be an array/)
+    end
   end
 
   describe 'AiClassifierRun recording' do

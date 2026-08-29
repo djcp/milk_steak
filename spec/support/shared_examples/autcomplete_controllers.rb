@@ -7,6 +7,20 @@ shared_examples 'an autocomplete controller' do
         expect(response).to be_successful
         expect(response.content_type).to include 'application/json'
       end
+
+      it 'returns empty json when no query is given (does not enumerate)' do
+        get :index
+
+        expect(response).to be_successful
+        expect(response.parsed_body).to eq([])
+      end
+
+      it 'does not error when q is an array' do
+        get :index, params: { q: ['a'] }
+
+        expect(response).to be_successful
+        expect(response.parsed_body).to eq([])
+      end
     end
 
     context 'authenticated user' do

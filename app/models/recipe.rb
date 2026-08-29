@@ -46,6 +46,7 @@ class Recipe < ApplicationRecord
   validates :status, inclusion: { in: STATUSES }
   validates :source_url, format: { with: /\Ahttps?:\/\/\S+\z/i, message: 'must be an HTTP(S) URL' },
                          allow_blank: true
+  validates :source_text, length: { maximum: 50.kilobytes }, allow_blank: true
 
   delegate :email,    to: :user, prefix: true, allow_nil: true
   delegate :username, to: :user, prefix: true, allow_nil: true
@@ -55,20 +56,18 @@ class Recipe < ApplicationRecord
   end
 
   def self.unique_serving_units
-    published_or_draft.select(:serving_units).distinct
+    published.select(:serving_units).distinct
   end
 
   def self.fuzzy_autocomplete_for(context, query)
     ActsAsTaggableOn::Tagging.includes(:tag).where(
       context: context,
       taggable_type: 'Recipe',
-      taggable_id: published_or_draft.select(:id)
+      taggable_id: published.select(:id)
     ).joins(:tag).where(
       'tags.name like ?', "%#{query}%"
     ).distinct
   end
-
-  scope :published_or_draft, -> { where(status: %w[published draft]) }
 
   def featured_image?
     featured_image.present?

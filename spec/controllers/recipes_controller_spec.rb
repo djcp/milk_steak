@@ -71,6 +71,49 @@ describe RecipesController do
         end
       end
     end
+
+    context 'nested ingredient attributes' do
+      before do
+        allow(controller).to receive(:current_user).and_return(build(:user))
+      end
+
+      it 'strips the ingredient id for a non-admin so a shared ingredient cannot be renamed' do
+        post :create, params: {
+          recipe: {
+            name: 'foo',
+            recipe_ingredients_attributes: [
+              { ingredient_attributes: { id: '99', name: 'hacked' } }
+            ]
+          }
+        }
+
+        permitted = controller.send(:recipe_params)
+        ingredient_attrs = permitted[:recipe_ingredients_attributes].first[:ingredient_attributes]
+        ingredient_attrs = ingredient_attrs.to_h
+
+        expect(ingredient_attrs).to eq('name' => 'hacked')
+        expect(ingredient_attrs.key?('id')).to be false
+      end
+
+      it 'keeps the ingredient id for an admin so they can rename shared ingredients' do
+        allow(controller).to receive(:current_user).and_return(build(:user, :admin))
+
+        post :create, params: {
+          recipe: {
+            name: 'foo',
+            recipe_ingredients_attributes: [
+              { ingredient_attributes: { id: '99', name: 'renamed' } }
+            ]
+          }
+        }
+
+        permitted = controller.send(:recipe_params)
+        ingredient_attrs = permitted[:recipe_ingredients_attributes].first[:ingredient_attributes]
+        ingredient_attrs = ingredient_attrs.to_h
+
+        expect(ingredient_attrs).to eq('id' => '99', 'name' => 'renamed')
+      end
+    end
   end
 
   context 'guest user' do
@@ -90,6 +133,16 @@ describe RecipesController do
         get :show, params: { id: recipe.id }
 
         expect(response).to be_successful
+      end
+
+      it 'treats a non-published recipe like a missing one (no existence oracle)' do
+        recipe = build_stubbed(:recipe, :draft)
+        scope = double(find: recipe)
+        allow(Recipe).to receive(:includes).and_return(scope)
+
+        # Same error as a nonexistent id; Rails maps RecordNotFound to a 404.
+        expect { get :show, params: { id: recipe.id } }
+          .to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
