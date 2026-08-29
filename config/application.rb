@@ -9,7 +9,7 @@ Bundler.require(*Rails.groups)
 module MilkSteak
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 8.0
+    config.load_defaults 8.1
 
     config.active_record.strict_loading_by_default = false
     config.active_job.queue_adapter = :solid_queue
