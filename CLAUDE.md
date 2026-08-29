@@ -152,7 +152,7 @@ Recipes have a `status` field with values: `draft`, `processing`, `processing_fa
 - Markdown rendered via Redcarpet with `safe_links_only` and `escape_html`
 - Tagging associations exempted from strict loading (gem uses lazy loading internally)
 - Devise approval pattern: override `active_for_authentication?` and `inactive_message` on User; the `:pending_approval` symbol maps to `devise.failure.pending_approval` in `config/locales/devise.en.yml`; admins bypass the gate via `approved?` short-circuiting on `admin?`
-- AI pipeline observability: every call to RecipeTextExtractor, RecipeAiExtractor, and RecipeAiApplier creates an `AiClassifierRun` record before the operation starts (`success: false`), then updates it on completion; viewable at `/admin/ai_classifier_runs`
+- AI pipeline observability: every call to RecipeTextExtractor, RecipeAiExtractor, and RecipeAiApplier creates an `AiClassifierRun` record before the operation starts (`success: false`), then updates it on completion; viewable at `/admin/ai_classifier_runs`. The extractor also records LLM token usage (`input_tokens`/`output_tokens`) and the Anthropic `request_id` from the RubyLLM Message's `tokens`/`raw`; `total_tokens` sums them.
 
 ## Environment Variables
 

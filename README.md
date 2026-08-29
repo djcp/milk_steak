@@ -120,7 +120,7 @@ See [docs/models.md](docs/models.md) for the full ER diagram.
 | `Recipe` | Core model with statuses: `draft`, `processing`, `processing_failed`, `review`, `published`, `rejected` |
 | `User` | Devise user with username, admin flag, and approval workflow |
 | `FilterSet` | PORO for compound recipe filtering (tags, name, ingredients, author username) |
-| `AiClassifierRun` | Persisted record of every AI pipeline invocation with timing, prompts, and outcome |
+| `AiClassifierRun` | Persisted record of every AI pipeline invocation with timing, prompts, outcome, LLM token usage, and request id |
 | `MagicRecipeJob` | Background job that extracts recipe data from URLs/text via Claude |
 | `RecipeAiExtractor` | Sends source content to Anthropic API and parses structured response |
 | `RecipeAiApplier` | Applies AI-extracted data to a Recipe (ingredients, tags, directions) |

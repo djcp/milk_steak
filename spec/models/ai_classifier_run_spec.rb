@@ -109,6 +109,23 @@ describe AiClassifierRun do
     end
   end
 
+  describe '#total_tokens' do
+    it 'returns nil when both token columns are nil' do
+      run = build_stubbed(:ai_classifier_run, input_tokens: nil, output_tokens: nil)
+      expect(run.total_tokens).to be_nil
+    end
+
+    it 'returns the sum of input and output tokens when both are present' do
+      run = build_stubbed(:ai_classifier_run, input_tokens: 125, output_tokens: 42)
+      expect(run.total_tokens).to eq(167)
+    end
+
+    it 'returns the single present value when only one is set' do
+      run = build_stubbed(:ai_classifier_run, input_tokens: 125, output_tokens: nil)
+      expect(run.total_tokens).to eq(125)
+    end
+  end
+
   describe '#recipe_name' do
     it 'returns the recipe name when recipe is present' do
       recipe = build_stubbed(:recipe, name: 'Pasta Carbonara')
