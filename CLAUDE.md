@@ -53,30 +53,32 @@ bin/screenshots
 ## Project Structure
 
 ### Models
-- `app/models/recipe.rb` — Core model with status workflow, tagging, nested attributes; delegates `email` and `username` to user (prefix: true)
+- `app/models/recipe.rb` — Core model with status workflow, tagging, nested attributes; delegates `email` and `username` to user (prefix: true); `source_text` capped at 50 kB. `Recipe.fuzzy_autocomplete_for` (and `Ingredient.unique_names`, `RecipeIngredient.unique_units`, `Recipe.unique_serving_units`) search published recipes only.
 - `app/models/image.rb` — Active Storage attachment with type/size validation; variants: `:tiny` (32x32), `:thumb` (187x187), `:large` (800x600)
 - `app/models/ingredient.rb` — Ingredient names, linked to recipes via RecipeIngredient
 - `app/models/recipe_ingredient.rb` — Join model with quantity (max 10 chars), unit, descriptor, section; ordered via `acts_as_list` scoped by recipe and section
-- `app/models/user.rb` — Devise user with `username` (unique, 3–30 chars, letters/numbers/underscores), `admin` flag, and `approved` flag. Key methods: `approved?` (always true for admins), `active_for_authentication?` (gates sign-in for unapproved users), `inactive_message` (returns `:pending_approval` symbol for Devise i18n). Pending admins bypass the approval gate — the admin flag is checked first.
+- `app/models/user.rb` — Devise user with `username` (unique, 3–30 chars, letters/numbers/underscores), `admin` flag, and `approved` flag. Key methods: `approved?` (always true for admins), `active_for_authentication?` (gates sign-in for unapproved users), `inactive_message` (returns `:pending_approval` symbol for Devise i18n). Pending admins bypass the approval gate — the admin flag is checked first. Also `:lockable` (10 failed attempts → lock, email unlock).
 - `app/models/ai_classifier_run.rb` — Persisted record of every AI pipeline call (RecipeTextExtractor, RecipeAiExtractor, RecipeAiApplier); stores adapter, model, system_prompt, user_prompt, raw_response, timing, success/failure
 - `app/models/filter_set.rb` — PORO (ActiveModel::Model) for compound recipe filtering (tags, name, ingredients, author); author filter uses `users.username ilike ?` (case-insensitive partial match)
 - `app/models/featured_image_chooser.rb` — PORO for selecting featured recipe images
 - `app/models/tag_finder.rb` — PORO for querying tags by context
 
 ### Controllers
-- `app/controllers/application_controller.rb` — `configure_permitted_parameters` permits `:username` on Devise sign_up; `require_approved!` signs out and redirects any authenticated user whose `approved?` returns false
-- `app/controllers/recipes_controller.rb` — Main CRUD with ownership-based authorization; `require_approved!` fires before new/create/edit/update
+- `app/controllers/application_controller.rb` — `configure_permitted_parameters` permits `:username` on Devise sign_up; `require_approved!` signs out and redirects any authenticated user whose `approved?` returns false; `autocomplete_query` helper returns nil for blank/non-String `q`, so autocompletes render `[]` instead of enumerating
+- `app/controllers/recipes_controller.rb` — Main CRUD with ownership-based authorization; `require_approved!` fires before new/create/edit/update; `ensure_visible` raises `ActiveRecord::RecordNotFound` (→ 404) for guests on non-published recipes (no existence oracle); `page`/`per_page` clamped (`page` ≥ 1, `per_page` 1–48); nested `ingredient_attributes` only exposes `:id` to admins so non-admins can't rename shared ingredients
+- `app/controllers/users/sessions_controller.rb` / `registrations_controller.rb` — Devise overrides that rate-limit `#create` (10 per 3 min for sessions, 10 per 10 min for registrations) via `rate_limit ... with: :rate_limited` returning 429 `devise.failure.too_many_requests`
 - `app/controllers/admin/base_controller.rb` — Admin auth via `current_user&.admin?` before_action
 - `app/controllers/admin/recipes_controller.rb` — Admin recipe management (publish, reject, reprocess, destroy)
 - `app/controllers/admin/magic_recipes_controller.rb` — AI recipe import (new, create)
 - `app/controllers/admin/users_controller.rb` — User management: index lists pending and approved non-admin users; approve patches `approved: true`
 - `app/controllers/admin/ai_classifier_runs_controller.rb` — AI run history with filtering, pagination, and per-recipe grouping; rerun action re-enqueues MagicRecipeJob
-- `app/controllers/autocompletes/` — JSON endpoints for tags, ingredients, units, serving units
+- `app/controllers/autocompletes/` — JSON endpoints for tags, ingredients, units, serving units; all query **published recipes only** (no draft disclosure)
 
 ### Services
-- `app/services/recipe_ai_extractor.rb` — Sends source content to Anthropic API, returns parsed JSON
-- `app/services/recipe_ai_applier.rb` — Applies AI-extracted data to a Recipe (ingredients, tags, directions)
-- `app/services/recipe_text_extractor.rb` — Fetches and extracts text/schema.org data from recipe URLs
+- `app/services/safe_url_fetcher.rb` — SSRF-safe HTTP fetch. Resolves DNS, blocks internal/private/link-local ranges (`0.0.0.0/8`, `10/8`, `100.64/10`, `127/8`, `169.254/16` incl. AWS metadata, `172.16/12`, `192.168/16`, `::1`, `fc00::/7`, `fe80::/10`), raises `SafeUrlFetcher::BlockedAddressError`; max 5 redirects, timeouts (5s open / 15s read), `MAX_BYTES = 5.megabytes`. Test seam: `SafeUrlFetcher.addresses_for` / `blocked_address?`
+- `app/services/recipe_ai_extractor.rb` — Sends source content to Anthropic API, returns parsed JSON; wraps text in `<untrusted_recipe_text>` delimiters (prompt-injection defense); `validate_result!` requires name+directions and an ingredients array (max 200)
+- `app/services/recipe_ai_applier.rb` — Applies AI-extracted data to a Recipe (ingredients, tags, directions); caps ingredients at 200
+- `app/services/recipe_text_extractor.rb` — Fetches and extracts text/schema.org data from recipe URLs via `SafeUrlFetcher.fetch(@url)`
 
 ### Jobs
 - `app/jobs/magic_recipe_job.rb` — Background job for AI recipe processing pipeline
@@ -92,6 +94,8 @@ bin/screenshots
 ### Config
 - `config/initializers/content_security_policy.rb` — CSP enforced
 - `config/initializers/acts_as_taggable_on.rb` — Force lowercase tags, auto-cleanup unused tags
+- `config/initializers/devise.rb` — Configures `:lockable` (`lock_strategy = :failed_attempts`, `unlock_keys = [:email]`, `unlock_strategy = :email`, `maximum_attempts = 10`, `last_attempt_warning = true`)
+- `config/initializers/host_check.rb` — Raises in production if `HOST` is not set (fail-fast on deploy)
 - `lib/tasks/` — Custom rake tasks for brakeman, bundler-audit, rubocop
 
 ## Routes
@@ -102,6 +106,7 @@ bin/screenshots
 - `admin/recipes` — index, destroy, plus member routes: publish, reject, reprocess
 - `admin/magic_recipes` — new, create (AI import)
 - `admin/ai_classifier_runs` — index, show, plus member route: rerun (post)
+- `devise_for :users, controllers: { sessions: 'users/sessions', registrations: 'users/registrations' }` — rate-limited Devise endpoints
 - `autocompletes/` — index-only resources for cooking_methods, cultural_influences, courses, dietary_restrictions, serving_units, ingredient_units, ingredient_names
 - `/up` — Rails 8 health check
 
@@ -152,6 +157,9 @@ Recipes have a `status` field with values: `draft`, `processing`, `processing_fa
 - Markdown rendered via Redcarpet with `safe_links_only` and `escape_html`
 - Tagging associations exempted from strict loading (gem uses lazy loading internally)
 - Devise approval pattern: override `active_for_authentication?` and `inactive_message` on User; the `:pending_approval` symbol maps to `devise.failure.pending_approval` in `config/locales/devise.en.yml`; admins bypass the gate via `approved?` short-circuiting on `admin?`
+- SSRF hardening: all outbound HTTP uses `SafeUrlFetcher.fetch` (never raw `Net::HTTP`/`URI.open`), which resolves DNS and blocks internal/private/link-local IPs before connecting. Test seam: stub `SafeUrlFetcher.addresses_for` to a public IP.
+- Login/registration hardening: Devise `:lockable` locks accounts after 10 failed attempts (email unlock); `users/sessions` and `users/registrations` controllers `rate_limit` `#create` (10/3min and 10/10min) returning 429 `devise.failure.too_many_requests`.
+- Draft disclosure: every autocomplete query (`autocomplete_query` helper) targets **published** recipes only; blank/non-String `q` yields `[]`, never a full enumeration.
 - AI pipeline observability: every call to RecipeTextExtractor, RecipeAiExtractor, and RecipeAiApplier creates an `AiClassifierRun` record before the operation starts (`success: false`), then updates it on completion; viewable at `/admin/ai_classifier_runs`. The extractor also records LLM token usage (`input_tokens`/`output_tokens`) from the RubyLLM Message's `tokens`, and the Anthropic `request_id` from the raw response body (`message.raw.body['id']` — note `Message#raw` is a `Faraday::Response`, so use `.body` before `dig`); `total_tokens` sums the tokens.
 
 ## Environment Variables
@@ -190,6 +198,13 @@ bin/rake
 ```
 
 This runs in order: bundler-audit (with DB update), brakeman, rubocop, rspec. All four must be green. Do not create a PR if any step fails — fix the issue locally first. This catches CVEs, security warnings, lint offenses, and test failures before CI sees them.
+
+**Always include a documentation update sweep in the same PR.** Before pushing or opening a PR, review the change and update anything it touches in:
+- `CLAUDE.md` (and any other agentic instruction files, e.g. `AGENTS.md`) — project overview, tech stack, project structure, routes, workflow, environment variables, key patterns, testing notes, and commands.
+- `README.md` — features, setup, testing, tech stack, architecture, and screenshots.
+- `db/schema.rb` / migrations if the change adds/alters tables, columns, indexes, or constraints.
+
+When the change introduces or renames models, controllers, services, jobs, routes, env vars, migrations, or visible behavior (e.g. UI text, screenshots), the corresponding section(s) in these docs must be updated to match — otherwise the docs drift and mislead future agents. If nothing is affected, no doc change is needed, but verify rather than assume. Re-run `bin/rake` after any edits (check that doc/markdown changes don't affect lint) so the PR is green before it ships.
 
 ## CI
 
