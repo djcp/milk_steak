@@ -92,7 +92,7 @@ bin/screenshots
 - `app/views/devise/registrations/new.html.erb` — Custom registration form that includes the username field (Simple Form)
 
 ### Config
-- `config/initializers/content_security_policy.rb` — CSP enforced
+- `config/initializers/content_security_policy.rb` — CSP enforced; `script_src` carries no `:unsafe_inline` (all app JS is external: `admin/magic_recipes/new.js`, `analytics.js`, `test_setup.js`), only `:self` + Google Analytics
 - `config/initializers/acts_as_taggable_on.rb` — Force lowercase tags, auto-cleanup unused tags
 - `config/initializers/devise.rb` — Configures `:lockable` (`lock_strategy = :failed_attempts`, `unlock_keys = [:email]`, `unlock_strategy = :email`, `maximum_attempts = 10`, `last_attempt_warning = true`)
 - `config/initializers/host_check.rb` — Raises in production if `HOST` is not set (fail-fast on deploy)
@@ -150,10 +150,10 @@ Recipes have a `status` field with values: `draft`, `processing`, `processing_fa
 - `RecipeIngredient#quantity` is max 10 characters — AI prompts must enforce this; use digits/fractions/hyphens only (e.g. `"1 1/2"`, `"2-3"`, `"to taste"`)
 - Image uploads validated for type (JPEG, PNG, WebP, AVIF, HEIC/HEIF) and size (max 10MB)
 - Security headers in `config/application.rb`: X-Frame-Options, X-Content-Type-Options, X-XSS-Protection, Referrer-Policy, Permissions-Policy
-- CSP enforced via `content_security_policy.rb`
+- CSP enforced via `content_security_policy.rb`; `script_src` has no `:unsafe_inline` — the source-toggle script (`admin/magic_recipes/new.js`), the Google Analytics snippet (`analytics.js`, reads the tracking ID from a `data-tracking-id` attribute since Propshaft doesn't compile ERB in JS), and the test-only `$.fx.off` setup (`test_setup.js`) are all external assets
 - Foreign key constraints on `images`, `recipe_ingredients`, and `recipes` tables
 - `Rack::Deflater` middleware for gzip compression
-- Use `Recipe.includes(...)` for eager loading associations (not `Preloader`)
+- Use `Recipe.includes(...)` for eager loading associations (not `Preloader`); image blobs are eager-loaded via `includes(images: { image_attachment: :blob })` in the recipes controller index/show
 - Markdown rendered via Redcarpet with `safe_links_only` and `escape_html`
 - Tagging associations exempted from strict loading (gem uses lazy loading internally)
 - Devise approval pattern: override `active_for_authentication?` and `inactive_message` on User; the `:pending_approval` symbol maps to `devise.failure.pending_approval` in `config/locales/devise.en.yml`; admins bypass the gate via `approved?` short-circuiting on `admin?`

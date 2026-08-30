@@ -9,7 +9,7 @@ class RecipesController < ApplicationController
 
   def index
     @filter_set = FilterSet.new(params.fetch(:filter_set, {}))
-    @recipes = Recipe.published.includes(:images).recent.paginate(
+    @recipes = Recipe.published.includes(images: { image_attachment: :blob }).recent.paginate(
       page: page_param,
       per_page: per_page_param
     )
@@ -98,7 +98,8 @@ class RecipesController < ApplicationController
   end
 
   def find_recipe
-    @recipe = Recipe.includes(:user, :images, :recipe_ingredients, :ingredients).find(params[:id])
+    @recipe = Recipe.includes(:user, :recipe_ingredients, :ingredients,
+      images: { image_attachment: :blob }).find(params[:id])
   end
 
   def can_update

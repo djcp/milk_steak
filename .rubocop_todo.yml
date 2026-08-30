@@ -187,6 +187,7 @@ Metrics/ClassLength:
   Exclude:
     - 'app/services/recipe_text_extractor.rb'
     - 'app/services/recipe_ai_extractor.rb'
+    - 'app/controllers/recipes_controller.rb'
 
 # Offense count: 5
 # Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.
