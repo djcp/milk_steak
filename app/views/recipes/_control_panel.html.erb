@@ -1,5 +1,5 @@
+<% is_admin = policy(:site).admin? %>
 <% is_owner = current_user == recipe.user %>
-<% is_admin = current_user&.admin? %>
 <% if is_owner || is_admin %>
   <div id="control-panel" class="flex flex-wrap items-center gap-x-4 gap-y-2 bg-white rounded-xl px-5 py-3 shadow-sm border border-cream-dark text-sm">
     <% if is_admin %>
@@ -8,7 +8,7 @@
     <% end %>
     <div class="ml-auto flex flex-wrap items-center gap-2">
       <%= link_to 'Edit', edit_recipe_path(recipe), class: 'btn btn-outline' %>
-      <% if is_admin %>
+      <% if policy(recipe).publish? %>
         <% if recipe.publishable? %>
           <%= button_to 'Publish', publish_admin_recipe_path(recipe), method: :patch, class: 'btn btn-success' %>
           <%= button_to 'Reject', reject_admin_recipe_path(recipe), method: :patch, class: 'btn btn-outline-danger' %>
@@ -16,6 +16,8 @@
         <% if recipe.reprocessable? %>
           <%= button_to 'Reprocess', reprocess_admin_recipe_path(recipe), method: :patch, class: 'btn btn-warn' %>
         <% end %>
+      <% end %>
+      <% if policy(recipe).destroy? %>
         <span class="w-px h-5 bg-cream-dark mx-1"></span>
         <%= button_to 'Delete', admin_recipe_path(recipe), method: :delete,
             class: 'btn btn-danger', data: { confirm: 'Are you sure you want to delete this recipe?' } %>

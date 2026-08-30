@@ -6,7 +6,7 @@
       root_path(filter_set: { author: current_user.username }),
       class: 'text-white no-underline inline-block px-5 py-2 rounded-full transition-colors hover:bg-white/15 hover:no-underline'
     ) %>
-    <% if current_user.admin? %>
+    <% if policy(:site).admin? %>
       <%= link_to 'Admin', admin_recipes_path, class: 'text-white no-underline inline-block px-5 py-2 rounded-full transition-colors hover:bg-white/15 hover:no-underline' %>
     <% end %>
   <% end %>

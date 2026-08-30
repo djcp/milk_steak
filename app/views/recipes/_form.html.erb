@@ -128,7 +128,7 @@
     </div>
   </fieldset>
 
-  <% if current_user&.admin? %>
+  <% if policy(@recipe).admin_fields? %>
     <fieldset class="border border-cream-dark rounded-xl p-5 bg-white/50" id="admin_fields">
       <legend class="text-xl font-display px-3 py-1 bg-cream-dark rounded-md text-ink">Admin</legend>
       <%= f.input :status, collection: Recipe::STATUSES, include_blank: false %>

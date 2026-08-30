@@ -6,18 +6,23 @@
     when 'admin/users' then :users
     when 'admin/ai_classifier_runs' then :runs
     end
-  nav_items = [
-    { key: :magic,    label: '<span class="text-[1.5em] leading-none">🪄</span> Magic Recipe'.html_safe, href: new_admin_magic_recipe_path, outline: true },
-    { key: :recipes, label: 'Recipes', href: admin_recipes_path },
-    { key: :users,    label: 'Users', href: admin_users_path },
-    { key: :runs,     label: 'AI Runs', href: admin_ai_classifier_runs_path },
-  ]
+  nav_items = []
+  if policy(:site).admin?
+    nav_items << { key: :magic,    label: '<span class="text-[1.5em] leading-none">🪄</span> Magic Recipe'.html_safe, href: new_admin_magic_recipe_path, outline: true }
+  end
+  nav_items << { key: :recipes, label: 'Recipes', href: admin_recipes_path }
+  if policy(:site).admin?
+    nav_items << { key: :users,  label: 'Users', href: admin_users_path }
+  end
+  nav_items << { key: :runs,     label: 'AI Runs', href: admin_ai_classifier_runs_path }
 -%>
 <aside class="bg-terra-dark text-white lg:w-56 lg:shrink-0 lg:min-h-screen lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto">
   <div class="flex items-center justify-between gap-4 px-4 py-4 lg:border-b lg:border-white/10 lg:px-5 lg:py-6">
     <%= link_to ENV.fetch('APP_NAME', 'Recipes'), admin_recipes_path,
         class: 'text-white no-underline font-display text-2xl tracking-tight hover:text-white/80' %>
-    <span class="text-white/50 text-sm font-semibold uppercase tracking-wider">Admin</span>
+    <% if policy(:site).admin? %>
+      <span class="text-white/50 text-sm font-semibold uppercase tracking-wider">Admin</span>
+    <% end %>
   </div>
 
   <% if current_user.present? %>

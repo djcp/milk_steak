@@ -13,6 +13,7 @@ New users sign up with an email and a unique public username; accounts require a
 - **Propshaft** asset pipeline with vendored jQuery/jQuery UI
 - **Tailwind CSS v4** via `tailwindcss-rails` (no Node.js required)
 - **Devise 5** for authentication (database_authenticatable, registerable, recoverable, rememberable, trackable, validatable, confirmable)
+- **Pundit 2** for authorization (policy classes in `app/policies/`; approval gate stays a Devise authn concern, not a policy)
 - **Active Storage** with S3 in production, local disk in dev/test
 - **Solid Queue** (1.7) for background jobs (separate queue database in production; batch tables via `db/queue_schema.rb`)
 - **Anthropic Claude** for AI recipe extraction
@@ -64,15 +65,22 @@ bin/screenshots
 - `app/models/tag_finder.rb` — PORO for querying tags by context
 
 ### Controllers
-- `app/controllers/application_controller.rb` — `configure_permitted_parameters` permits `:username` on Devise sign_up; `require_approved!` signs out and redirects any authenticated user whose `approved?` returns false; `autocomplete_query` helper returns nil for blank/non-String `q`, so autocompletes render `[]` instead of enumerating
-- `app/controllers/recipes_controller.rb` — Main CRUD with ownership-based authorization; `require_approved!` fires before new/create/edit/update; `ensure_visible` raises `ActiveRecord::RecordNotFound` (→ 404) for guests on non-published recipes (no existence oracle); `page`/`per_page` clamped (`page` ≥ 1, `per_page` 1–48); nested `ingredient_attributes` permits `:name` only (no `:id`) for every role — Ingredients are create-or-matched by name in `RecipeIngredient#ingredient_attributes=`, never renamed/duplicated
+- `app/controllers/application_controller.rb` — Includes `Pundit::Authorization` and rescues `Pundit::NotAuthorizedError`: `show?` denials re-raise `ActiveRecord::RecordNotFound` (→ 404, no existence oracle), guests get redirected to sign-in, and any other logged-in denial gets `root_path` + `not_authorized` alert. `configure_permitted_parameters` permits `:username` on Devise sign_up; `require_logged_in_approved!` routes guests to sign-in and signs out unapproved users with the `pending_approval` alert (replaces the old `require_approved!`/`redirect_to_login`/`forbidden`); `autocomplete_query` helper returns nil for blank/non-String `q`, so autocompletes render `[]` instead of enumerating
+- `app/controllers/recipes_controller.rb` — Main CRUD. Guest index/public show are open; `new/create/edit/update` run under `require_logged_in_approved!` and use the `'admin'` layout. Every action authorizes (`authorize @recipe`, `authorize :recipe, :index?`) and strong params come from `RecipePolicy#permitted_attributes` (ingredient params are `:name` only, no `:id`, for every role — Ingredients are create-or-matched by name in `RecipeIngredient#ingredient_attributes=`, never renamed/duplicated). Keep destroyed via `policy_scope(Recipe).includes(...)` (unowned drafts get 404). Headless text ORACLE: `ensure_visible` style disclosure is gone; the no-existence oracle is preserved by `Rescuer: show? → RecordNotFound`. `page`/`per_page` clamped (`page` ≥ 1, `per_page` 1–48)
 - `app/controllers/users/sessions_controller.rb` / `registrations_controller.rb` — Devise overrides that rate-limit `#create` (10 per 3 min for sessions, 10 per 10 min for registrations) via `rate_limit ... with: :rate_limited` returning 429 `devise.failure.too_many_requests`
-- `app/controllers/admin/base_controller.rb` — Admin auth via `current_user&.admin?` before_action
-- `app/controllers/admin/recipes_controller.rb` — Admin recipe management (publish, reject, reprocess, destroy); status actions redirect back to `admin_recipes_path`
-- `app/controllers/admin/magic_recipes_controller.rb` — AI recipe import (new, create)
-- `app/controllers/admin/users_controller.rb` — User management: index lists pending and approved non-admin users; approve patches `approved: true`
-- `app/controllers/admin/ai_classifier_runs_controller.rb` — AI run history with filtering, pagination, and per-recipe grouping; rerun action re-enqueues MagicRecipeJob
+- `app/controllers/admin/base_controller.rb` — `layout 'admin'`, `before_action :require_logged_in_approved!`, `after_action :verify_authorized`, and `require_admin!` (`authorize :site, :admin_area?`). Admin auth is a **policy** check, not a visibility shortcut
+- `app/controllers/admin/recipes_controller.rb` — Admin + member shell. Index is `policy_scope(Recipe)` — admins see all, members see only their own (status-filter tabs and `group(:status)` counts computed on the whole scoped set so tabs are consistent); `find_recipe` is policy-scoped so acting on another user's recipe 404s before `publish?`/`reject?`/`reprocess?`/`destroy?` even runs. `destroy?` scoping lets members delete their **own** recipes
+- `app/controllers/admin/magic_recipes_controller.rb` — AI recipe import (new, create); overrides `layout 'application'` (public shell) and `require_admin!`
+- `app/controllers/admin/users_controller.rb` — User management via `require_admin!` + `authorize :user, :index?/:approve?`; index lists pending and approved non-admin users; approve patches `approved: true`
+- `app/controllers/admin/ai_classifier_runs_controller.rb` — AI run history. Every query goes through `policy_scope(AiClassifierRun)` (runs of the visible recipe scope, so members only see their own runs read-only); show/rerun `find_run` is scoped (others' runs 404); rerun re-enqueues MagicRecipeJob and is admin-only (`authorize @run, :rerun?`)
 - `app/controllers/autocompletes/` — JSON endpoints for tags, ingredients, units, serving units; all query **published recipes only** (no draft disclosure)
+
+### Policies
+- `app/policies/application_policy.rb` — Base class: `admin?` (boolean), `user`/`record` readers, no-op `Scope`
+- `app/policies/recipe_policy.rb` — `index?` all; `show?` published or owner or admin; `new?`/`create?` any signed-in user; `edit?`/`update?`/`destroy?` owner or admin; `publish?`/`reject?`/`reprocess?`/`admin_fields?` admin only; `permitted_attributes` (all strong params, ingredient `:name` only, plus `status`/`source_url`/`source_text` for admins); `Scope` = admin → all, member → own, guest → none
+- `app/policies/ai_classifier_run_policy.rb` — `index?`/`show?` any signed-in user; `rerun?` admin; `Scope` reuses `RecipePolicy::Scope` so members only see runs of their own recipes
+- `app/policies/user_policy.rb` — `index?`/`approve?` admin only
+- `app/policies/site_policy.rb` — `admin_area?`/`magic?` admin only (used via `policy(:site)` for role-only checks in views/controllers)
 
 ### Services
 - `app/services/safe_url_fetcher.rb` — SSRF-safe HTTP fetch. Resolves DNS, blocks internal/private/link-local ranges (`0.0.0.0/8`, `10/8`, `100.64/10`, `127/8`, `169.254/16` incl. AWS metadata, `172.16/12`, `192.168/16`, `::1`, `fc00::/7`, `fe80::/10`), raises `SafeUrlFetcher::BlockedAddressError`; max 5 redirects, timeouts (5s open / 15s read), `MAX_BYTES = 5.megabytes`. Test seam: `SafeUrlFetcher.addresses_for` / `blocked_address?`
@@ -84,13 +92,13 @@ bin/screenshots
 - `app/jobs/magic_recipe_job.rb` — Background job for AI recipe processing pipeline
 
 ### Key Views / Partials
-- `app/views/layouts/admin.html.erb` — Dedicated admin layout: slim terra sidebar (`app/views/admin/_sidebar.html.erb`) with Recipes / Magic Recipe / Users / AI Runs nav, plus flashes, footer, and scripts; selected explicitly via `layout "admin"` on `Admin::BaseController` (Rails does not auto-resolve `layouts/admin` for namespaced controllers — `_implied_layout_name` would look up `layouts/admin/recipes`)
+- `app/views/layouts/admin.html.erb` — Dedicated admin layout: slim terra sidebar (`app/views/admin/_sidebar.html.erb`) with role-aware nav (Recipes + AI Runs for everyone; Magic Recipe and Users links and the "Admin" chip for admins via `policy(:site)`), plus flashes, footer, and scripts; selected explicitly via `layout "admin"` on `Admin::BaseController` (Rails does not auto-resolve `layouts/admin` for namespaced controllers — `_implied_layout_name` would look up `layouts/admin/recipes`)
 - `app/views/recipes/_show_content.html.erb` — Publication-style recipe detail: hero image, title + metadata chips (prep/cook/makes/author shown as `user_username`, not email), two-column ingredients|directions on desktop, tags strip, lightbox gallery
-- `app/views/recipes/_control_panel.html.erb` — Role-aware toolbar on recipe#show; renders for the recipe owner (Edit) or any admin (status badge + grouped Publish/Reject/Reprocess buttons + separated Delete); uses shared `.btn` component classes
+- `app/views/recipes/_control_panel.html.erb` — Role-aware toolbar on recipe#show, gated by `current_user == recipe.user || policy(:site).admin?`; renders Edit and (now, for owners too) Delete, plus admin-only status badge + grouped Publish/Reject/Reprocess buttons via `policy(recipe)`; uses shared `.btn` component classes
 - `app/views/recipes/_recipe.html.erb` — Recipe card with square image crop and a corner time badge when `cooking_time` is present
 - `app/views/recipes/_filter_set.html.erb` — Search form with collapsible `<details>` groups around the tag autocompletes (all open by default)
 - `app/views/recipes/_tagged_attributes.html.erb` / `app/views/acts_as_taggable_on/tags/_tag.html.erb` — Tag chips, colored per context, linking to the matching filter
-- `app/views/admin/recipes/index.html.erb` — Admin recipe index: page header with primary "New Magic Recipe" CTA, status-filter tab strip above the table, and grouped row actions (Publish/Reject/Reprocess/Edit with Delete separated)
+- `app/views/admin/recipes/index.html.erb` — Admin recipe index (scoped for members): page header with "New Recipe" CTA (the public recipe form), status-filter tab strip above the table, and grouped row actions (Publish/Reject/Reprocess/Edit with Delete separated, policy-gated)
 - `app/views/admin/users/index.html.erb` — Pending and approved user lists with approve buttons
 - `app/views/admin/ai_classifier_runs/` — AI run index (grouped by recipe) and show (full prompt/response detail)
 - `app/views/devise/registrations/new.html.erb` — Custom registration form that includes the username field (Simple Form)
@@ -105,7 +113,7 @@ bin/screenshots
 ## Routes
 
 - `root` → `recipes#index`
-- `resources :recipes` — index, new, create, show, edit, update (no destroy for non-admin)
+- `resources :recipes` — index, new, create, show, edit, update. No delete route (manual shell deletion happens at `admin/recipes`)
 - `admin/users` — index, plus member route: approve (patch)
 - `admin/recipes` — index, destroy, plus member routes: publish, reject, reprocess
 - `admin/magic_recipes` — new, create (AI import)
@@ -128,6 +136,7 @@ Recipes have a `status` field with values: `draft`, `processing`, `processing_fa
 - **RSpec** with FactoryBot, Shoulda Matchers, Capybara, Database Cleaner
 - Factories in `spec/support/factories.rb`, validated via `spec/models/factories_spec.rb`
 - Shared examples in `spec/support/shared_examples/`
+- Policy specs in `spec/policies/` are plain RSpec (no pundit-matchers) — they assert the role matrix directly on policy booleans and `Scope#resolve`
 - Feature specs use Selenium headless Chrome (`js: true`); default driver is `rack_test`
 - `user_logs_in` (in `Features::SessionHelpers`) creates and logs in a regular user; `log_in_as(user)` logs in a pre-created user (use this when you need to supply your own user, e.g. an admin)
 - WebMock disables external network calls in tests
@@ -162,7 +171,9 @@ Recipes have a `status` field with values: `draft`, `processing`, `processing_fa
 - Use `Recipe.includes(...)` for eager loading associations (not `Preloader`); image blobs are eager-loaded via `includes(images: { image_attachment: :blob })` in the recipes controller index/show
 - Markdown rendered via Redcarpet with `safe_links_only` and `escape_html`
 - Tagging associations exempted from strict loading (gem uses lazy loading internally)
-- Devise approval pattern: override `active_for_authentication?` and `inactive_message` on User; the `:pending_approval` symbol maps to `devise.failure.pending_approval` in `config/locales/devise.en.yml`; admins bypass the gate via `approved?` short-circuiting on `admin?`
+- Pundit authorization: every recipes/admin action calls `authorize` and scoped indexes call `policy_scope` (recipes and admin controllers have `after_action :verify_authorized`; `verify_policy_scoped` is per-controller on the indexes that scope). `RecipePolicy::Scope` is the single source of truth for "visible recipes" (admin → all, member → own, guest → none) and `AiClassifierRunPolicy::Scope` builds on it, so members can never see other users' recipes or runs anywhere. Symbol policies (`authorize :site, :admin_area?`) map to `SitePolicy`.
+- Denied-action semantics: `show?` failures re-raise `ActiveRecord::RecordNotFound` (uniform 404 for guests *and* logged-in members — no existence oracle); guests get redirected to sign-in; any other logged-in member denial redirects to `root_path` with the `not_authorized` alert (locale key in `config/locales/en.yml`). Policy-scoped lookups also produce a 404 (`policy_scope(...).find`), so acting on another user's recipe/runs 404s before the action's `authorize` even runs.
+- Devise approval pattern: override `active_for_authentication?` and `inactive_message` on User; the `:pending_approval` symbol maps to `devise.failure.pending_approval` in `config/locales/devise.en.yml`; admins bypass the gate via `approved?` short-circuiting on `admin?`. The approval gate stays an authn concern (`require_logged_in_approved!`), never a policy.
 - SSRF hardening: all outbound HTTP uses `SafeUrlFetcher.fetch` (never raw `Net::HTTP`/`URI.open`), which resolves DNS and blocks internal/private/link-local IPs before connecting. Test seam: stub `SafeUrlFetcher.addresses_for` to a public IP.
 - Login/registration hardening: Devise `:lockable` locks accounts after 10 failed attempts (email unlock); `users/sessions` and `users/registrations` controllers `rate_limit` `#create` (10/3min and 10/10min) returning 429 `devise.failure.too_many_requests`.
 - Draft disclosure: every autocomplete query (`autocomplete_query` helper) targets **published** recipes only; blank/non-String `q` yields `[]`, never a full enumeration.
