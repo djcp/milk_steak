@@ -8,7 +8,7 @@ MilkSteak is a recipe tracker web application built with love.
 
 - Create and edit recipes with ingredients, directions, images, and descriptions
 - Tag recipes across four facets: cooking methods, courses, cultural influences, and dietary restrictions
-- Browse and filter recipes by tags, name, ingredients, and author username
+- Browse and filter the full published cookbook by tags, name, ingredients, and author username — no account needed
 - Autocomplete for tags, ingredients, units, and serving units
 - AI-powered recipe import from URLs or pasted text (admin only, via Anthropic Claude)
 - Role-aware control panel on recipe pages: owners see Edit and can delete their own recipes; admins see the status badge and workflow actions (Publish, Reject, Reprocess, Delete)

@@ -6,6 +6,19 @@ describe RecipesController do
       sign_in_user build(:user)
     end
 
+    context '#index' do
+      it 'shows the full published feed, including other users\' recipes' do
+        other = create(:recipe)
+        draft = create(:recipe, :draft)
+
+        get :index
+
+        expect(response).to be_successful
+        expect(assigns(:recipes)).to include(other)
+        expect(assigns(:recipes)).not_to include(draft)
+      end
+    end
+
     context '#new' do
       it "can render a form" do
         get :new
@@ -123,6 +136,16 @@ describe RecipesController do
         get :index
 
         expect(response).to be_successful
+      end
+
+      it 'shows published recipes but not drafts' do
+        draft = create(:recipe, :draft)
+        published = create(:recipe)
+
+        get :index
+
+        expect(assigns(:recipes)).to include(published)
+        expect(assigns(:recipes)).not_to include(draft)
       end
     end
 

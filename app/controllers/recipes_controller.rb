@@ -5,12 +5,11 @@ class RecipesController < ApplicationController
   before_action :find_recipe, only: %i[show edit update]
 
   after_action :verify_authorized
-  after_action :verify_policy_scoped, only: :index
 
   def index
     authorize :recipe, :index?
     @filter_set = FilterSet.new(params.fetch(:filter_set, {}))
-    @recipes = policy_scope(Recipe).published.includes(images: { image_attachment: :blob }).recent.paginate(
+    @recipes = Recipe.published.includes(images: { image_attachment: :blob }).recent.paginate(
       page: page_param,
       per_page: per_page_param
     )
