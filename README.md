@@ -17,6 +17,9 @@ MilkSteak is a recipe tracker web application built with love.
 - Image uploads with automatic variant generation (thumbnails, large)
 - Pagination and SEO-friendly recipe URLs
 - User accounts with email confirmation (Devise); new users are pending until an admin approves them
+- Custom-branded auth screens (log in, password reset, resend confirmation, account settings)
+- Empty-state messaging on the recipe index, with clear-filters and add-your-first-recipe actions
+- Branded error pages (400/404/406/422/500) rendered by the app, with a link back home
 - Unique public username collected at signup; shown on recipes instead of email address
 - Admin user management: view pending and approved users, approve pending accounts
 

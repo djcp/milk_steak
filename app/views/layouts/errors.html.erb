@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="ROBOTS" content="NOINDEX, NOFOLLOW" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= page_title(app_name: ENV.fetch('APP_NAME', 'Recipes')) %></title>
+    <%= stylesheet_link_tag "tailwind", :media => 'all' %>
+  </head>
+  <body>
+    <div class="max-w-5xl mx-auto">
+      <header class="bg-terra/90 backdrop-blur-md">
+        <h1 class="m-0 py-2 px-4 text-center text-white text-4xl md:text-6xl lg:text-7xl tracking-tight">
+          <%= link_to(ENV.fetch('APP_NAME', 'Recipes'), root_path, class: 'text-white no-underline hover:text-white/80 hover:no-underline') %>
+        </h1>
+      </header>
+      <div class="max-w-5xl mx-auto bg-cream/95 backdrop-blur-sm min-h-screen flex items-center justify-center">
+        <%= yield %>
+      </div>
+    </div>
+  </body>
+</html>

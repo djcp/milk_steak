@@ -1,0 +1,25 @@
+<div class="max-w-md mx-auto p-6">
+  <h2 class="text-2xl text-ink mb-6">Resend confirmation instructions</h2>
+
+  <%= simple_form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
+    <%= f.error_notification %>
+    <%= f.full_error :confirmation_token %>
+
+    <div class="space-y-4">
+      <%= f.input :email,
+            required: true,
+            autofocus: true,
+            value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email),
+            input_html: { autocomplete: 'email' } %>
+    </div>
+
+    <div class="mt-6">
+      <%= f.button :submit, 'Resend confirmation instructions', class: 'bg-terra-dark text-white px-5 py-2 rounded-lg hover:bg-terra font-medium transition-colors' %>
+    </div>
+  <% end %>
+
+  <div class="mt-6 text-sm text-ink-light space-y-2">
+    <%= render 'devise/shared/links' %>
+  </div>
+</div>
+<% content_for(:page_title, 'Resend confirmation instructions') %>

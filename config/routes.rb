@@ -40,6 +40,13 @@ Rails.application.routes.draw do
 
   root to: 'recipes#index'
 
+  # Branded error pages (also served via config.exceptions_app)
+  get '/400', to: 'errors#show'
+  get '/404', to: 'errors#show'
+  get '/406', to: 'errors#show'
+  get '/422', to: 'errors#show'
+  get '/500', to: 'errors#show'
+
   # Health check endpoint for Rails 8
   get 'up' => 'rails/health#show', as: :rails_health_check
 end
