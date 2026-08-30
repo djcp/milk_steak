@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_30_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_30_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pg_trgm"
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
@@ -81,6 +82,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_30_000000) do
     t.string "notes", limit: 1024
     t.datetime "updated_at"
     t.string "url", limit: 1024
+    t.index "lower((name)::text) gin_trgm_ops", name: "index_ingredients_on_lower_name_trgm", using: :gin
     t.index ["name"], name: "index_ingredients_on_name"
   end
 
@@ -114,7 +116,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_30_000000) do
     t.string "status", default: "draft", null: false
     t.datetime "updated_at"
     t.integer "user_id"
+    t.index "lower((name)::text) gin_trgm_ops", name: "index_recipes_on_lower_name_trgm", using: :gin
+    t.index ["status", "created_at"], name: "index_recipes_on_status_and_created_at"
     t.index ["status"], name: "index_recipes_on_status"
+    t.index ["user_id", "status"], name: "index_recipes_on_user_id_and_status"
     t.index ["user_id"], name: "index_recipes_on_user_id"
   end
 
@@ -314,10 +319,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_30_000000) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
+    t.index ["username"], name: "index_users_on_username_trgm", opclass: :gin_trgm_ops, using: :gin
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "ai_classifier_runs", "recipes", on_delete: :nullify
   add_foreign_key "images", "recipes"
   add_foreign_key "recipe_ingredients", "ingredients"
   add_foreign_key "recipe_ingredients", "recipes"
