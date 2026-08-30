@@ -1,15 +1,16 @@
 class RecipesController < ApplicationController
-  before_action :redirect_to_login,
-    if: -> { current_user.blank? },
-    only: [:new, :update, :create, :edit]
-  before_action :require_approved!, only: [:new, :create, :edit, :update]
-  before_action :find_recipe, only: [:show, :edit, :update]
-  before_action :can_update, only: [:edit, :update]
-  before_action :ensure_visible, only: [:show]
+  layout 'admin', only: %i[new create edit update]
+
+  before_action :require_logged_in_approved!, only: %i[new create edit update]
+  before_action :find_recipe, only: %i[show edit update]
+
+  after_action :verify_authorized
+  after_action :verify_policy_scoped, only: :index
 
   def index
+    authorize :recipe, :index?
     @filter_set = FilterSet.new(params.fetch(:filter_set, {}))
-    @recipes = Recipe.published.includes(images: { image_attachment: :blob }).recent.paginate(
+    @recipes = policy_scope(Recipe).published.includes(images: { image_attachment: :blob }).recent.paginate(
       page: page_param,
       per_page: per_page_param
     )
@@ -18,12 +19,14 @@ class RecipesController < ApplicationController
 
   def new
     @recipe = Recipe.new
+    authorize @recipe
     set_up_form_for(@recipe)
   end
 
   def update
+    authorize @recipe
     begin
-      @recipe.update!(recipe_params)
+      @recipe.update!(permitted_attributes(@recipe))
       flash[:notice] = t('ui.recipes.updated')
       redirect_to recipe_path(@recipe)
     rescue ActiveRecord::RecordInvalid => e
@@ -34,7 +37,9 @@ class RecipesController < ApplicationController
   end
 
   def create
-    @recipe = Recipe.new(recipe_params.merge(user: current_user, status: 'published'))
+    @recipe = Recipe.new(user: current_user, status: 'published')
+    authorize @recipe
+    @recipe.assign_attributes(permitted_attributes(@recipe))
     begin
       @recipe.save!
       flash[:notice] = t('created')
@@ -47,36 +52,15 @@ class RecipesController < ApplicationController
   end
 
   def show
+    authorize @recipe
   end
 
   def edit
+    authorize @recipe
     set_up_form_for(@recipe)
   end
 
   private
-
-  def recipe_params
-    permitted = [
-      :name,
-      :description,
-      :preparation_time,
-      :cooking_time,
-      :services,
-      :serving_units,
-      :directions,
-      :servings,
-      :cooking_method_list,
-      :cultural_influence_list,
-      :course_list,
-      :dietary_restriction_list,
-      { images_attributes: [:_destroy, :id, :caption, :featured, :image],
-        recipe_ingredients_attributes: [:_destroy, :id, :quantity, :unit, :section, :descriptor,
-                                        { ingredient_attributes: [:name] }] }
-    ]
-    permitted.push(:source_url, :source_text, :status) if current_user&.admin?
-
-    params.require(:recipe).permit(*permitted)
-  end
 
   def set_up_form_for(recipe)
     5.times do
@@ -92,24 +76,6 @@ class RecipesController < ApplicationController
   def find_recipe
     @recipe = Recipe.includes(:user, :recipe_ingredients, :ingredients,
       images: { image_attachment: :blob }).find(params[:id])
-  end
-
-  def can_update
-    return if current_user&.admin?
-
-    if @recipe.user != current_user
-      redirect_to new_user_session_path and return
-    end
-  end
-
-  def ensure_visible
-    return if @recipe.status == 'published'
-    return if current_user&.admin?
-    return if @recipe.user == current_user
-
-    # Return the same 404 as a missing record so anonymous users cannot
-    # distinguish draft/review/rejected recipes from nonexistent ones.
-    raise ActiveRecord::RecordNotFound
   end
 
   def page_param

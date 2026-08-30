@@ -70,7 +70,7 @@
       <% end %>
     </div>
 
-    <% if @run.recipe.present? %>
+    <% if @run.recipe.present? && policy(@run).rerun? %>
       <div class="mt-5 pt-5 border-t border-cream-dark">
         <%= button_to 'Rerun', rerun_admin_ai_classifier_run_path(@run), method: :post,
             class: 'inline-flex items-center bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-orange-700 transition-colors' %>

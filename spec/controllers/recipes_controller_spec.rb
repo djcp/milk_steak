@@ -10,6 +10,7 @@ describe RecipesController do
       it "can render a form" do
         get :new
         expect(response).to be_successful
+        expect(response).to render_template(layout: 'admin')
       end
     end
 
@@ -23,6 +24,20 @@ describe RecipesController do
         get :edit, params: { id: recipe.id }
 
         expect(response).to be_successful
+        expect(response).to render_template(layout: 'admin')
+      end
+
+      it "cannot edit another user's recipe" do
+        user = build(:user)
+        allow(controller).to receive(:current_user).and_return(user)
+        recipe = build_stubbed(:recipe)
+        scope = double(find: recipe)
+        allow(Recipe).to receive(:includes).and_return(scope)
+
+        get :edit, params: { id: recipe.id }
+
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq('Not authorized')
       end
     end
 
@@ -77,42 +92,10 @@ describe RecipesController do
         allow(controller).to receive(:current_user).and_return(build(:user))
       end
 
-      it 'strips the ingredient id for a non-admin' do
-        post :create, params: {
-          recipe: {
-            name: 'foo',
-            recipe_ingredients_attributes: [
-              { quantity: '2', unit: 'cups', ingredient_attributes: { id: '99', name: 'hacked' } }
-            ]
-          }
-        }
-
-        permitted = controller.send(:recipe_params)
-        ingredient_attrs = permitted[:recipe_ingredients_attributes].first[:ingredient_attributes]
-        ingredient_attrs = ingredient_attrs.to_h
-
-        expect(ingredient_attrs).to eq('name' => 'hacked')
-        expect(ingredient_attrs.key?('id')).to be false
-      end
-
-      it 'strips the ingredient id for an admin so a shared ingredient cannot be renamed' do
-        allow(controller).to receive(:current_user).and_return(build(:user, :admin))
-
-        post :create, params: {
-          recipe: {
-            name: 'foo',
-            recipe_ingredients_attributes: [
-              { quantity: '2', unit: 'cups', ingredient_attributes: { id: '99', name: 'hacked' } }
-            ]
-          }
-        }
-
-        permitted = controller.send(:recipe_params)
-        ingredient_attrs = permitted[:recipe_ingredients_attributes].first[:ingredient_attributes]
-        ingredient_attrs = ingredient_attrs.to_h
-
-        expect(ingredient_attrs).to eq('name' => 'hacked')
-        expect(ingredient_attrs.key?('id')).to be false
+      it 'never permits an ingredient id, for any role, so a shared ingredient cannot be renamed' do
+        [build(:user), build(:user, :admin)].each do |user|
+          expect(permitted_ingredient_attrs_for(user)).to eq([:name])
+        end
       end
 
       it 'cannot rename a shared ingredient, even with a forged id' do
@@ -210,4 +193,11 @@ def create_stubbed_recipe
   allow(recipe).to receive(:save!)
 
   recipe
+end
+
+def permitted_ingredient_attrs_for(user)
+  permitted = RecipePolicy.new(user, Recipe.new).permitted_attributes
+  nested = permitted.find { |attr| attr.is_a?(Hash) }
+  ri_hash = nested[:recipe_ingredients_attributes].find { |attr| attr.is_a?(Hash) }
+  ri_hash[:ingredient_attributes]
 end

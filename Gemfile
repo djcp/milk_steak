@@ -22,6 +22,7 @@ gem 'puma', '~> 7.2'
 gem 'devise', '~> 5.0'
 gem 'acts_as_list'
 gem 'acts-as-taggable-on', '~> 13.0'
+gem 'pundit'
 gem 'will_paginate'
 gem 'redcarpet'
 gem 'aws-sdk-s3', require: false

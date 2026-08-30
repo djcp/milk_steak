@@ -36,7 +36,13 @@ feature 'Recipe control panel' do
         expect(page).not_to have_button('Publish')
         expect(page).not_to have_button('Reject')
         expect(page).not_to have_button('Reprocess')
-        expect(page).not_to have_button('Delete')
+      end
+    end
+
+    scenario 'can delete their own recipe' do
+      visit recipe_path(recipe)
+      within('#control-panel') do
+        expect(page).to have_button('Delete')
       end
     end
   end

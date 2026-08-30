@@ -1,5 +1,8 @@
 <div class="max-w-6xl mx-auto">
-  <h1 class="text-3xl text-ink mb-6">Admin: Recipes</h1>
+  <div class="flex items-center justify-between gap-4 mb-6">
+    <h1 class="text-3xl text-ink">Admin: Recipes</h1>
+    <%= link_to 'New Recipe', new_recipe_path, class: 'btn btn-success' %>
+  </div>
 
   <div class="bg-white rounded-xl shadow-sm border border-cream-dark overflow-hidden">
     <div class="flex items-center gap-x-2 overflow-x-auto border-b border-cream-dark bg-gray-50 px-4 py-2.5 text-sm">

@@ -3,9 +3,14 @@ require 'spec_helper'
 describe Admin::MagicRecipesController do
   describe 'non-admin access' do
     context 'when guest' do
-      it 'redirects from new' do
+      it 'redirects to sign in from new' do
         get :new
-        expect(response).to redirect_to(root_path)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+
+      it 'redirects to sign in from create' do
+        post :create, params: { source_url: 'https://example.com/recipe' }
+        expect(response).to redirect_to(new_user_session_path)
       end
     end
 

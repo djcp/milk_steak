@@ -3,18 +3,42 @@ require 'spec_helper'
 describe Admin::AiClassifierRunsController do
   describe 'non-admin access' do
     context 'when guest' do
-      it 'redirects from index' do
+      it 'redirects to sign in' do
         get :index
-        expect(response).to redirect_to(root_path)
+        expect(response).to redirect_to(new_user_session_path)
       end
     end
 
     context 'when regular user' do
-      before { sign_in_user build(:user, admin: false) }
+      let(:user) { create(:user) }
 
-      it 'redirects from index' do
+      before { sign_in_user user }
+
+      it 'shows only runs for their own recipes' do
+        mine   = create(:recipe, user: user)
+        theirs = create(:recipe)
+        create(:ai_classifier_run, :with_recipe, recipe: mine)
+        create(:ai_classifier_run, :with_recipe, recipe: theirs)
+
         get :index
-        expect(response).to redirect_to(root_path)
+
+        expect(response).to be_successful
+        expect(assigns(:recipe_ids)).to include(mine.id)
+        expect(assigns(:recipe_ids)).not_to include(theirs.id)
+      end
+
+      it 'cannot view another user\'s run' do
+        run = create(:ai_classifier_run)
+
+        expect { get :show, params: { id: run.id } }
+          .to raise_error(ActiveRecord::RecordNotFound)
+      end
+
+      it 'cannot rerun the pipeline' do
+        run = create(:ai_classifier_run)
+
+        expect { post :rerun, params: { id: run.id } }
+          .to raise_error(ActiveRecord::RecordNotFound)
       end
     end
   end

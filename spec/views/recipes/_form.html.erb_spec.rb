@@ -3,6 +3,9 @@ require 'spec_helper'
 describe 'app/views/recipes/_form.html.erb' do
   before do
     allow(view).to receive(:current_user).and_return(build(:user))
+    allow(view).to receive(:policy) do |_record|
+      Struct.new(:admin_fields?).new(false)
+    end
   end
 
   it 'has correct multi autocompletes' do
@@ -35,6 +38,9 @@ describe 'app/views/recipes/_form.html.erb' do
   context 'when user is admin' do
     before do
       allow(view).to receive(:current_user).and_return(build(:user, :admin))
+      allow(view).to receive(:policy) do |_record|
+        Struct.new(:admin_fields?).new(true)
+      end
     end
 
     it 'shows admin fields' do

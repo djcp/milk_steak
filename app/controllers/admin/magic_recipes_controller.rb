@@ -1,8 +1,15 @@
 module Admin
   class MagicRecipesController < BaseController
-    def new; end
+    layout 'application'
+
+    before_action :require_admin!
+
+    def new
+      authorize :site, :magic?
+    end
 
     def create
+      authorize :site, :magic?
       recipe = Recipe.new(
         name: magic_recipe_name,
         user: current_user,

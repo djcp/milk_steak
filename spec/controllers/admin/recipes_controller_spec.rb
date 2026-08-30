@@ -3,20 +3,47 @@ require 'spec_helper'
 describe Admin::RecipesController do
   describe 'non-admin access' do
     context 'when guest' do
-      it 'redirects from index' do
+      it 'redirects to sign in' do
         get :index
-        expect(response).to redirect_to(root_path)
+        expect(response).to redirect_to(new_user_session_path)
       end
     end
 
     context 'when regular user' do
-      before { sign_in_user build(:user, admin: false) }
+      let(:user) { create(:user) }
 
-      it 'redirects from index' do
+      before { sign_in_user user }
+
+      it 'shows only their own recipes' do
+        mine = create(:recipe, user: user)
+        theirs = create(:recipe)
+
         get :index
-        expect(response).to redirect_to(root_path)
+
+        expect(response).to be_successful
+        expect(assigns(:recipes)).to include(mine)
+        expect(assigns(:recipes)).not_to include(theirs)
+        expect(assigns(:status_counts)).to have_key('published')
       end
 
+      it 'deletes one of their own recipes' do
+        mine = create(:recipe, user: user)
+
+        expect do
+          delete :destroy, params: { id: mine.id }
+        end.to change(Recipe, :count).by(-1)
+
+        expect(response).to redirect_to(admin_recipes_path)
+      end
+
+      it 'cannot see or act on another user\'s recipe' do
+        theirs = create(:recipe)
+
+        expect { delete :destroy, params: { id: theirs.id } }
+          .to raise_error(ActiveRecord::RecordNotFound)
+        expect { patch :publish, params: { id: theirs.id } }
+          .to raise_error(ActiveRecord::RecordNotFound)
+      end
     end
   end
 
