@@ -81,14 +81,14 @@ feature 'Recipe control panel' do
         visit recipe_path(recipe)
         click_button 'Publish'
         expect(recipe.reload.status).to eq('published')
-        expect(page).to have_current_path(recipe_path(recipe))
+        expect(page).to have_current_path(admin_recipes_path)
       end
 
       scenario 'rejecting marks the recipe as rejected' do
         visit recipe_path(recipe)
         click_button 'Reject'
         expect(recipe.reload.status).to eq('rejected')
-        expect(page).to have_current_path(recipe_path(recipe))
+        expect(page).to have_current_path(admin_recipes_path)
       end
     end
 

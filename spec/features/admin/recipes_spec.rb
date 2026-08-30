@@ -5,9 +5,9 @@ feature 'Admin recipe management' do
 
   before { log_in_as(admin) }
 
-  scenario 'status bar includes a link to create a magic recipe' do
+  scenario 'sidebar includes a link to create a magic recipe' do
     visit admin_recipes_path
-    expect(page).to have_link('New Magic Recipe', href: new_admin_magic_recipe_path)
+    expect(page).to have_link('Magic Recipe', href: new_admin_magic_recipe_path)
   end
 
   scenario 'status filter links filter recipes by status' do

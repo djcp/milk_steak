@@ -14,23 +14,23 @@ module Admin
     def publish
       if @recipe.publishable?
         @recipe.update!(status: 'published')
-        redirect_to recipe_path(@recipe), notice: 'Recipe published.'
+        redirect_to admin_recipes_path, notice: 'Recipe published.'
       else
-        redirect_to recipe_path(@recipe), alert: 'Recipe cannot be published from its current status.'
+        redirect_to admin_recipes_path, alert: 'Recipe cannot be published from its current status.'
       end
     end
 
     def reject
       @recipe.update!(status: 'rejected')
-      redirect_to recipe_path(@recipe), notice: 'Recipe rejected.'
+      redirect_to admin_recipes_path, notice: 'Recipe rejected.'
     end
 
     def reprocess
       if @recipe.reprocessable?
         MagicRecipeJob.perform_later(@recipe.id)
-        redirect_to recipe_path(@recipe), notice: 'Recipe re-enqueued for processing.'
+        redirect_to admin_recipes_path, notice: 'Recipe re-enqueued for processing.'
       else
-        redirect_to recipe_path(@recipe), alert: 'Recipe cannot be reprocessed from its current status.'
+        redirect_to admin_recipes_path, alert: 'Recipe cannot be reprocessed from its current status.'
       end
     end
 

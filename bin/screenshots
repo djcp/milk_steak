@@ -71,7 +71,7 @@ begin
   driver.save_screenshot(File.join(OUT_DIR, 'recipe_detail.png'))
   puts 'recipe_detail.png saved'
 
-  # 3. Admin recipe index (shows restyled status bar)
+  # 3. Admin recipe index (sidebar shell + status-filter tabs)
   driver.get("#{HOST}/admin/recipes")
   sleep 1
   driver.save_screenshot(File.join(OUT_DIR, 'admin_index.png'))
