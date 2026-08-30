@@ -93,7 +93,7 @@ bin/screenshots
 
 ### Key Views / Partials
 - `app/views/layouts/admin.html.erb` — Dedicated admin layout: slim terra sidebar (`app/views/admin/_sidebar.html.erb`) with role-aware nav (Recipes + AI Runs for everyone; Magic Recipe and Users links and the "Admin" chip for admins via `policy(:site)`), plus flashes, footer, and scripts; selected explicitly via `layout "admin"` on `Admin::BaseController` (Rails does not auto-resolve `layouts/admin` for namespaced controllers — `_implied_layout_name` would look up `layouts/admin/recipes`)
-- `app/views/recipes/_show_content.html.erb` — Publication-style recipe detail: hero image, title + metadata chips (prep/cook/makes/author shown as `user_username`, not email), two-column ingredients|directions on desktop, tags strip, lightbox gallery
+- `app/views/recipes/_show_content.html.erb` — Publication-style recipe detail: title + metadata chips (prep/cook/makes/author shown as `user_username`, not email), then the featured image, then two-column ingredients|directions on desktop, then tags strip and lightbox gallery
 - `app/views/recipes/_control_panel.html.erb` — Role-aware toolbar on recipe#show, gated by `current_user == recipe.user || policy(:site).admin?`; renders Edit and (now, for owners too) Delete, plus admin-only status badge + grouped Publish/Reject/Reprocess buttons via `policy(recipe)`; uses shared `.btn` component classes
 - `app/views/recipes/_recipe.html.erb` — Recipe card with square image crop and a corner time badge when `cooking_time` is present
 - `app/views/recipes/_filter_set.html.erb` — Search form with collapsible `<details>` groups around the tag autocompletes (all open by default)
