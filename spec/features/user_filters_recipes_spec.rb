@@ -22,7 +22,9 @@ feature 'User filters recipes', js: true do
 
     visit '/'
 
-    fill_in 'Cooking methods', with: 'deep fried'
+    fill_in 'filter_set_cooking_methods', with: 'deep fried'
+    # The <details> <summary> serves as the field's accessible label.
+    expect(find('#filter_set_cooking_methods')['aria-labelledby']).to eq('filter_cooking_methods_summary')
     # Dismiss the jQuery UI autocomplete menu (Escape) before submitting.
     # An open menu can race the page navigation in Selenium and raise
     # "Node with given id does not belong to the document".

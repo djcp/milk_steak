@@ -2,42 +2,47 @@
   <%= filter.input :name %>
 
   <details class="filter-group mt-3" open>
-    <summary class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2">Ingredients</summary>
-    <%= filter.input :ingredients, required: false, input_html: {
+    <summary id="filter_ingredients_summary" class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2">Ingredients</summary>
+    <%= filter.input :ingredients, required: false, label: false, input_html: {
       class: 'autocomplete_multiple',
-      'data-target' => autocompletes_ingredient_names_path
+      'data-target' => autocompletes_ingredient_names_path,
+      'aria-labelledby' => 'filter_ingredients_summary'
     } %>
   </details>
 
   <details class="filter-group mt-3" open>
-    <summary class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2">Cooking methods</summary>
-    <%= filter.input :cooking_methods, input_html: {
+    <summary id="filter_cooking_methods_summary" class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2">Cooking methods</summary>
+    <%= filter.input :cooking_methods, label: false, input_html: {
       class: 'autocomplete_multiple',
-      'data-target' => autocompletes_cooking_methods_path
+      'data-target' => autocompletes_cooking_methods_path,
+      'aria-labelledby' => 'filter_cooking_methods_summary'
     } %>
   </details>
 
   <details class="filter-group mt-3" open>
-    <summary class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2">Cultural influences</summary>
-    <%= filter.input :cultural_influences, input_html: {
+    <summary id="filter_cultural_influences_summary" class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2">Cultural influences</summary>
+    <%= filter.input :cultural_influences, label: false, input_html: {
       class: 'autocomplete_multiple',
-      'data-target' => autocompletes_cultural_influences_path
+      'data-target' => autocompletes_cultural_influences_path,
+      'aria-labelledby' => 'filter_cultural_influences_summary'
     } %>
   </details>
 
   <details class="filter-group mt-3" open>
-    <summary class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2">Courses</summary>
-    <%= filter.input :courses, input_html: {
+    <summary id="filter_courses_summary" class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2">Courses</summary>
+    <%= filter.input :courses, label: false, input_html: {
       class: 'autocomplete_multiple',
-      'data-target' => autocompletes_courses_path
+      'data-target' => autocompletes_courses_path,
+      'aria-labelledby' => 'filter_courses_summary'
     } %>
   </details>
 
   <details class="filter-group mt-3" open>
-    <summary class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2">Dietary restrictions</summary>
-    <%= filter.input :dietary_restrictions, input_html: {
+    <summary id="filter_dietary_restrictions_summary" class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2">Dietary restrictions</summary>
+    <%= filter.input :dietary_restrictions, label: false, input_html: {
       class: 'autocomplete_multiple',
-      'data-target' => autocompletes_dietary_restrictions_path
+      'data-target' => autocompletes_dietary_restrictions_path,
+      'aria-labelledby' => 'filter_dietary_restrictions_summary'
     } %>
   </details>
 
