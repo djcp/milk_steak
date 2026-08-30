@@ -55,8 +55,8 @@ bin/screenshots
 ### Models
 - `app/models/recipe.rb` — Core model with status workflow, tagging, nested attributes; delegates `email` and `username` to user (prefix: true); `source_text` capped at 50 kB. `Recipe.fuzzy_autocomplete_for` (and `Ingredient.unique_names`, `RecipeIngredient.unique_units`, `Recipe.unique_serving_units`) search published recipes only.
 - `app/models/image.rb` — Active Storage attachment with type/size validation; variants: `:tiny` (32x32), `:thumb` (187x187), `:large` (800x600)
-- `app/models/ingredient.rb` — Ingredient names, linked to recipes via RecipeIngredient
-- `app/models/recipe_ingredient.rb` — Join model with quantity (max 10 chars), unit, descriptor, section; ordered via `acts_as_list` scoped by recipe and section
+- `app/models/ingredient.rb` — Global, shared ingredient names (normalized lowercase on save, unique), linked to recipes via RecipeIngredient
+- `app/models/recipe_ingredient.rb` — Join model with quantity (max 10 chars), unit, descriptor, section; ordered via `acts_as_list` scoped by recipe and section; replaces `accepts_nested_attributes_for :ingredient` with a hand-rolled `ingredient_attributes=` setter that create-or-matches by (lowercased) name and ignores any incoming `id` — the recipe form can never rename or duplicate an Ingredient, for any role
 - `app/models/user.rb` — Devise user with `username` (unique, 3–30 chars, letters/numbers/underscores), `admin` flag, and `approved` flag. Key methods: `approved?` (always true for admins), `active_for_authentication?` (gates sign-in for unapproved users), `inactive_message` (returns `:pending_approval` symbol for Devise i18n). Pending admins bypass the approval gate — the admin flag is checked first. Also `:lockable` (10 failed attempts → lock, email unlock).
 - `app/models/ai_classifier_run.rb` — Persisted record of every AI pipeline call (RecipeTextExtractor, RecipeAiExtractor, RecipeAiApplier); stores adapter, model, system_prompt, user_prompt, raw_response, timing, success/failure. `belongs_to :recipe, optional: true` (FK `on_delete: :nullify`, so runs survive recipe deletion); `recipe_name` returns `"(recipe deleted)"` when the recipe is gone, and admin index/show views render that fallback instead of a dead link.
 - `app/models/filter_set.rb` — PORO (ActiveModel::Model) for compound recipe filtering (tags, name, ingredients, author); author filter uses `users.username ilike ?` (case-insensitive partial match)
@@ -65,7 +65,7 @@ bin/screenshots
 
 ### Controllers
 - `app/controllers/application_controller.rb` — `configure_permitted_parameters` permits `:username` on Devise sign_up; `require_approved!` signs out and redirects any authenticated user whose `approved?` returns false; `autocomplete_query` helper returns nil for blank/non-String `q`, so autocompletes render `[]` instead of enumerating
-- `app/controllers/recipes_controller.rb` — Main CRUD with ownership-based authorization; `require_approved!` fires before new/create/edit/update; `ensure_visible` raises `ActiveRecord::RecordNotFound` (→ 404) for guests on non-published recipes (no existence oracle); `page`/`per_page` clamped (`page` ≥ 1, `per_page` 1–48); nested `ingredient_attributes` only exposes `:id` to admins so non-admins can't rename shared ingredients
+- `app/controllers/recipes_controller.rb` — Main CRUD with ownership-based authorization; `require_approved!` fires before new/create/edit/update; `ensure_visible` raises `ActiveRecord::RecordNotFound` (→ 404) for guests on non-published recipes (no existence oracle); `page`/`per_page` clamped (`page` ≥ 1, `per_page` 1–48); nested `ingredient_attributes` permits `:name` only (no `:id`) for every role — Ingredients are create-or-matched by name in `RecipeIngredient#ingredient_attributes=`, never renamed/duplicated
 - `app/controllers/users/sessions_controller.rb` / `registrations_controller.rb` — Devise overrides that rate-limit `#create` (10 per 3 min for sessions, 10 per 10 min for registrations) via `rate_limit ... with: :rate_limited` returning 429 `devise.failure.too_many_requests`
 - `app/controllers/admin/base_controller.rb` — Admin auth via `current_user&.admin?` before_action
 - `app/controllers/admin/recipes_controller.rb` — Admin recipe management (publish, reject, reprocess, destroy); status actions redirect back to `admin_recipes_path`
@@ -77,7 +77,7 @@ bin/screenshots
 ### Services
 - `app/services/safe_url_fetcher.rb` — SSRF-safe HTTP fetch. Resolves DNS, blocks internal/private/link-local ranges (`0.0.0.0/8`, `10/8`, `100.64/10`, `127/8`, `169.254/16` incl. AWS metadata, `172.16/12`, `192.168/16`, `::1`, `fc00::/7`, `fe80::/10`), raises `SafeUrlFetcher::BlockedAddressError`; max 5 redirects, timeouts (5s open / 15s read), `MAX_BYTES = 5.megabytes`. Test seam: `SafeUrlFetcher.addresses_for` / `blocked_address?`
 - `app/services/recipe_ai_extractor.rb` — Sends source content to Anthropic API, returns parsed JSON; wraps text in `<untrusted_recipe_text>` delimiters (prompt-injection defense); `validate_result!` requires name+directions and an ingredients array (max 200)
-- `app/services/recipe_ai_applier.rb` — Applies AI-extracted data to a Recipe (ingredients, tags, directions); caps ingredients at 200
+- `app/services/recipe_ai_applier.rb` — Applies AI-extracted data to a Recipe (ingredients, tags, directions); caps ingredients at 200; ingredient names normalized to lowercase and create-or-matched against the shared table
 - `app/services/recipe_text_extractor.rb` — Fetches and extracts text/schema.org data from recipe URLs via `SafeUrlFetcher.fetch(@url)`
 
 ### Jobs
@@ -152,11 +152,12 @@ Recipes have a `status` field with values: `draft`, `processing`, `processing_fa
 - Nested attributes: Recipe accepts nested RecipeIngredients and Images
 - RecipeIngredients ordered via `acts_as_list`, scoped by recipe and section
 - `RecipeIngredient#quantity` is max 10 characters — AI prompts must enforce this; use digits/fractions/hyphens only (e.g. `"1 1/2"`, `"2-3"`, `"to taste"`)
+- Ingredients are a global, shared table with **lowercase-normalized, unique names** (migration `20260830000003` collapsed existing mixed-case/duplicate rows). The recipe form and AI importer both resolve ingredients create-or-match by normalized name; no code path can rename or duplicate an Ingredient — admins included
 - Image uploads validated for type (JPEG, PNG, WebP, AVIF, HEIC/HEIF) and size (max 10MB)
 - Security headers in `config/application.rb`: X-Frame-Options, X-Content-Type-Options, X-XSS-Protection, Referrer-Policy, Permissions-Policy
 - CSP enforced via `content_security_policy.rb`; `script_src` has no `:unsafe_inline` — the source-toggle script (`admin/magic_recipes/new.js`), the Google Analytics snippet (`analytics.js`, reads the tracking ID from a `data-tracking-id` attribute since Propshaft doesn't compile ERB in JS), and the test-only `$.fx.off` setup (`test_setup.js`) are all external assets
 - Foreign key constraints on `images`, `recipe_ingredients`, and `recipes` tables
-- Search performance indexes: `pg_trgm` extension enabled with GIN trigram indexes on `recipes(lower(name))`, `ingredients(lower(name))`, and `users(username)` for the substring `like`/`ilike` filter/autocomplete queries (see `FilterSet`, `Recipe.fuzzy_autocomplete_for`, and the autocomplete controllers); composite indexes on `recipes(user_id, status)` and `recipes(status, created_at)`
+- Search performance indexes: `pg_trgm` extension enabled with GIN trigram indexes on `recipes(lower(name))`, `ingredients(lower(name))`, and `users(username)` for the substring `like`/`ilike` filter/autocomplete queries (see `FilterSet`, `Recipe.fuzzy_autocomplete_for`, and the autocomplete controllers); composite indexes on `recipes(user_id, status)` and `recipes(status, created_at)`; a unique index on `ingredients(name)` enforces one canonical row per ingredient name
 - `Rack::Deflater` middleware for gzip compression
 - Use `Recipe.includes(...)` for eager loading associations (not `Preloader`); image blobs are eager-loaded via `includes(images: { image_attachment: :blob })` in the recipes controller index/show
 - Markdown rendered via Redcarpet with `safe_links_only` and `escape_html`

@@ -18,10 +18,21 @@ class RecipeIngredient < ApplicationRecord
     allow_blank: true,
     length: { maximum: 255 }
 
-  accepts_nested_attributes_for :ingredient,
-    reject_if: ->(attr) { attr['name'].blank? }
-
   delegate :name, to: :ingredient
+
+  # Replaces `accepts_nested_attributes_for :ingredient`. Ingredient names are
+  # normalized to lowercase and resolved create-or-match by name, so the recipe
+  # form can never rename or duplicate the shared global Ingredient table --
+  # for any role (admin included). An incoming `id` is deliberately ignored.
+  def ingredient_attributes=(attrs)
+    name = attrs['name'].to_s.strip.downcase
+
+    if name.present?
+      self.ingredient = Ingredient.find_or_create_by(name: name)
+    else
+      self.ingredient ||= Ingredient.new
+    end
+  end
 
   def self.unique_units
     joins(:recipe)

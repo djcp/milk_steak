@@ -60,6 +60,19 @@ describe RecipeAiApplier do
       end.to change(Ingredient, :count).by(2)
     end
 
+    it 'normalizes ingredient names to lowercase' do
+      Ingredient.create!(name: 'flour')
+      data = self.data.merge('ingredients' => [
+        { 'quantity' => '2', 'unit' => 'cups', 'name' => 'Flour' }
+      ])
+
+      described_class.apply(recipe, data)
+
+      recipe.reload
+      expect(recipe.ingredients.map(&:name)).to eq(['flour'])
+      expect(Ingredient.where(name: 'flour').count).to eq(1)
+    end
+
     it 'assigns sections to recipe ingredients' do
       described_class.apply(recipe, data)
 
