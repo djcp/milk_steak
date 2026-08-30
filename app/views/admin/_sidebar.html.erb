@@ -1,0 +1,48 @@
+<%
+  current_admin_item =
+    case params[:controller]
+    when 'admin/recipes' then :recipes
+    when 'admin/magic_recipes' then :magic
+    when 'admin/users' then :users
+    when 'admin/ai_classifier_runs' then :runs
+    end
+  nav_items = [
+    { key: :magic,    label: '<span class="text-[1.5em] leading-none">🪄</span> Magic Recipe'.html_safe, href: new_admin_magic_recipe_path, outline: true },
+    { key: :recipes, label: 'Recipes', href: admin_recipes_path },
+    { key: :users,    label: 'Users', href: admin_users_path },
+    { key: :runs,     label: 'AI Runs', href: admin_ai_classifier_runs_path },
+  ]
+-%>
+<aside class="bg-terra-dark text-white lg:w-56 lg:shrink-0 lg:min-h-screen lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto">
+  <div class="flex items-center justify-between gap-4 px-4 py-4 lg:border-b lg:border-white/10 lg:px-5 lg:py-6">
+    <%= link_to ENV.fetch('APP_NAME', 'Recipes'), admin_recipes_path,
+        class: 'text-white no-underline font-display text-2xl tracking-tight hover:text-white/80' %>
+    <span class="text-white/50 text-sm font-semibold uppercase tracking-wider">Admin</span>
+  </div>
+
+  <%= link_to 'Back to site', root_path,
+      class: 'block px-4 py-3 lg:px-5 lg:py-5 text-white/70 hover:text-white no-underline text-sm' %>
+
+  <nav class="flex flex-wrap items-center gap-1 px-4 pb-4 lg:flex-col lg:items-stretch lg:px-3 lg:pt-4 lg:pb-6">
+    <% nav_items.each do |item| %>
+      <%= link_to item[:label], item[:href],
+          class: ['no-underline rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                  item[:outline] ? 'border border-white/30' : '',
+                  item[:key] == current_admin_item ? 'bg-white/25 text-white' : 'text-white/75 hover:text-white hover:bg-white/10'].join(' ') %>
+    <% end %>
+    <% if current_user.present? %>
+      <%= link_to 'Sign out', destroy_user_session_path, method: :delete,
+          class: 'no-underline rounded-lg px-3 py-2 text-sm font-medium text-white/75 hover:text-white hover:bg-white/10 lg:hidden' %>
+    <% end %>
+  </nav>
+
+  <% if current_user.present? %>
+    <div class="hidden px-5 pb-5 lg:block">
+      <div class="px-3 py-2.5 bg-white/10 rounded-lg space-y-0.5">
+        <div class="text-white text-sm font-medium truncate"><%= current_user.email %></div>
+        <%= link_to 'Sign out', destroy_user_session_path, method: :delete,
+            class: 'text-white/70 hover:text-white no-underline text-xs' %>
+      </div>
+    </div>
+  <% end %>
+</aside>

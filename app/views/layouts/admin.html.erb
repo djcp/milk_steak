@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="ROBOTS" content="NOODP" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= page_title(app_name: 'Recipes Admin') %></title>
+    <%= stylesheet_link_tag "tailwind", :media => 'all' %>
+    <%= stylesheet_link_tag "jquery-ui.min", :media => 'all' %>
+    <%= csrf_meta_tags %>
+  </head>
+  <body class="<%= body_class %>">
+    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row min-h-screen">
+      <%= render 'admin/sidebar' %>
+      <div class="flex-1 min-w-0 bg-cream/95 backdrop-blur-sm flex flex-col">
+        <%= render 'flashes' %>
+        <main id="main_content" class="flex-1 p-4 md:p-6">
+          <%= yield %>
+        </main>
+        <%= render 'footer' %>
+      </div>
+    </div>
+    <%= render 'javascript' %>
+    <%= render 'analytics' %>
+  </body>
+</html>
