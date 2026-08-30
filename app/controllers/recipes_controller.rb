@@ -71,19 +71,11 @@ class RecipesController < ApplicationController
       :dietary_restriction_list,
       { images_attributes: [:_destroy, :id, :caption, :featured, :image],
         recipe_ingredients_attributes: [:_destroy, :id, :quantity, :unit, :section, :descriptor,
-                                        { ingredient_attributes: ingredient_attributes }] }
+                                        { ingredient_attributes: [:name] }] }
     ]
     permitted.push(:source_url, :source_text, :status) if current_user&.admin?
 
     params.require(:recipe).permit(*permitted)
-  end
-
-  # Ingredients are a global, shared table. Only admins may pass an existing
-  # ingredient's `:id` (which lets ActiveRecord update that shared record).
-  # Regular users may only create-or-match by name, so they can never rename a
-  # shared ingredient that appears on other users' recipes.
-  def ingredient_attributes
-    current_user&.admin? ? [:id, :name] : [:name]
   end
 
   def set_up_form_for(recipe)

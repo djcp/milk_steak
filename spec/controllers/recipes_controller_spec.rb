@@ -77,12 +77,12 @@ describe RecipesController do
         allow(controller).to receive(:current_user).and_return(build(:user))
       end
 
-      it 'strips the ingredient id for a non-admin so a shared ingredient cannot be renamed' do
+      it 'strips the ingredient id for a non-admin' do
         post :create, params: {
           recipe: {
             name: 'foo',
             recipe_ingredients_attributes: [
-              { ingredient_attributes: { id: '99', name: 'hacked' } }
+              { quantity: '2', unit: 'cups', ingredient_attributes: { id: '99', name: 'hacked' } }
             ]
           }
         }
@@ -95,14 +95,14 @@ describe RecipesController do
         expect(ingredient_attrs.key?('id')).to be false
       end
 
-      it 'keeps the ingredient id for an admin so they can rename shared ingredients' do
+      it 'strips the ingredient id for an admin so a shared ingredient cannot be renamed' do
         allow(controller).to receive(:current_user).and_return(build(:user, :admin))
 
         post :create, params: {
           recipe: {
             name: 'foo',
             recipe_ingredients_attributes: [
-              { ingredient_attributes: { id: '99', name: 'renamed' } }
+              { quantity: '2', unit: 'cups', ingredient_attributes: { id: '99', name: 'hacked' } }
             ]
           }
         }
@@ -111,7 +111,25 @@ describe RecipesController do
         ingredient_attrs = permitted[:recipe_ingredients_attributes].first[:ingredient_attributes]
         ingredient_attrs = ingredient_attrs.to_h
 
-        expect(ingredient_attrs).to eq('id' => '99', 'name' => 'renamed')
+        expect(ingredient_attrs).to eq('name' => 'hacked')
+        expect(ingredient_attrs.key?('id')).to be false
+      end
+
+      it 'cannot rename a shared ingredient, even with a forged id' do
+        shared = create(:ingredient, name: 'flour')
+        allow(controller).to receive(:current_user).and_return(build(:user, :admin))
+
+        post :create, params: {
+          recipe: {
+            name: 'foo',
+            recipe_ingredients_attributes: [
+              { quantity: '2', unit: 'cups', ingredient_attributes: { id: shared.id, name: 'Risen Flour' } }
+            ]
+          }
+        }
+
+        expect(shared.reload.name).to eq('flour')
+        expect(Ingredient.where(name: 'risen flour').count).to eq(1)
       end
     end
   end
