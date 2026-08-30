@@ -75,7 +75,7 @@ class RecipePolicy < ApplicationPolicy
   class Scope < ApplicationPolicy::Scope
     def resolve
       return scope.all if user&.admin?
-      return scope.none if user.blank?
+      return scope.published if user.blank?
 
       scope.where(user: user)
     end

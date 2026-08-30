@@ -43,8 +43,12 @@ describe RecipePolicy do
     end
 
     describe 'scope' do
-      it 'resolves to no recipes' do
-        expect(described_class::Scope.new(nil, Recipe.all).resolve.count).to eq(0)
+      it 'resolves to published recipes' do
+        create(:recipe, :draft)
+        create(:recipe, status: 'review')
+        published = create(:recipe)
+
+        expect(described_class::Scope.new(nil, Recipe.all).resolve).to contain_exactly(published)
       end
     end
   end
