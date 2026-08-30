@@ -66,6 +66,41 @@
   }
 }
 
+/* ── Buttons ── */
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid transparent;
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.4;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+  .btn-primary { background-color: var(--color-terra); color: #fff; }
+  .btn-primary:hover { background-color: var(--color-terra-dark); }
+  .btn-outline {
+    background-color: #fff;
+    border-color: #e4ddd2;
+    color: var(--color-terra);
+  }
+  .btn-outline:hover { background-color: var(--color-terra-faint); }
+  .btn-success { background-color: #059669; color: #fff; }
+  .btn-success:hover { background-color: #047857; }
+  .btn-warn { background-color: #fff7ed; border-color: #fed7aa; color: #b45309; }
+  .btn-warn:hover { background-color: #ffedd5; }
+  .btn-outline-danger { background-color: #fff; border-color: #fecaca; color: #b91c1c; }
+  .btn-outline-danger:hover { background-color: #fef2f2; }
+  .btn-danger { background-color: #dc2626; color: #fff; }
+  .btn-danger:hover { background-color: #b91c1c; }
+}
+
 /* ── Lightbox (JS-dependent, keep as custom CSS) ── */
 .lightbox-overlay {
   position: fixed;

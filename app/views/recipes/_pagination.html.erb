@@ -1,0 +1,27 @@
+<%
+  current_page = collection.current_page
+  per_page     = collection.per_page
+  total        = collection.total_entries
+  from         = total.zero? ? 0 : (current_page - 1) * per_page + 1
+  to           = total.zero? ? 0 : [current_page * per_page, total].min
+  base         = request.query_parameters.except('page', 'per_page', 'authenticity_token')
+-%>
+<div class="flex flex-wrap items-center justify-between gap-2 py-3 text-sm text-ink-light">
+  <div class="text-xs whitespace-nowrap">
+    Showing <%= from %>–<%= to %> of <%= total %>
+  </div>
+
+  <%= will_paginate collection %>
+
+  <div class="flex items-center gap-1.5 text-xs">
+    <span class="text-ink-light">Per page</span>
+    <% per_page_options.each do |n| %>
+      <% if n == per_page %>
+        <span class="inline-flex items-center justify-center min-w-[2.25rem] h-9 px-3 rounded-full bg-terra text-white font-semibold"><%= n %></span>
+      <% else %>
+        <%= link_to n, url_for(base.merge(per_page: n, page: 1)),
+            class: 'inline-flex items-center justify-center min-w-[2.25rem] h-9 px-3 rounded-full bg-terra-faint text-terra hover:bg-terra-subtle no-underline transition-colors' %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

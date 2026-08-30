@@ -7,7 +7,7 @@ module Admin
       base = base.by_success(params[:success]) if params[:success].present?
       base = base.for_recipe(params[:recipe_id]) if params[:recipe_id].present?
 
-      per_page = 10
+      per_page = params.fetch(:per_page, 10).to_i.clamp(1, 100)
       page     = (params[:page] || 1).to_i
       total    = base.distinct.count(:recipe_id)
 

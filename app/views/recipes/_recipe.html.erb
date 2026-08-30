@@ -1,10 +1,19 @@
-<div class="<%= dom_class(recipe) %> bg-white rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 overflow-hidden" id="<%= dom_id(recipe) %>">
-  <% if recipe.featured_image? %>
-    <%= render 'homepage_image', image: recipe.featured_image %>
-  <% else %>
-    <div class="image not_featured">
-      <%= link_to(image_tag('recipe_placeholder.svg', class: 'w-full aspect-4/3 object-cover'), url_to_recipe(recipe)) %>
-    </div>
-  <% end %>
-  <h2 class="text-center text-sm px-3 py-3"><%= link_to(recipe.name, url_to_recipe(recipe), class: 'text-ink no-underline hover:text-terra hover:underline') %></h2>
+<div class="<%= dom_class(recipe) %> bg-white rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 overflow-hidden group" id="<%= dom_id(recipe) %>">
+  <div class="relative">
+    <% if recipe.featured_image? %>
+      <%= render 'homepage_image', image: recipe.featured_image %>
+    <% else %>
+      <div class="image not_featured">
+        <%= link_to(image_tag('recipe_placeholder.svg', class: 'w-full aspect-square object-cover'), url_to_recipe(recipe)) %>
+      </div>
+    <% end %>
+    <% if recipe.cooking_time.present? %>
+      <span class="absolute top-2 right-2 inline-flex items-center gap-1 bg-white/95 text-ink-light text-xs font-medium px-2.5 py-1 rounded-full shadow-sm">
+        <%= recipe.cooking_time %> min
+      </span>
+    <% end %>
+  </div>
+  <h2 class="text-left px-4 py-3">
+    <%= link_to(recipe.name, url_to_recipe(recipe), class: 'text-ink no-underline font-display text-lg leading-snug group-hover:text-terra') %>
+  </h2>
 </div>

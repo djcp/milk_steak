@@ -46,7 +46,7 @@ describe Admin::RecipesController do
         patch :publish, params: { id: recipe.id }
 
         expect(recipe.reload.status).to eq('published')
-        expect(response).to redirect_to(recipe_path(recipe))
+        expect(response).to redirect_to(admin_recipes_path)
       end
 
       it 'does not publish a draft recipe' do
@@ -64,7 +64,7 @@ describe Admin::RecipesController do
         patch :reject, params: { id: recipe.id }
 
         expect(recipe.reload.status).to eq('rejected')
-        expect(response).to redirect_to(recipe_path(recipe))
+        expect(response).to redirect_to(admin_recipes_path)
       end
     end
 
@@ -76,7 +76,7 @@ describe Admin::RecipesController do
           patch :reprocess, params: { id: recipe.id }
         end.to have_enqueued_job(MagicRecipeJob).with(recipe.id)
 
-        expect(response).to redirect_to(recipe_path(recipe))
+        expect(response).to redirect_to(admin_recipes_path)
         expect(flash[:notice]).to eq('Recipe re-enqueued for processing.')
       end
 
@@ -84,7 +84,7 @@ describe Admin::RecipesController do
         recipe = create(:recipe, :draft)
         patch :reprocess, params: { id: recipe.id }
 
-        expect(response).to redirect_to(recipe_path(recipe))
+        expect(response).to redirect_to(admin_recipes_path)
         expect(flash[:alert]).to be_present
       end
     end
