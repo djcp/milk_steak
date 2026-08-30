@@ -21,7 +21,7 @@ feature 'Recipe index empty state' do
 
   scenario 'a filter matching nothing shows a clear-filters empty state' do
     user = user_logs_in
-    create(:recipe, user: user)
+    create(:recipe, user: user, name: 'Clearable Ziti')
 
     visit root_path(filter_set: { name: 'nonexistent' })
 
@@ -30,7 +30,7 @@ feature 'Recipe index empty state' do
 
     click_on 'Clear all filters'
 
-    expect(page).to have_content('Recipe name 1')
+    expect(page).to have_content('Clearable Ziti')
     expect(page).not_to have_content('No recipes match your search')
   end
 end
