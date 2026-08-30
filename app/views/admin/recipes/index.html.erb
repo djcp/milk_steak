@@ -17,7 +17,7 @@
       <% end %>
     </div>
 
-    <div class="overflow-x-auto">
+    <div class="hidden md:block overflow-x-auto">
       <table class="w-full text-sm">
         <thead class="bg-gray-50 text-left">
           <tr>
@@ -46,25 +46,35 @@
                     class: 'text-terra hover:underline' %>
               </td>
               <td class="px-4 py-3 text-ink-light"><%= l(recipe.created_at, format: :default) %></td>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-1.5 flex-wrap">
-                  <% if recipe.publishable? %>
-                    <%= button_to 'Publish', publish_admin_recipe_path(recipe), method: :patch, class: 'btn btn-success' %>
-                    <%= button_to 'Reject', reject_admin_recipe_path(recipe), method: :patch, class: 'btn btn-outline-danger' %>
-                  <% end %>
-                  <% if recipe.reprocessable? %>
-                    <%= button_to 'Reprocess', reprocess_admin_recipe_path(recipe), method: :patch, class: 'btn btn-warn' %>
-                  <% end %>
-                  <%= link_to 'Edit', edit_recipe_path(recipe), class: 'btn btn-outline' %>
-                  <span class="w-px h-5 bg-cream-dark mx-1"></span>
-                  <%= button_to 'Delete', admin_recipe_path(recipe), method: :delete,
-                      class: 'btn btn-danger', data: { confirm: 'Are you sure?' } %>
-                </div>
-              </td>
+              <td class="px-4 py-3"><%= render 'admin/recipes/row_actions', recipe: recipe %></td>
             </tr>
           <% end %>
         </tbody>
       </table>
+    </div>
+
+    <div class="md:hidden divide-y divide-gray-100">
+      <% @recipes.each do |recipe| %>
+        <div class="p-4 space-y-2">
+          <div class="flex items-start justify-between gap-2">
+            <%= link_to recipe.name, recipe_path(recipe), class: 'font-medium text-terra hover:underline no-underline' %>
+            <%= render 'status_badge', status: recipe.status %>
+          </div>
+          <div class="text-xs text-ink-light">
+            by <%= recipe.user_username %>
+            <% if recipe.magic? %>
+              <span class="text-purple-600">(magic)</span>
+            <% end %>
+          </div>
+          <div class="text-xs text-ink-light">
+            <%= link_to "#{@run_counts[recipe.id] || 0} run(s)",
+                admin_ai_classifier_runs_path(recipe_id: recipe.id),
+                class: 'text-terra hover:underline' %>
+            · <%= l(recipe.created_at, format: :default) %>
+          </div>
+          <%= render 'admin/recipes/row_actions', recipe: recipe %>
+        </div>
+      <% end %>
     </div>
   </div>
 

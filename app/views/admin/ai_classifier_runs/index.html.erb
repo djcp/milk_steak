@@ -53,8 +53,8 @@
       <% last_run = runs.max_by(&:started_at) %>
 
       <%# Recipe header row %>
-      <div class="flex items-center justify-between px-4 py-3 bg-gray-50">
-        <div class="flex items-center gap-3">
+      <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-3 bg-gray-50">
+        <div class="flex flex-wrap items-center gap-3">
           <% if recipe.present? %>
             <%= link_to recipe.name, recipe_path(recipe), class: 'font-semibold text-terra hover:underline no-underline text-sm' %>
           <% else %>
@@ -64,7 +64,7 @@
             <span class="text-xs text-ink-light">last run <%= last_run.started_at.in_time_zone('America/New_York').strftime('%-d %b %Y %H:%M %Z') %></span>
           <% end %>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center gap-3">
           <% if recipe.present? %>
             <%= button_to 'Rerun', rerun_admin_ai_classifier_run_path(last_run), method: :post,
                 class: 'text-orange-700 hover:underline bg-transparent border-0 cursor-pointer p-0 text-xs' %>
@@ -74,7 +74,7 @@
 
       <%# Per-run rows %>
       <% runs.each do |run| %>
-        <div class="flex items-center gap-4 pl-8 pr-4 py-2 text-xs border-t border-gray-100 hover:bg-gray-50">
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 pl-8 pr-4 py-2 text-xs border-t border-gray-100 hover:bg-gray-50">
           <span class="inline-block px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-medium shrink-0"><%= run.service_class %></span>
 
           <% if run.in_progress? %>
