@@ -23,6 +23,9 @@ module MilkSteak
 
     config.middleware.use Rack::Deflater
 
+    # Render branded 404/422/500 pages via the application (see ErrorsController)
+    config.exceptions_app = ->(env) { ErrorsController.action(:show).call(env) }
+
     # Security headers
     config.action_dispatch.default_headers = {
       'X-Frame-Options' => 'SAMEORIGIN',

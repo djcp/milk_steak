@@ -101,9 +101,12 @@ bin/screenshots
 - `app/views/admin/recipes/index.html.erb` — Admin recipe index (scoped for members): page header with "New Recipe" CTA (the public recipe form), status-filter tab strip above the table, and grouped row actions (Publish/Reject/Reprocess/Edit with Delete separated, policy-gated)
 - `app/views/admin/users/index.html.erb` — Pending and approved user lists with approve buttons
 - `app/views/admin/ai_classifier_runs/` — AI run index (grouped by recipe) and show (full prompt/response detail)
-- `app/views/devise/registrations/new.html.erb` — Custom registration form that includes the username field (Simple Form)
+- `app/views/devise/` — Custom Simple Form auth screens matching the sign-up card style (`max-w-md mx-auto p-6` + serif h2 + terra submit), all rendered through the public `application` layout: `sessions/new`, `passwords/new` + `passwords/edit`, `confirmations/new`, `registrations/new` + `registrations/edit`, and `shared/_links` (Log in/Sign up/Forgot password/Confirmation/Unlock links). The old `body.devise-*` CSS block styling the gem default `.field`/`.actions` markup has been removed
+- `app/views/layouts/errors.html.erb` / `app/views/errors/show.html.erb` — Minimal branded error-page layout (terra-dark marble body + cream column + brand header, no nav/footer/DB/GA deps) and status-keyed copy for `ErrorsController`
+- `app/controllers/errors_controller.rb` — Renders branded 400/404/406/422/500 pages via `config.exceptions_app` (see Config) and matching `get '/400|404|406|422|500'` routes; unknown statuses fall back to the 500 copy
 
 ### Config
+- `config/application.rb` — Sets `config.exceptions_app` (routes status errors to `ErrorsController.action(:show)`, so even 4xx/5xx render the branded errors layout); adds Rack::Deflater and the security headers
 - `config/initializers/content_security_policy.rb` — CSP enforced; `script_src` carries no `:unsafe_inline` (all app JS is external: `admin/magic_recipes/new.js`, `analytics.js`, `test_setup.js`), only `:self` + Google Analytics
 - `config/initializers/acts_as_taggable_on.rb` — Force lowercase tags, auto-cleanup unused tags
 - `config/initializers/devise.rb` — Configures `:lockable` (`lock_strategy = :failed_attempts`, `unlock_keys = [:email]`, `unlock_strategy = :email`, `maximum_attempts = 10`, `last_attempt_warning = true`)
