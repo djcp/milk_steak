@@ -1,30 +1,45 @@
 <%= simple_form_for(filter_set, url: root_path, method: :get) do |filter| %>
   <%= filter.input :name %>
 
-  <%= filter.input :ingredients, required: false, input_html: {
-    class: 'autocomplete_multiple',
-    'data-target' => autocompletes_ingredient_names_path
-  } %>
+  <details class="filter-group mt-3" open>
+    <summary class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2">Ingredients</summary>
+    <%= filter.input :ingredients, required: false, input_html: {
+      class: 'autocomplete_multiple',
+      'data-target' => autocompletes_ingredient_names_path
+    } %>
+  </details>
 
-  <%= filter.input :cooking_methods, input_html: {
-    class: 'autocomplete_multiple',
-    'data-target' => autocompletes_cooking_methods_path
-  } %>
+  <details class="filter-group mt-3" open>
+    <summary class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2">Cooking methods</summary>
+    <%= filter.input :cooking_methods, input_html: {
+      class: 'autocomplete_multiple',
+      'data-target' => autocompletes_cooking_methods_path
+    } %>
+  </details>
 
-  <%= filter.input :cultural_influences, input_html: {
-    class: 'autocomplete_multiple',
-    'data-target' => autocompletes_cultural_influences_path
-  } %>
+  <details class="filter-group mt-3" open>
+    <summary class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2">Cultural influences</summary>
+    <%= filter.input :cultural_influences, input_html: {
+      class: 'autocomplete_multiple',
+      'data-target' => autocompletes_cultural_influences_path
+    } %>
+  </details>
 
-  <%= filter.input :courses, input_html: {
-    class: 'autocomplete_multiple',
-    'data-target' => autocompletes_courses_path
-  } %>
+  <details class="filter-group mt-3" open>
+    <summary class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2">Courses</summary>
+    <%= filter.input :courses, input_html: {
+      class: 'autocomplete_multiple',
+      'data-target' => autocompletes_courses_path
+    } %>
+  </details>
 
-  <%= filter.input :dietary_restrictions, input_html: {
-    class: 'autocomplete_multiple',
-    'data-target' => autocompletes_dietary_restrictions_path
-  } %>
+  <details class="filter-group mt-3" open>
+    <summary class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2">Dietary restrictions</summary>
+    <%= filter.input :dietary_restrictions, input_html: {
+      class: 'autocomplete_multiple',
+      'data-target' => autocompletes_dietary_restrictions_path
+    } %>
+  </details>
 
   <%= filter.input :author %>
 

@@ -1,18 +1,53 @@
-<article class="<%= dom_class(recipe) %> grid grid-cols-1 md:grid-cols-[2fr_1fr] lg:grid-cols-[3fr_1fr] gap-6 p-4 md:p-6" id="<%= dom_id(recipe) %>">
+<article class="<%= dom_class(recipe) %> max-w-5xl mx-auto p-4 md:p-6" id="<%= dom_id(recipe) %>">
   <%= render 'control_panel', recipe: recipe %>
 
-  <div class="recipe-narrative">
-    <h1 class="col-span-full text-3xl md:text-4xl mb-4 text-ink">
-      <%= recipe.name %>
-    </h1>
+  <% if recipe.featured_image? %>
+    <div class="hero-image mt-6">
+      <%= image_tag(recipe.featured_image.image_url(:large), class: 'w-full aspect-[16/9] object-cover rounded-2xl shadow-sm') %>
+    </div>
+  <% end %>
+
+  <div class="recipe-heading mt-6 lg:mt-8 text-center lg:text-left">
+    <h1 class="text-3xl md:text-5xl text-ink"><%= recipe.name %></h1>
 
     <% if recipe.description? %>
-      <blockquote class="description col-span-full border-l-4 border-terra/30 pl-5 pr-4 mb-6 text-ink-light italic">
+      <blockquote class="description mx-auto lg:mx-0 max-w-2xl mt-4 text-ink-light italic leading-relaxed">
         <%= sanitize(markdown_format(recipe.description)) %>
       </blockquote>
     <% end %>
 
-    <div class="recipe_ingredients bg-white rounded-xl px-6 py-4 mb-6 shadow-sm">
+    <div class="recipe-metadata flex flex-wrap items-center justify-center lg:justify-start gap-2 mt-5 text-sm">
+      <% if recipe.preparation_time? %>
+        <span class="inline-flex items-center gap-1.5 bg-white rounded-full px-3 py-1 shadow-sm border border-cream-dark font-medium text-ink">
+          <%= recipe.preparation_time %> min prep
+        </span>
+      <% end %>
+      <% if recipe.cooking_time? %>
+        <span class="inline-flex items-center gap-1.5 bg-white rounded-full px-3 py-1 shadow-sm border border-cream-dark font-medium text-ink">
+          <%= recipe.cooking_time %> min total
+        </span>
+      <% end %>
+      <% if recipe.servings? || recipe.serving_units? %>
+        <span class="inline-flex items-center gap-1.5 bg-white rounded-full px-3 py-1 shadow-sm border border-cream-dark font-medium text-ink">
+          Makes <%= recipe.servings %> <%= recipe.serving_units %>
+        </span>
+      <% end %>
+      <% if recipe.user_username.present? %>
+        <div class="user">
+          <span class="inline-block bg-white rounded-full px-3 py-1 shadow-sm border border-cream-dark">
+            by: <%= link_to recipe.user_username, root_path(filter_set: { author: recipe.user_username }), class: 'font-medium text-terra no-underline hover:underline' %>
+          </span>
+        </div>
+      <% end %>
+      <% if recipe.created_at.present? %>
+        <span class="text-ink-muted"><%= l(recipe.created_at, format: :default) %></span>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+    <div class="recipe_ingredients bg-white rounded-xl px-6 py-5 shadow-sm">
+      <h2 class="font-display text-xl text-ink mb-4">Ingredients</h2>
       <% recipe.recipe_ingredients.order(:position).group_by(&:section).each do |section, ingredients| %>
         <% if section.present? %>
           <h3 class="font-semibold text-ink mt-4 mb-1 first:mt-0"><%= section %></h3>
@@ -23,37 +58,29 @@
       <% end %>
     </div>
 
-    <div class="directions leading-relaxed text-ink-light">
-      <%= sanitize(markdown_format(recipe.directions)) if recipe.directions? %>
+    <div class="directions">
+      <h2 class="font-display text-xl text-ink mb-4">Directions</h2>
+      <div class="markdown-content text-ink-light leading-relaxed">
+        <%= sanitize(markdown_format(recipe.directions)) if recipe.directions? %>
+      </div>
     </div>
   </div>
 
-  <div class="tags bg-warm-white p-5 rounded-xl border-l-4 border-terra/40 max-md:border-l-0 max-md:border-t-4 text-sm space-y-4">
-    <div class="metadata space-y-2 pb-4 border-b border-cream-dark">
-      <% if recipe.preparation_time? %>
-        <div><span class="font-semibold text-ink">Prep time:</span> <%= recipe.preparation_time %> minutes</div>
-      <% end %>
-      <% if recipe.cooking_time? %>
-        <div><span class="font-semibold text-ink">Total Cooking time:</span> <%= recipe.cooking_time %> minutes</div>
-      <% end %>
-      <% if recipe.servings? || recipe.serving_units? %>
-        <div><span class="font-semibold text-ink">Makes:</span> <%= recipe.servings %> <%= recipe.serving_units %></div>
-      <% end %>
-      <div><span class="font-semibold text-ink">Created:</span> <%= l(recipe.created_at, format: :default) %></div>
-      <% if recipe.user_username.present? %>
-        <div class="user">
-          by: <span class="badge inline-block bg-terra-faint text-terra-dark px-3 py-0.5 rounded-full text-xs font-medium"><%= link_to(recipe.user_username, root_path(filter_set: { author: recipe.user_username }), class: 'text-terra-dark no-underline hover:underline') %></span>
-        </div>
-      <% end %>
+  <div class="mt-10 pt-6 border-t border-cream-dark">
+    <div class="flex flex-wrap gap-x-8 gap-y-4">
+      <%= render 'recipes/tagged_attributes', recipe: recipe, attribute: 'cooking_methods' %>
+      <%= render 'recipes/tagged_attributes', recipe: recipe, attribute: 'cultural_influences' %>
+      <%= render 'recipes/tagged_attributes', recipe: recipe, attribute: 'courses' %>
+      <%= render 'recipes/tagged_attributes', recipe: recipe, attribute: 'dietary_restrictions' %>
     </div>
-    <%= render 'recipes/tagged_attributes', recipe: recipe, attribute: 'cooking_methods' %>
-    <%= render 'recipes/tagged_attributes', recipe: recipe, attribute: 'cultural_influences' %>
-    <%= render 'recipes/tagged_attributes', recipe: recipe, attribute: 'courses' %>
-    <%= render 'recipes/tagged_attributes', recipe: recipe, attribute: 'dietary_restrictions' %>
   </div>
 
-  <div class="images col-span-full mt-4 grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-4" id="image_list">
-    <%= render recipe.images.order('id') %>
-  </div>
-
+  <% if recipe.images.any? %>
+    <div class="images mt-10" id="image_list">
+      <h2 class="font-display text-xl text-ink mb-4">Photos</h2>
+      <div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-4">
+        <%= render recipe.images.order('id') %>
+      </div>
+    </div>
+  <% end %>
 </article>
