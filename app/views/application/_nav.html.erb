@@ -9,6 +9,9 @@
     <% if policy(:site).admin? %>
       <%= link_to 'Admin', admin_recipes_path, class: 'text-white no-underline inline-block px-5 py-2 rounded-full transition-colors hover:bg-white/15 hover:no-underline' %>
     <% end %>
+    <% if policy(:site).magic? %>
+      <%= link_to 'Magic Recipe', new_admin_magic_recipe_path, class: 'text-white no-underline inline-block px-5 py-2 rounded-full transition-colors hover:bg-white/15 hover:no-underline' %>
+    <% end %>
   <% end %>
   <% if current_user.present? %>
     <%= link_to "#{current_user.email}, log out", destroy_user_session_path, method: :delete, data: { confirm: "Are you sure?" }, class: 'text-white/70 no-underline inline-block px-5 py-2 rounded-full transition-colors hover:bg-white/15 hover:text-white hover:no-underline' %>
