@@ -13,6 +13,7 @@ MilkSteak is a recipe tracker web application built with love.
 - AI-powered recipe import from URLs or pasted text (admin only, via Anthropic Claude)
 - Role-aware control panel on recipe pages: owners see Edit; admins see status badge and workflow actions (Publish, Reject, Reprocess, Delete)
 - Admin workflow for reviewing, publishing, and rejecting recipes
+- Dedicated admin backend with sidebar navigation (Recipes, Magic Recipe, Users, AI Runs) and status-filter tabs on the recipe index
 - Image uploads with automatic variant generation (thumbnails, large)
 - Pagination and SEO-friendly recipe URLs
 - User accounts with email confirmation (Devise); new users are pending until an admin approves them
@@ -25,7 +26,7 @@ MilkSteak is a recipe tracker web application built with love.
 |---|---|
 | ![Homepage](docs/screenshots/homepage.png) | ![Recipe detail](docs/screenshots/recipe_detail.png) |
 
-| Admin recipe management with status filtering |
+| Admin recipe management with sidebar nav and status-filter tabs |
 |---|
 | ![Admin index](docs/screenshots/admin_index.png) |
 

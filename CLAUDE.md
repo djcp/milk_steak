@@ -68,7 +68,7 @@ bin/screenshots
 - `app/controllers/recipes_controller.rb` — Main CRUD with ownership-based authorization; `require_approved!` fires before new/create/edit/update; `ensure_visible` raises `ActiveRecord::RecordNotFound` (→ 404) for guests on non-published recipes (no existence oracle); `page`/`per_page` clamped (`page` ≥ 1, `per_page` 1–48); nested `ingredient_attributes` only exposes `:id` to admins so non-admins can't rename shared ingredients
 - `app/controllers/users/sessions_controller.rb` / `registrations_controller.rb` — Devise overrides that rate-limit `#create` (10 per 3 min for sessions, 10 per 10 min for registrations) via `rate_limit ... with: :rate_limited` returning 429 `devise.failure.too_many_requests`
 - `app/controllers/admin/base_controller.rb` — Admin auth via `current_user&.admin?` before_action
-- `app/controllers/admin/recipes_controller.rb` — Admin recipe management (publish, reject, reprocess, destroy)
+- `app/controllers/admin/recipes_controller.rb` — Admin recipe management (publish, reject, reprocess, destroy); status actions redirect back to `admin_recipes_path`
 - `app/controllers/admin/magic_recipes_controller.rb` — AI recipe import (new, create)
 - `app/controllers/admin/users_controller.rb` — User management: index lists pending and approved non-admin users; approve patches `approved: true`
 - `app/controllers/admin/ai_classifier_runs_controller.rb` — AI run history with filtering, pagination, and per-recipe grouping; rerun action re-enqueues MagicRecipeJob
@@ -84,9 +84,13 @@ bin/screenshots
 - `app/jobs/magic_recipe_job.rb` — Background job for AI recipe processing pipeline
 
 ### Key Views / Partials
-- `app/views/recipes/_control_panel.html.erb` — Role-aware action bar on recipe#show; renders for the recipe owner (Edit) or any admin (status badge + Edit + Publish/Reject/Reprocess/Delete gated on workflow state)
-- `app/views/recipes/_show_content.html.erb` — Recipe detail; author shown as `user_username` (not email), linked to author filter
-- `app/views/admin/recipes/index.html.erb` — Admin recipe list with unified status-filter/action bar; nav bar includes Users and AI Runs links
+- `app/views/layouts/admin.html.erb` — Dedicated admin layout: slim terra sidebar (`app/views/admin/_sidebar.html.erb`) with Recipes / Magic Recipe / Users / AI Runs nav, plus flashes, footer, and scripts; selected explicitly via `layout "admin"` on `Admin::BaseController` (Rails does not auto-resolve `layouts/admin` for namespaced controllers — `_implied_layout_name` would look up `layouts/admin/recipes`)
+- `app/views/recipes/_show_content.html.erb` — Publication-style recipe detail: hero image, title + metadata chips (prep/cook/makes/author shown as `user_username`, not email), two-column ingredients|directions on desktop, tags strip, lightbox gallery
+- `app/views/recipes/_control_panel.html.erb` — Role-aware toolbar on recipe#show; renders for the recipe owner (Edit) or any admin (status badge + grouped Publish/Reject/Reprocess buttons + separated Delete); uses shared `.btn` component classes
+- `app/views/recipes/_recipe.html.erb` — Recipe card with square image crop and a corner time badge when `cooking_time` is present
+- `app/views/recipes/_filter_set.html.erb` — Search form with collapsible `<details>` groups around the tag autocompletes (all open by default)
+- `app/views/recipes/_tagged_attributes.html.erb` / `app/views/acts_as_taggable_on/tags/_tag.html.erb` — Tag chips, colored per context, linking to the matching filter
+- `app/views/admin/recipes/index.html.erb` — Admin recipe index: page header with primary "New Magic Recipe" CTA, status-filter tab strip above the table, and grouped row actions (Publish/Reject/Reprocess/Edit with Delete separated)
 - `app/views/admin/users/index.html.erb` — Pending and approved user lists with approve buttons
 - `app/views/admin/ai_classifier_runs/` — AI run index (grouped by recipe) and show (full prompt/response detail)
 - `app/views/devise/registrations/new.html.erb` — Custom registration form that includes the username field (Simple Form)
@@ -199,6 +203,8 @@ bin/rake
 ```
 
 This runs in order: bundler-audit (with DB update), brakeman, rubocop, rspec. All four must be green. Do not create a PR if any step fails — fix the issue locally first. This catches CVEs, security warnings, lint offenses, and test failures before CI sees them.
+
+**Git branch policy:** force-pushing (rewriting history) is allowed on any pre-merge feature branch — use `git push --force-with-lease`. Never force-push to `main` (the default branch) or rewrite any history that touches it.
 
 **Always include a documentation update sweep in the same PR.** Before pushing or opening a PR, review the change and update anything it touches in:
 - `CLAUDE.md` (and any other agentic instruction files, e.g. `AGENTS.md`) — project overview, tech stack, project structure, routes, workflow, environment variables, key patterns, testing notes, and commands.
