@@ -6,7 +6,7 @@ module Admin
       @status_counts = Recipe.group(:status).count
       @recipes = Recipe.includes(:user, :images).recent
       @recipes = @recipes.by_status(params[:status]) if params[:status].present?
-      @recipes = @recipes.paginate(page: params[:page], per_page: 20)
+      @recipes = @recipes.paginate(page: params[:page], per_page: admin_per_page)
       recipe_ids  = @recipes.map(&:id)
       @run_counts = AiClassifierRun.where(recipe_id: recipe_ids).group(:recipe_id).count
     end
@@ -40,6 +40,10 @@ module Admin
     end
 
     private
+
+    def admin_per_page
+      params.fetch(:per_page, 20).to_i.clamp(1, 100)
+    end
 
     def find_recipe
       @recipe = Recipe.includes(:user, :images, :recipe_ingredients, :ingredients).find(params[:id])

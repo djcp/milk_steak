@@ -1,4 +1,4 @@
-<div class="max-w-6xl mx-auto p-4 md:p-6">
+<div class="max-w-6xl mx-auto">
   <div class="flex items-center justify-between mb-6">
     <% if @filtered_recipe %>
       <div>
@@ -107,7 +107,7 @@
   </div>
 
   <div class="mt-4">
-    <%= will_paginate @pagination %>
+    <%= render 'recipes/pagination', collection: @pagination, per_page_options: [10, 20, 50] %>
   </div>
 </div>
 <% content_for(:page_title, 'Admin: AI Classifier Runs') %>
