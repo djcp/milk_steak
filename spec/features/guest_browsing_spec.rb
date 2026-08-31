@@ -32,7 +32,7 @@ feature 'Guest browses recipes without logging in' do
 
     visit '/'
 
-    fill_in 'Cooking methods', with: 'deep fried'
+    fill_in 'filter_set_cooking_methods', with: 'deep fried'
     click_on 'Apply'
 
     expect(page).to have_content('Fried Chicken')

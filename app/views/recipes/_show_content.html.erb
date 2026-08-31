@@ -1,12 +1,6 @@
 <article class="<%= dom_class(recipe) %> max-w-5xl mx-auto p-4 md:p-6" id="<%= dom_id(recipe) %>">
   <%= render 'control_panel', recipe: recipe %>
 
-  <% if recipe.featured_image? %>
-    <div class="hero-image mt-6">
-      <%= image_tag(recipe.featured_image.image_url(:large), class: 'w-full aspect-[16/9] object-cover rounded-2xl shadow-sm') %>
-    </div>
-  <% end %>
-
   <div class="recipe-heading mt-6 lg:mt-8 text-center lg:text-left">
     <h1 class="text-3xl md:text-5xl text-ink"><%= recipe.name %></h1>
 
@@ -44,6 +38,12 @@
       <% end %>
     </div>
   </div>
+
+  <% if recipe.featured_image? %>
+    <div class="hero-image mt-6 lg:mt-8">
+      <%= image_tag(recipe.featured_image.image_url(:large), class: 'w-full aspect-[16/9] object-cover rounded-2xl shadow-sm') %>
+    </div>
+  <% end %>
 
   <div class="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
     <div class="recipe_ingredients bg-white rounded-xl px-6 py-5 shadow-sm">

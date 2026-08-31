@@ -7,7 +7,7 @@
   base         = request.query_parameters.except('page', 'per_page', 'authenticity_token')
 -%>
 <div class="flex flex-wrap items-center justify-between gap-2 py-3 text-sm text-ink-light">
-  <div class="text-xs whitespace-nowrap">
+  <div class="text-sm font-medium text-ink whitespace-nowrap">
     Showing <%= from %>–<%= to %> of <%= total %>
   </div>
 
