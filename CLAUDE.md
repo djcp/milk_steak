@@ -159,6 +159,17 @@ Recipes have a `status` field with values: `draft`, `processing`, `processing_fa
 - **Bundler Audit** for dependency vulnerability checking
 - All three run as part of `bundle exec rake` (in order: brakeman, bundler-audit, rubocop, rspec)
 
+## Auditing
+
+The repo ships an **agent-based audit system** for cross-harness use (opencode, Claude CLI, Pi, and Copilot/Cursor via skills). It complements — not replaces — the static tools above and is **read-only** (agents never edit files; they report findings with `file_path:line_number`, severity, impact, and a proposed fix).
+
+- **Portable knowledge** lives in `.github/skills/<topic>/SKILL.md` — eight audit skills: `security-audit` (folds in Brakeman), `accessibility-audit`, `performance-audit`, `compatibility-audit`, `rails-practices-audit` (folds in RuboCop), `data-integrity-audit`, `dependency-audit` (folds in Bundler Audit), and `test-quality-audit`.
+- **Thin per-harness agents** point at those skills: `.opencode/agent/<topic>-auditor.md`, `.claude/agents/<topic>-auditor.md`, `.pi/agents/<topic>-auditor.md`, plus an `audit-orchestrator` in each. opencode registers the skill dir via `opencode.json` (`skills.paths`).
+- **Invoke** with `/audit` (reads the harness-native `*.md` command in `.opencode/command/`, `.claude/commands/`, `.pi/commands/`): `/audit` runs all eight, `/audit security accessibility` runs a subset, `/audit --report` additionally writes `docs/audits/YYYY-MM-DD.md` (gitignored).
+- Model is unset on all agents so they inherit the current session model; override per harness via native config.
+
+When the auditing system changes, keep the skill bodies, the per-harness agents/commands, `opencode.json`, and this section in sync.
+
 ## Key Patterns
 
 - Recipes use `acts_as_taggable_on` with four tag contexts, all force-lowercased with auto-cleanup of unused tags
