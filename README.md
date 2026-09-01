@@ -100,6 +100,16 @@ bundle exec rubocop
 
 The CI suite runs on GitHub Actions against PostgreSQL 16 for every push to `master` and all pull requests.
 
+## Agent-based Auditing
+
+The repo ships a read-only, cross-harness audit system (opencode, Claude CLI, Pi). Audit knowledge lives in `.github/skills/<topic>/SKILL.md`; thin per-harness agents and commands wire it up. Run it from any supported harness:
+
+- `/audit` — run all eight audit topics (security, accessibility, performance, compatibility, Rails practices, data integrity, dependencies, test quality)
+- `/audit security accessibility` — run a subset
+- `/audit --report` — also write `docs/audits/YYYY-MM-DD.md`
+
+Reports are gitignored. See the `## Auditing` section in `CLAUDE.md` for the full layout.
+
 ## Tech Stack
 
 - **Ruby 4.0.1** / **Rails 8.1**
