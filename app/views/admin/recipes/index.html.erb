@@ -41,7 +41,7 @@
                   <span class="text-xs text-purple-600">(magic)</span>
                 <% end %>
               </td>
-              <td class="px-4 py-3 text-ink-light"><%= recipe.user_username %></td>
+              <td class="px-4 py-3 text-ink-light"><%= author_display(recipe) %></td>
               <td class="px-4 py-3"><%= render 'status_badge', status: recipe.status %></td>
               <td class="px-4 py-3 text-ink-light">
                 <%= link_to @run_counts[recipe.id] || 0,
@@ -64,7 +64,7 @@
             <%= render 'status_badge', status: recipe.status %>
           </div>
           <div class="text-xs text-ink-light">
-            by <%= recipe.user_username %>
+            by <%= author_display(recipe) %>
             <% if recipe.magic? %>
               <span class="text-purple-600">(magic)</span>
             <% end %>

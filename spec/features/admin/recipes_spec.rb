@@ -20,4 +20,15 @@ feature 'Admin recipe management' do
     expect(page).to have_text(published.name)
     expect(page).not_to have_text(review.name)
   end
+
+  scenario 'shows an armored email for authors without a username' do
+    author = create(:user, :no_username)
+    create(:recipe, user: author)
+
+    visit admin_recipes_path
+
+    expect(page).to have_css('.armored-email')
+    expect(page.body).to include(author.email.reverse)
+    expect(page.body).not_to include(author.email)
+  end
 end

@@ -313,6 +313,12 @@
   opacity: 1;
 }
 
+/* ── Email armoring ── */
+.armored-email {
+  direction: rtl;
+  unicode-bidi: bidi-override;
+}
+
 /* ── Markdown content ── */
 .markdown-content p {
   margin-bottom: 1em;

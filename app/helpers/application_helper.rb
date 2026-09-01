@@ -32,4 +32,14 @@ module ApplicationHelper
       "not_featured"
     end
   end
+
+  def armored_email(email)
+    return nil if email.blank?
+
+    content_tag(:span, email.reverse, class: 'armored-email')
+  end
+
+  def author_display(recipe)
+    recipe.user_username.presence || armored_email(recipe.user_email)
+  end
 end
