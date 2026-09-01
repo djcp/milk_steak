@@ -32,6 +32,12 @@
             by: <%= link_to recipe.user_username, root_path(filter_set: { author: recipe.user_username }), class: 'font-medium text-terra no-underline hover:underline' %>
           </span>
         </div>
+      <% elsif recipe.user_email.present? %>
+        <div class="user">
+          <span class="inline-block bg-white rounded-full px-3 py-1 shadow-sm border border-cream-dark">
+            by: <%= armored_email(recipe.user_email) %>
+          </span>
+        </div>
       <% end %>
       <% if recipe.created_at.present? %>
         <span class="text-ink-muted"><%= l(recipe.created_at, format: :default) %></span>

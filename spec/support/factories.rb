@@ -36,6 +36,12 @@ FactoryBot.define do
     trait :pending do
       approved { false }
     end
+
+    trait :no_username do
+      after(:create) do |user|
+        user.update_column(:username, '') # rubocop:disable Rails/SkipsModelValidations
+      end
+    end
   end
 
   factory :recipe do

@@ -34,9 +34,9 @@ if Rails.env == 'development'
   admin = User.find_or_initialize_by(email: 'admin@example.com')
   if admin.new_record?
     admin.password = ENV.fetch('SEED_ADMIN_PASSWORD', 'asdASD123!@#')
-    admin.username = 'admin'
     admin.skip_confirmation!
   end
+  admin.username = 'admin' if admin.username.blank?
   admin.admin    = true
   admin.approved = true
   admin.save!
