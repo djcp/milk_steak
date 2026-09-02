@@ -113,7 +113,7 @@ Reports are gitignored. See the `## Auditing` section in `CLAUDE.md` for the ful
 ## Tech Stack
 
 - **Ruby 4.0.1** / **Rails 8.1**
-- **PostgreSQL** with foreign key constraints
+- **PostgreSQL** with foreign key constraints, cascading deletes, and CHECK constraints backing the model validations
 - **Propshaft** asset pipeline
 - **Tailwind CSS v4** via `tailwindcss-rails` (no Node.js required)
 - **Devise 5** for authentication

@@ -12,21 +12,28 @@ class RecipeAiApplier
 
   def apply
     with_classifier_run do
-      @recipe.strict_loading!(false)
-      @recipe.assign_attributes(
-        name: @data['name'] || @recipe.name,
-        description: @data['description'],
-        directions: @data['directions'],
-        preparation_time: @data['preparation_time'],
-        cooking_time: @data['cooking_time'],
-        servings: @data['servings'],
-        serving_units: @data['serving_units']
-      )
+      # The transaction sits INSIDE with_classifier_run so a rollback cannot
+      # take the AiClassifierRun audit record with it. Without it, the
+      # destroy_all in apply_ingredients commits on its own and a later save!
+      # failure leaves the recipe with zero ingredients -- which the job's
+      # `retry_on StandardError` would then repeat against an empty set.
+      Recipe.transaction do
+        @recipe.strict_loading!(false)
+        @recipe.assign_attributes(
+          name: @data['name'] || @recipe.name,
+          description: @data['description'],
+          directions: @data['directions'],
+          preparation_time: @data['preparation_time'],
+          cooking_time: @data['cooking_time'],
+          servings: @data['servings'],
+          serving_units: @data['serving_units']
+        )
 
-      apply_ingredients
-      apply_tags
+        apply_ingredients
+        apply_tags
 
-      @recipe.save!
+        @recipe.save!
+      end
     end
   end
 
@@ -38,8 +45,7 @@ class RecipeAiApplier
     @recipe.recipe_ingredients.destroy_all
 
     Array(@data['ingredients']).first(200).each_with_index do |ing_data, index|
-      name = ing_data['name'].to_s.strip.downcase
-      ingredient = Ingredient.where(name: name).first_or_create!
+      ingredient = Ingredient.resolve_by_name(ing_data['name'])
 
       @recipe.recipe_ingredients.build(
         ingredient: ingredient,

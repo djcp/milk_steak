@@ -155,6 +155,27 @@ describe RecipeAiApplier do
         expect(run.error_class).to eq('RuntimeError')
         expect(run.completed_at).not_to be_nil
       end
+
+      it 'rolls back the ingredient wipe instead of leaving the recipe empty' do
+        existing = create(:recipe_ingredient, recipe: recipe)
+        allow(recipe).to receive(:save!).and_raise(RuntimeError, 'save failed')
+
+        expect { described_class.apply(recipe, data) }.to raise_error(RuntimeError)
+
+        # apply_ingredients calls destroy_all before rebuilding. Without the
+        # surrounding transaction that delete commits on its own, so a failure
+        # here would strand the recipe with zero ingredients -- and the job's
+        # retry_on would then re-run against the emptied set.
+        expect(RecipeIngredient.where(recipe_id: recipe.id).pluck(:id)).to eq([existing.id])
+      end
+
+      it 'still records the failed run, which the rollback must not erase' do
+        create(:recipe_ingredient, recipe: recipe)
+        allow(recipe).to receive(:save!).and_raise(RuntimeError, 'save failed')
+
+        expect { suppress(RuntimeError) { described_class.apply(recipe, data) } }
+          .to change(AiClassifierRun, :count).by(1)
+      end
     end
   end
 end
