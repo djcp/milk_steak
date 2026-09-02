@@ -44,12 +44,22 @@
     font-family: var(--font-body);
     color: var(--color-ink);
     background-color: var(--color-terra-dark);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* iOS Safari does not honour background-attachment: fixed together with
+     background-size: cover -- it paints the image at its native size and the
+     backdrop looks broken. A fixed pseudo-element behind the content gives the
+     same effect on every browser. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
     background-image: url("marble_bg.jpg");
     background-size: cover;
     background-position: center;
-    background-attachment: fixed;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -113,6 +123,9 @@
   opacity: 0;
   transition: opacity 0.25s ease;
   pointer-events: none;
+  /* Safari < 18 needs the prefixed form; without it the blur is silently
+     dropped and only the solid overlay colour remains. */
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
 .lightbox-overlay.active {

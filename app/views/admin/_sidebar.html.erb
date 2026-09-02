@@ -16,7 +16,7 @@
   end
   nav_items << { key: :runs,     label: 'AI Runs', href: admin_ai_classifier_runs_path }
 -%>
-<aside class="bg-terra-dark text-white lg:w-56 lg:shrink-0 lg:min-h-screen lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto">
+<aside class="bg-terra-dark text-white lg:w-56 lg:shrink-0 lg:sticky lg:top-0 lg:max-h-dvh lg:overflow-y-auto">
   <div class="flex items-center justify-between gap-4 px-4 py-4 lg:border-b lg:border-white/10 lg:px-5 lg:py-6">
     <%= link_to ENV.fetch('APP_NAME', 'Recipes'), admin_recipes_path,
         class: 'text-white no-underline font-display text-2xl tracking-tight hover:text-white/80' %>

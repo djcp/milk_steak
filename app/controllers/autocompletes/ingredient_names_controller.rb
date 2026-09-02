@@ -3,7 +3,7 @@ class Autocompletes::IngredientNamesController < ApplicationController
     return render(json: []) if autocomplete_query.nil?
 
     render json: Ingredient.unique_names.where(
-      'lower(ingredients.name) like ?', "%#{autocomplete_query.downcase}%"
-    ).pluck('ingredients.name')
+      'lower(ingredients.name) like ?', "%#{like_pattern(autocomplete_query.downcase)}%"
+    ).limit(Recipe::AUTOCOMPLETE_LIMIT).pluck('ingredients.name')
   end
 end

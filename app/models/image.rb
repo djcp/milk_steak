@@ -20,16 +20,20 @@ class Image < ApplicationRecord
   validates :image, size: { less_than: MAX_FILE_SIZE,
                             message: 'must be less than 10 MB' }
 
+  # Variants are forced to JPEG. Uploads may be HEIC/HEIF (which no browser
+  # renders) or AVIF (unsupported on Safari < 16.4), and image_processing keeps
+  # the source format unless told otherwise -- so without this, those uploads
+  # produced a broken image for every viewer.
   def image_url(variant = :original)
     return unless image.attached?
 
     case variant
     when :tiny
-      image.variant(resize_to_fill: [32, 32], saver: { quality: 50, strip: true })
+      image.variant(resize_to_fill: [32, 32], format: :jpg, saver: { quality: 50, strip: true })
     when :thumb
-      image.variant(resize_to_fill: [187, 187], saver: { quality: 75, strip: true })
+      image.variant(resize_to_fill: [187, 187], format: :jpg, saver: { quality: 75, strip: true })
     when :large
-      image.variant(resize_to_limit: [800, 600], saver: { quality: 85, strip: true })
+      image.variant(resize_to_limit: [800, 600], format: :jpg, saver: { quality: 85, strip: true })
     else
       image
     end

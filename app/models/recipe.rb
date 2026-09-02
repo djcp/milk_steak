@@ -1,6 +1,10 @@
 class Recipe < ApplicationRecord
   STATUSES = %w[draft processing processing_failed review published rejected].freeze
 
+  # Autocomplete responses are capped so a broad query can't serialise the
+  # whole table into a dropdown.
+  AUTOCOMPLETE_LIMIT = 20
+
   # Ordered at the association so callers get a stable order without calling
   # .order, which would discard the eager-loaded collection and re-query.
   has_many :images, -> { order(:id) }, dependent: :destroy, inverse_of: :recipe
@@ -63,13 +67,15 @@ class Recipe < ApplicationRecord
   end
 
   def self.fuzzy_autocomplete_for(context, query)
+    pattern = ActiveRecord::Base.sanitize_sql_like(query.to_s)
+
     ActsAsTaggableOn::Tagging.includes(:tag).where(
       context: context,
       taggable_type: 'Recipe',
       taggable_id: published.select(:id)
     ).joins(:tag).where(
-      'tags.name like ?', "%#{query}%"
-    ).distinct
+      'tags.name like ?', "%#{pattern}%"
+    ).distinct.limit(AUTOCOMPLETE_LIMIT)
   end
 
   def featured_image?

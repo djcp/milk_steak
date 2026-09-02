@@ -38,6 +38,28 @@ shared_examples 'an autocomplete controller' do |seed:|
       end
     end
 
+    context 'query handling' do
+      it 'treats a LIKE wildcard as a literal, not a match-everything query' do
+        instance_exec(create(:recipe, status: 'published'), 'realvalue', &seed)
+
+        get :index, params: { q: '%' }
+
+        # Bound parameters already prevent injection; the risk here is a bare
+        # % returning the entire table as an autocomplete payload.
+        expect(response.parsed_body).not_to include('realvalue')
+      end
+
+      it 'caps how many results it will return' do
+        25.times do |i|
+          instance_exec(create(:recipe, status: 'published'), "cappedvalue#{i}", &seed)
+        end
+
+        get :index, params: { q: 'cappedvalue' }
+
+        expect(response.parsed_body.length).to be <= Recipe::AUTOCOMPLETE_LIMIT
+      end
+    end
+
     # Every autocomplete queries published recipes only. Without this, dropping
     # a `published` scope would leak unpublished content to anonymous callers
     # and no spec would fail.

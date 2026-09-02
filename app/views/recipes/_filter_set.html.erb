@@ -2,7 +2,7 @@
   <%= filter.input :name %>
 
   <details class="filter-group mt-3" open>
-    <summary id="filter_ingredients_summary" class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2">Ingredients</summary>
+    <summary id="filter_ingredients_summary" class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2 py-2 min-h-11 flex items-center">Ingredients</summary>
     <%= filter.input :ingredients, required: false, label: false, input_html: {
       class: 'autocomplete_multiple',
       'data-target' => autocompletes_ingredient_names_path,
@@ -11,7 +11,7 @@
   </details>
 
   <details class="filter-group mt-3" open>
-    <summary id="filter_cooking_methods_summary" class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2">Cooking methods</summary>
+    <summary id="filter_cooking_methods_summary" class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2 py-2 min-h-11 flex items-center">Cooking methods</summary>
     <%= filter.input :cooking_methods, label: false, input_html: {
       class: 'autocomplete_multiple',
       'data-target' => autocompletes_cooking_methods_path,
@@ -20,7 +20,7 @@
   </details>
 
   <details class="filter-group mt-3" open>
-    <summary id="filter_cultural_influences_summary" class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2">Cultural influences</summary>
+    <summary id="filter_cultural_influences_summary" class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2 py-2 min-h-11 flex items-center">Cultural influences</summary>
     <%= filter.input :cultural_influences, label: false, input_html: {
       class: 'autocomplete_multiple',
       'data-target' => autocompletes_cultural_influences_path,
@@ -29,7 +29,7 @@
   </details>
 
   <details class="filter-group mt-3" open>
-    <summary id="filter_courses_summary" class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2">Courses</summary>
+    <summary id="filter_courses_summary" class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2 py-2 min-h-11 flex items-center">Courses</summary>
     <%= filter.input :courses, label: false, input_html: {
       class: 'autocomplete_multiple',
       'data-target' => autocompletes_courses_path,
@@ -38,7 +38,7 @@
   </details>
 
   <details class="filter-group mt-3" open>
-    <summary id="filter_dietary_restrictions_summary" class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2">Dietary restrictions</summary>
+    <summary id="filter_dietary_restrictions_summary" class="cursor-pointer select-none text-sm font-semibold text-ink-light mb-2 py-2 min-h-11 flex items-center">Dietary restrictions</summary>
     <%= filter.input :dietary_restrictions, label: false, input_html: {
       class: 'autocomplete_multiple',
       'data-target' => autocompletes_dietary_restrictions_path,
