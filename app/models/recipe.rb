@@ -1,8 +1,11 @@
 class Recipe < ApplicationRecord
   STATUSES = %w[draft processing processing_failed review published rejected].freeze
 
-  has_many :images, dependent: :destroy, inverse_of: :recipe
-  has_many :recipe_ingredients, dependent: :destroy, inverse_of: :recipe
+  # Ordered at the association so callers get a stable order without calling
+  # .order, which would discard the eager-loaded collection and re-query.
+  has_many :images, -> { order(:id) }, dependent: :destroy, inverse_of: :recipe
+  has_many :recipe_ingredients, -> { order(:position) },
+    dependent: :destroy, inverse_of: :recipe
   has_many :ingredients, through: :recipe_ingredients
   belongs_to :user
 

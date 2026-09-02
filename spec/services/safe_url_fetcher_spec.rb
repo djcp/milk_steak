@@ -80,6 +80,46 @@ describe SafeUrlFetcher do
       expect { described_class.fetch(url) }.to raise_error(described_class::BlockedAddressError, /exceeds maximum size/)
     end
 
+    it 'refuses on Content-Length before reading the body' do
+      stub_const('SafeUrlFetcher::MAX_BYTES', 100)
+      stub_request(:get, url)
+        .to_return(status: 200, body: 'x', headers: { 'Content-Length' => '5000' })
+
+      expect { described_class.fetch(url) }
+        .to raise_error(described_class::ResponseTooLargeError, /exceeds maximum size/)
+    end
+
+    it 'raises a ResponseTooLargeError, which stays rescuable as BlockedAddressError' do
+      stub_const('SafeUrlFetcher::MAX_BYTES', 100)
+      stub_request(:get, url).to_return(status: 200, body: 'x' * 101)
+
+      expect(described_class::ResponseTooLargeError.ancestors)
+        .to include(described_class::BlockedAddressError)
+      expect { described_class.fetch(url) }
+        .to raise_error(described_class::ResponseTooLargeError)
+    end
+
+    it 'stops after MAX_REDIRECTS hops' do
+      stub_const('SafeUrlFetcher::MAX_REDIRECTS', 2)
+      stub_request(:get, url).to_return(status: 302, headers: { 'Location' => url })
+
+      expect { described_class.fetch(url) }.to raise_error(/Too many redirects/)
+    end
+
+    it 'raises when a redirect omits its Location header' do
+      stub_request(:get, url).to_return(status: 302)
+
+      expect { described_class.fetch(url) }.to raise_error(/Redirect without location/)
+    end
+
+    it 'follows a redirect to a public host' do
+      final = 'https://recipes.example.com/cake-final'
+      stub_request(:get, url).to_return(status: 302, headers: { 'Location' => final })
+      stub_request(:get, final).to_return(status: 200, body: 'redirected body')
+
+      expect(described_class.fetch(url).body).to eq('redirected body')
+    end
+
     it 'raises for non-http(s) schemes' do
       expect { described_class.fetch('file:///etc/passwd') }.to raise_error(ArgumentError)
     end

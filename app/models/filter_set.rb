@@ -30,10 +30,19 @@ class FilterSet
   end
 
   def apply_to(recipes)
-    active_strategies.reduce(recipes) { |r, strategy| strategy.apply(r) }.distinct
+    filtered = active_strategies.reduce(recipes) { |r, strategy| strategy.apply(r) }
+
+    # Only the join-based filters can yield duplicate rows. DISTINCT forces an
+    # extra sort/hash pass, so skip it on the unfiltered public index -- by far
+    # the most-requested query -- and on name/author filters, which don't join.
+    joins_duplicate_rows? ? filtered.distinct : filtered
   end
 
   private
+
+  def joins_duplicate_rows?
+    TAG_CONTEXTS.any? { |context| send(context).present? } || ingredients.present?
+  end
 
   def active_strategies
     tag_strategies + scalar_strategies.compact

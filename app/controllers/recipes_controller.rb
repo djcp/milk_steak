@@ -1,4 +1,7 @@
 class RecipesController < ApplicationController
+  BLANK_INGREDIENT_ROWS = 5
+  BLANK_IMAGE_ROWS = 4
+
   layout 'admin', only: %i[new create edit update]
 
   before_action :require_logged_in_approved!, only: %i[new create edit update]
@@ -9,7 +12,9 @@ class RecipesController < ApplicationController
   def index
     authorize :recipe, :index?
     @filter_set = FilterSet.new(params.fetch(:filter_set, {}))
-    @recipes = Recipe.published.includes(images: { image_attachment: :blob }).recent.paginate(
+    @recipes = Recipe.published.includes(
+      :user, images: { image_attachment: { blob: :variant_records } }
+    ).recent.paginate(
       page: page_param,
       per_page: per_page_param
     )
@@ -61,20 +66,32 @@ class RecipesController < ApplicationController
 
   private
 
+  # Tops the form up to a fixed number of blank rows instead of unconditionally
+  # adding them. On a validation-failure re-render the recipe already carries
+  # the unsaved rows built from params, so the old version stacked five *more*
+  # blanks on top of them each time -- fail twice and the form grew to fifteen.
+  #
+  # Reads `target` rather than the association itself so this never triggers a
+  # lazy load: on edit/update find_recipe has already preloaded it, and on new
+  # or a failed create the in-memory rows are exactly what we want to count.
   def set_up_form_for(recipe)
-    5.times do
-      recipe.recipe_ingredients.build(
-        ingredient: Ingredient.new
-      )
-    end
-    4.times do
-      recipe.images.build
-    end
+    blank_ingredients = BLANK_INGREDIENT_ROWS - recipe.recipe_ingredients.target.count(&:new_record?)
+    blank_images = BLANK_IMAGE_ROWS - recipe.images.target.count(&:new_record?)
+
+    [blank_ingredients, 0].max.times { recipe.recipe_ingredients.build(ingredient: Ingredient.new) }
+    [blank_images, 0].max.times { recipe.images.build }
   end
 
   def find_recipe
+    # The four tag contexts are preloaded because _show_content renders all of
+    # them. Measured: this is query-neutral for a single recipe (four taggings
+    # lookups either way), so it's for explicitness, not speed -- the audit's
+    # claim of "4 extra round trips" only holds when rendering many recipes.
+    # Worth keeping because these associations are exempt from strict loading
+    # (see Recipe), so a future N+1 on them would be invisible to the suite.
     @recipe = Recipe.includes(:user, :recipe_ingredients, :ingredients,
-      images: { image_attachment: :blob }).find(params[:id])
+      :cooking_methods, :cultural_influences, :courses, :dietary_restrictions,
+      images: { image_attachment: { blob: :variant_records } }).find(params[:id])
   end
 
   def page_param

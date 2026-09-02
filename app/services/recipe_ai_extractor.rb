@@ -104,7 +104,15 @@ class RecipeAiExtractor
 
   def user_message
     @user_message ||= "Extract the recipe from this untrusted text:\n\n" \
-                      "<untrusted_recipe_text>\n#{@text}\n</untrusted_recipe_text>"
+                      "<untrusted_recipe_text>\n#{sanitized_text}\n</untrusted_recipe_text>"
+  end
+
+  # The delimiters are the whole prompt-injection defence, so the untrusted text
+  # must not be able to emit one. A fetched page containing a literal
+  # </untrusted_recipe_text> would otherwise close the boundary early and have
+  # everything after it read as trusted instructions.
+  def sanitized_text
+    @text.to_s.gsub(%r{</?untrusted_recipe_text>}i, '[redacted-tag]')
   end
 
   def validate_result!(data)
