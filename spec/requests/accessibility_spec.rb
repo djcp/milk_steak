@@ -4,7 +4,7 @@ require 'spec_helper'
 # markup rather than raw strings so a class rename can't silently pass.
 describe 'Accessibility', type: :request do
   def page
-    Nokogiri::HTML(response.body)
+    response.parsed_body
   end
 
   describe 'landmarks and bypass blocks' do

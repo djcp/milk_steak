@@ -12,7 +12,7 @@ module Admin
       authorize :user, :approve?
       # Scoped to the same set #index lists, so an id outside it 404s rather
       # than producing a misleading "approved" flash and a pointless write.
-      @user = User.where(approved: false, admin: false).find(params[:id])
+      @user = User.where(approved: false, admin: false).find(params.expect(:id))
       @user.update!(approved: true)
       redirect_to admin_users_path, notice: "#{@user.username} has been approved."
     end

@@ -72,11 +72,11 @@ module Admin
     def assign_filtered_recipe
       return if params[:recipe_id].blank?
 
-      @filtered_recipe = policy_scope(Recipe).find(params[:recipe_id])
+      @filtered_recipe = policy_scope(Recipe).find(params.expect(:recipe_id))
     end
 
     def find_run
-      @run = policy_scope(AiClassifierRun).includes(:recipe).find(params[:id])
+      @run = policy_scope(AiClassifierRun).includes(:recipe).find(params.expect(:id))
     end
   end
 end

@@ -59,7 +59,9 @@ module Admin
     end
 
     def find_recipe
-      @recipe = policy_scope(Recipe).includes(:user, :images, :recipe_ingredients, :ingredients).find(params[:id])
+      @recipe = policy_scope(Recipe)
+                .includes(:user, :images, :recipe_ingredients, :ingredients)
+                .find(params.expect(:id))
     end
   end
 end

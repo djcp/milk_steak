@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-# rubocop:disable RSpec/VerifiedDoubles
+# rubocop:disable-next RSpec/VerifiedDoubles
 describe RecipeAiExtractor do
   let(:text) { 'A recipe for chocolate cake with flour and sugar' }
   let(:json_response) do
@@ -192,4 +192,3 @@ describe RecipeAiExtractor do
     end
   end
 end
-# rubocop:enable RSpec/VerifiedDoubles

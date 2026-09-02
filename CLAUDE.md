@@ -143,6 +143,8 @@ Recipes have a `status` field with values: `draft`, `processing`, `processing_fa
 - Shared examples in `spec/support/shared_examples/`. `'an autocomplete controller'` takes a **required** `seed:` lambda (`->(recipe, value)`) describing how to attach a value to a recipe for that endpoint, so adding a new autocomplete without draft-disclosure coverage is a loud failure rather than a silent omission. Verified to have teeth: removing the `published` scopes fails exactly seven examples, one per endpoint
 - Policy specs in `spec/policies/` are plain RSpec (no pundit-matchers) — they assert the role matrix directly on policy booleans and `Scope#resolve`
 - Feature specs use Selenium headless Chrome (`js: true`); default driver is `rack_test`
+- `wait_for_ajax` (`Features::AjaxHelpers`) blocks until jQuery has no requests in flight. The filter autocompletes fire on keyup, so dismissing the menu with Escape alone isn't enough: a late response reopens it, and a menu open across a navigation makes Selenium raise "Node with given id does not belong to the document"
+- **Known issue:** the Selenium specs still flake roughly one full run in five, environmental rather than order-dependent — a failing seed passes on replay. Not yet root-caused
 - `user_logs_in` (in `Features::SessionHelpers`) creates and logs in a regular user; `log_in_as(user)` logs in a pre-created user (use this when you need to supply your own user, e.g. an admin)
 - `ActiveRecord::Migration.maintain_test_schema!` runs in `spec_helper`, aborting when the test database is behind `db/schema.rb`. Without it the test schema silently drifts after a migration and specs fail in ways that look like application bugs
 - WebMock disables external network calls in tests

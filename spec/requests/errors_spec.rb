@@ -11,7 +11,7 @@ describe 'Error pages', type: :request do
 
       # Compare parsed text, not raw HTML: some copy contains an apostrophe
       # that is entity-escaped in the response body.
-      text = Nokogiri::HTML(response.body).text
+      text = response.parsed_body.text
       expect(text).to include(title)
       expect(text).to include(message)
     end
@@ -20,7 +20,7 @@ describe 'Error pages', type: :request do
   it 'renders without the nav or footer chrome' do
     get '/404'
 
-    page = Nokogiri::HTML(response.body)
+    page = response.parsed_body
     expect(page.at_css('nav')).to be_nil
     expect(page.at_css('main')).to be_present
   end

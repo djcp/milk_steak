@@ -36,6 +36,11 @@ end
 # included module would sit below it in the ancestor chain and never run.
 SimpleForm::Inputs::Base.prepend(SimpleFormAriaHints)
 
+# rubocop:disable Style/OneClassPerFile -- both modules exist solely to
+# configure the wrapper defined below, and must be loaded before
+# SimpleForm.setup runs; splitting them out would separate them from the
+# configuration they modify.
+#
 # Makes the "N errors prohibited this from being saved" banner announce itself.
 # Applied centrally rather than at each `f.error_notification` call site so a
 # newly added form can't silently omit it.
@@ -46,6 +51,7 @@ module SimpleFormAnnouncedErrors
 end
 
 SimpleForm::ErrorNotification.prepend(SimpleFormAnnouncedErrors)
+# rubocop:enable Style/OneClassPerFile
 
 SimpleForm.setup do |config|
   # Wrappers are used by the form builder to generate a
