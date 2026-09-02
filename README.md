@@ -71,6 +71,7 @@ See `.sample.env` for all available variables. Key ones for development:
 | `SECRET_KEY_BASE` | Rails secret key (generate with `bundle exec rake secret`) |
 | `ANTHROPIC_API_KEY` | Required for AI recipe import |
 | `DEFAULT_SENDER` | Devise mailer from address |
+| `SEED_ADMIN_PASSWORD` | Required by `rails db:seed` in development. There is deliberately no default, so a committed password can't become an admin login on a dev instance that gets exposed. Must be at least 12 characters. |
 
 Production additionally requires S3 credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`) and SMTP settings. See `CLAUDE.md` for the full list.
 

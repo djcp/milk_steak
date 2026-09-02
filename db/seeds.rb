@@ -33,7 +33,12 @@ end
 if Rails.env == 'development'
   admin = User.find_or_initialize_by(email: 'admin@example.com')
   if admin.new_record?
-    admin.password = ENV.fetch('SEED_ADMIN_PASSWORD', 'asdASD123!@#')
+    # No default: a committed password means any dev instance that becomes
+    # reachable (ngrok, tailscale, bin/dev on a shared network) is a trivial
+    # admin takeover.
+    admin.password = ENV.fetch('SEED_ADMIN_PASSWORD') do
+      raise 'Set SEED_ADMIN_PASSWORD to seed the development admin user.'
+    end
     admin.skip_confirmation!
   end
   admin.username = 'admin' if admin.username.blank?

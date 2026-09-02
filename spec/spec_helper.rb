@@ -21,7 +21,12 @@ RSpec.configure do |config|
   config.include Controllers::SessionHelpers, type: :controller
   config.include FactoryBot::Syntax::Methods
   config.include ActiveStorageTestHelpers
+  config.include ActiveSupport::Testing::TimeHelpers
   config.infer_base_class_for_anonymous_controllers = false
+  # Rate-limit counters live in the cache; without this a run of sign-ins in one
+  # spec would throttle a later one.
+  config.before { Rails.cache.clear }
+
   config.infer_spec_type_from_file_location!
   config.order = 'random'
   config.use_transactional_fixtures = false
