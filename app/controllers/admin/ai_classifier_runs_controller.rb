@@ -53,12 +53,20 @@ module Admin
       runs.group_by(&:recipe_id)
     end
 
+    # One pass instead of four serial aggregates over the same scope. Not
+    # cached: this page exists to observe recent runs, so stale counts would
+    # defeat its purpose, and a single indexed aggregate is cheap.
     def assign_stats
-      scoped = policy_scope(AiClassifierRun)
-      @total_count   = scoped.count
-      @success_count = scoped.successful.count
-      @failure_count = scoped.failed.count
-      @avg_duration  = compute_avg_duration
+      totals = policy_scope(AiClassifierRun).pick(Arel.sql(<<~SQL.squish)) || [0, 0, 0, nil]
+        COUNT(*),
+        COUNT(*) FILTER (WHERE success),
+        COUNT(*) FILTER (WHERE NOT success),
+        AVG(EXTRACT(EPOCH FROM (completed_at - started_at)) * 1000)
+          FILTER (WHERE started_at IS NOT NULL AND completed_at IS NOT NULL)
+      SQL
+
+      @total_count, @success_count, @failure_count, average_duration = totals
+      @avg_duration = average_duration&.round
     end
 
     def assign_filtered_recipe
@@ -69,13 +77,6 @@ module Admin
 
     def find_run
       @run = policy_scope(AiClassifierRun).includes(:recipe).find(params[:id])
-    end
-
-    def compute_avg_duration
-      policy_scope(AiClassifierRun)
-        .where.not(started_at: nil).where.not(completed_at: nil)
-        .average('EXTRACT(EPOCH FROM (completed_at - started_at)) * 1000')
-        &.round
     end
   end
 end

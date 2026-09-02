@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_01_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_01_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -62,9 +62,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_000000) do
     t.datetime "updated_at", null: false
     t.text "user_prompt"
     t.index ["created_at"], name: "index_ai_classifier_runs_on_created_at"
+    t.index ["recipe_id", "started_at"], name: "index_ai_classifier_runs_on_recipe_id_and_started_at", order: { started_at: :desc }
     t.index ["recipe_id"], name: "index_ai_classifier_runs_on_recipe_id"
     t.index ["request_id"], name: "index_ai_classifier_runs_on_request_id"
-    t.index ["success"], name: "index_ai_classifier_runs_on_success"
+    t.index ["success", "started_at"], name: "index_ai_classifier_runs_on_success_and_started_at", order: { started_at: :desc }
   end
 
   create_table "images", force: :cascade do |t|

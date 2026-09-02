@@ -26,6 +26,7 @@ gem 'pundit'
 gem 'will_paginate'
 gem 'redcarpet'
 gem 'aws-sdk-s3', require: false
+gem 'solid_cache'
 gem 'solid_queue'
 gem 'ruby_llm'
 
