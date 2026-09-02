@@ -1,5 +1,7 @@
 <div class="<%= dom_class(image) %> <%= featured_image_class(image) %> thumbnail" id="<%= dom_id(image) %>">
   <% if image.image.attached? %>
-    <%= link_to(image_tag(image.image_url(:thumb), class: 'w-full aspect-square object-cover'), url_to_recipe(image.recipe)) %>
+    <%= link_to(image_tag(image.image_url(:thumb), alt: '', class: 'w-full aspect-square object-cover'),
+          url_to_recipe(image.recipe),
+          tabindex: -1, 'aria-hidden': true) %>
   <% end %>
 </div>

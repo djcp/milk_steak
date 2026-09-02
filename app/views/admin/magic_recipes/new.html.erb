@@ -2,7 +2,7 @@
   <h1 class="text-3xl text-ink mb-6">New Magic Recipe</h1>
 
   <% if flash[:alert].present? %>
-    <div class="bg-red-50 text-red-700 p-4 rounded-lg mb-6"><%= flash[:alert] %></div>
+    <div role="alert" class="bg-red-50 text-red-700 p-4 rounded-lg mb-6"><%= flash[:alert] %></div>
   <% end %>
 
   <%= form_tag admin_magic_recipes_path, method: :post do %>
@@ -10,8 +10,8 @@
       <p class="text-ink-light">Paste a recipe URL or raw recipe text. We'll extract the structured recipe data for your review.</p>
 
       <div id="source-toggle" class="flex gap-2">
-        <button type="button" data-target="url-input" class="source-toggle-btn px-4 py-2 rounded-lg text-sm bg-terra text-white border-0 cursor-pointer">From URL</button>
-        <button type="button" data-target="text-input" class="source-toggle-btn px-4 py-2 rounded-lg text-sm bg-gray-100 text-gray-700 border-0 cursor-pointer">From Text</button>
+        <button type="button" data-target="url-input" aria-pressed="true" aria-controls="url-input" class="source-toggle-btn px-4 py-2 rounded-lg text-sm bg-terra text-white border-0 cursor-pointer">From URL</button>
+        <button type="button" data-target="text-input" aria-pressed="false" aria-controls="text-input" class="source-toggle-btn px-4 py-2 rounded-lg text-sm bg-gray-100 text-gray-700 border-0 cursor-pointer">From Text</button>
       </div>
 
       <div id="url-input">

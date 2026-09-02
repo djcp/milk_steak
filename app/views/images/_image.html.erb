@@ -1,9 +1,12 @@
 <div class="image-wrapper">
   <div class="<%= dom_class(image) %> <%= featured_image_class(image) %> thumbnail" id="<%= dom_id(image) %>">
     <% if image.image.attached? %>
-      <%= link_to(image_tag(image.image_url(:thumb), class: 'w-full aspect-square object-cover rounded-lg shadow-sm hover:shadow-md hover:scale-[1.03] transition-all duration-200'),
+      <%= link_to(image_tag(image.image_url(:thumb),
+              alt: image.caption.presence || "Photo of #{image.recipe.name}",
+              class: 'w-full aspect-square object-cover rounded-lg shadow-sm hover:shadow-md hover:scale-[1.03] transition-all duration-200'),
             image.image_url(:large),
             class: 'lightbox-trigger',
+            'aria-label': "Open #{image.caption.presence || image.recipe.name} in the photo viewer",
             data: { caption: image.caption.presence }) %>
     <% end %>
   </div>

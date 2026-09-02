@@ -94,7 +94,7 @@ bin/screenshots
 - `app/views/layouts/admin.html.erb` — Dedicated admin layout: slim terra sidebar (`app/views/admin/_sidebar.html.erb`) with role-aware nav (Recipes + AI Runs for everyone; Magic Recipe and Users links and the "Admin" chip for admins via `policy(:site)`), plus flashes, footer, and scripts; selected explicitly via `layout "admin"` on `Admin::BaseController` (Rails does not auto-resolve `layouts/admin` for namespaced controllers — `_implied_layout_name` would look up `layouts/admin/recipes`)
 - `app/views/recipes/_show_content.html.erb` — Publication-style recipe detail: title + metadata chips (prep/cook/makes/author), then the featured image, then two-column ingredients|directions on desktop, then tags strip and lightbox gallery. Author chip shows the username linked to the author filter; legacy accounts with a blank username fall back to the email rendered via `armored_email` (CSS-reverse scrape protection — reversed text in the DOM, flipped visually by the `.armored-email` rule in `app/assets/tailwind/application.css`), never the raw address
 - `app/views/recipes/_control_panel.html.erb` — Role-aware toolbar on recipe#show, gated by `current_user == recipe.user || policy(:site).admin?`; renders Edit and (now, for owners too) Delete, plus admin-only status badge + grouped Publish/Reject/Reprocess buttons via `policy(recipe)`; uses shared `.btn` component classes
-- `app/views/recipes/_recipe.html.erb` — Recipe card with square image crop and a corner time badge when `cooking_time` is present
+- `app/views/recipes/_recipe.html.erb` — Recipe card with square image crop and a corner time badge when `cooking_time` is present. The card image link duplicates the `<h2>` link to the same recipe, so it stays clickable for mouse users but carries `aria-hidden="true" tabindex="-1"` (with `alt=""`) — the standard redundant-card-link pattern, which keeps assistive tech and the tab order on the single named `<h2>` link
 - `app/views/application/_nav.html.erb` — Public header nav (rendered by the `application` layout): New Recipe + My recipes links for any signed-in user, the Admin link and a Magic Recipe link (🪄, to `new_admin_magic_recipe_path`) between Admin and the email/log-out pill, gated via `policy(:site).admin?`/`policy(:site).magic?`
 - `app/views/recipes/_filter_set.html.erb` — Search form with collapsible `<details>` groups around the tag autocompletes (all open by default); each group's `<summary>` is the sole label — the inner inputs render `label: false` and point at the summary via `aria-labelledby` (ids `filter_<attribute>_summary`), so there's no duplicated visible label while inputs keep their accessible name
 - `app/views/recipes/_tagged_attributes.html.erb` / `app/views/acts_as_taggable_on/tags/_tag.html.erb` — Tag chips, colored per context, linking to the matching filter
@@ -108,6 +108,7 @@ bin/screenshots
 ### Config
 - `config/application.rb` — Sets `config.exceptions_app` (routes status errors to `ErrorsController.action(:show)`, so even 4xx/5xx render the branded errors layout); adds Rack::Deflater and the security headers
 - `config/initializers/content_security_policy.rb` — CSP enforced; `script_src` carries no `:unsafe_inline` (all app JS is external: `admin/magic_recipes/new.js`, `analytics.js`, `test_setup.js`), only `:self` + Google Analytics
+- `config/initializers/simple_form.rb` — Defines two prepended components before `SimpleForm.setup`: `SimpleFormAriaHints` gives every hint span a stable `#{input_id}_hint` id and points the input at it with `aria-describedby` (hints are visually hidden via `opacity: 0` but stay in the accessibility tree, so without the association a screen-reader user tabbing into a field never hears them); `SimpleFormAnnouncedErrors` adds `role="alert"` to the error-notification banner centrally, so a new form can't omit it. Both use `prepend` rather than `include` — the methods they override are defined directly on the Simple Form classes, so an included module would sit below them in the ancestor chain and never run. The wrapper uses `b.use :aria_hint` in place of `b.use :hint`
 - `config/initializers/acts_as_taggable_on.rb` — Force lowercase tags, auto-cleanup unused tags
 - `config/initializers/devise.rb` — Configures `:lockable` (`lock_strategy = :failed_attempts`, `unlock_keys = [:email]`, `unlock_strategy = :email`, `maximum_attempts = 10`, `last_attempt_warning = true`)
 - `config/initializers/host_check.rb` — Raises in production if `HOST` is not set (fail-fast on deploy)
@@ -168,6 +169,19 @@ The repo ships an **agent-based audit system** for cross-harness use (opencode, 
 - Model is unset on all agents so they inherit the current session model; override per harness via native config.
 
 When the auditing system changes, keep the skill bodies, the per-harness agents/commands, `opencode.json`, and this section in sync.
+
+## Accessibility
+
+Guarded by `spec/requests/accessibility_spec.rb`, which asserts on Nokogiri-parsed markup so a class rename can't silently pass.
+
+- Both the public and admin layouts open with a `sr-only focus:not-sr-only` **skip link** targeting `<main id="main_content" tabindex="-1">` (the `tabindex` is required for the target to accept focus). The public layout's `<div id="main_content">` became a `<main>`; the errors layout gets a `<main>` but no skip link, having no nav to skip
+- Every `<nav>` carries an `aria-label` (`Primary` / `Admin`) so the landmarks can be told apart
+- Flashes render with `role="status" aria-live="polite"`, or `role="alert" aria-live="assertive"` for the `error` key, so form feedback and the pending-approval alert are announced
+- Every `<img>` has an explicit `alt` — caption, falling back to the recipe name, or `alt=""` where the image is decorative and an adjacent link already names the target
+- The filter-remove control is a real `<button type="button">` with an `aria-label`, not a styled `<span>`. It keeps the `remove_filter` class because `app/assets/javascripts/recipes_index.js` selects on it
+- The Magic Recipe source toggle exposes selection via `aria-pressed`, flipped in `admin/magic_recipes/new.js` alongside the colour swap (which conveys state visually only)
+- Admin table headers use `scope="col"`
+- Form hints are associated via `aria-describedby` (see the Simple Form initializer under Config). **Known limitation:** hints remain visually hidden until hover/focus, so this helps screen-reader users but not sighted keyboard, touch, or screen-magnifier users — a deliberate scope decision, not an oversight
 
 ## Key Patterns
 

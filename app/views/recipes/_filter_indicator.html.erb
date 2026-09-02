@@ -4,7 +4,10 @@
     <ul class="active_filters flex flex-wrap gap-2 list-none p-0 m-0">
       <% filter_set.active_filters.map do |filter| %>
         <li class="inline-flex items-center gap-1 bg-terra-faint text-terra-dark px-3 py-1 rounded-full text-xs font-medium">
-          <span class="remove_filter cursor-pointer opacity-60 hover:opacity-100 transition-opacity" data-filter-name="<%= filter %>">&#x2715;</span>
+          <button type="button"
+                  class="remove_filter cursor-pointer opacity-60 hover:opacity-100 transition-opacity bg-transparent border-0 p-0 leading-none focus:outline-2 focus:outline-offset-2 focus:outline-terra-dark"
+                  aria-label="Remove <%= filter.to_s.humanize %> filter"
+                  data-filter-name="<%= filter %>">&#x2715;</button>
           <%= filter.to_s.humanize %> :: <%= filter_set.send(filter) %>
         </li>
       <% end %>

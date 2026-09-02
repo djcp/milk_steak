@@ -10,6 +10,7 @@
     <%= csrf_meta_tags %>
   </head>
   <body class="<%= body_class %>">
+    <a href="#main_content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-white focus:text-terra-dark focus:px-3 focus:py-2 focus:rounded focus:shadow">Skip to main content</a>
     <div class="max-w-5xl mx-auto">
       <header class="bg-terra/90 backdrop-blur-md">
         <h1 class="m-0 py-2 px-4 text-center text-white text-4xl md:text-6xl lg:text-7xl tracking-tight">
@@ -19,9 +20,9 @@
       <div class="max-w-5xl mx-auto bg-cream/95 backdrop-blur-sm min-h-screen">
         <%= render 'nav' -%>
         <%= render 'flashes' -%>
-        <div id="main_content">
+        <main id="main_content" tabindex="-1">
           <%= yield %>
-        </div>
+        </main>
         <%= render 'footer' -%>
       </div>
     </div>

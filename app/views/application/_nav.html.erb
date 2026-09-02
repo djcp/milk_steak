@@ -1,4 +1,4 @@
-<nav class="bg-terra-dark px-4 py-3 text-center flex justify-center flex-wrap gap-1 font-body text-sm">
+<nav aria-label="Primary" class="bg-terra-dark px-4 py-3 text-center flex justify-center flex-wrap gap-1 font-body text-sm">
   <% if current_user.present? %>
     <%= link_to t('ui.recipes.links.new'), new_recipe_path, class: 'text-white no-underline inline-block px-5 py-2 rounded-full transition-colors hover:bg-white/15 hover:no-underline' %>
     <%= link_to(
@@ -11,7 +11,7 @@
     <% end %>
     <% if policy(:site).magic? %>
       <%= link_to new_admin_magic_recipe_path, class: 'text-white no-underline inline-block px-5 py-2 rounded-full transition-colors hover:bg-white/15 hover:no-underline' do %>
-        <span class="text-[1.5em] leading-none">🪄</span> Magic Recipe
+        <span class="text-[1.5em] leading-none" aria-hidden="true">🪄</span> Magic Recipe
       <% end %>
     <% end %>
   <% end %>

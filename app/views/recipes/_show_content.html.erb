@@ -47,7 +47,9 @@
 
   <% if recipe.featured_image? %>
     <div class="hero-image mt-6 lg:mt-8">
-      <%= image_tag(recipe.featured_image.image_url(:large), class: 'w-full aspect-[16/9] object-cover rounded-2xl shadow-sm') %>
+      <%= image_tag(recipe.featured_image.image_url(:large),
+        alt: recipe.featured_image.caption.presence || recipe.name,
+        class: 'w-full aspect-[16/9] object-cover rounded-2xl shadow-sm') %>
     </div>
   <% end %>
 

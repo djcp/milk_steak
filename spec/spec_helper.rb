@@ -17,6 +17,7 @@ RSpec.configure do |config|
   end
   config.include Features::SessionHelpers, type: :feature
   config.include Devise::Test::ControllerHelpers, type: :controller
+  config.include Devise::Test::IntegrationHelpers, type: :request
   config.include Controllers::SessionHelpers, type: :controller
   config.include FactoryBot::Syntax::Methods
   config.include ActiveStorageTestHelpers
