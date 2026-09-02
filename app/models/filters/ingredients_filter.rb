@@ -16,7 +16,7 @@ module Filters
     end
 
     def parameters
-      @ingredients.map { |i| "%#{i}%" }
+      @ingredients.map { |i| "%#{ActiveRecord::Base.sanitize_sql_like(i)}%" }
     end
   end
 end

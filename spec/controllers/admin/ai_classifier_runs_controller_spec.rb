@@ -114,6 +114,44 @@ describe Admin::AiClassifierRunsController do
         expect(assigns(:success_count)).to eq(1)
         expect(assigns(:failure_count)).to eq(1)
       end
+
+      it 'averages run duration in milliseconds' do
+        now = Time.current
+        create(:ai_classifier_run, started_at: now - 2.seconds, completed_at: now)
+        create(:ai_classifier_run, started_at: now - 4.seconds, completed_at: now)
+
+        get :index
+
+        expect(assigns(:avg_duration)).to eq(3000)
+      end
+
+      it 'ignores runs that never completed when averaging' do
+        now = Time.current
+        create(:ai_classifier_run, started_at: now - 2.seconds, completed_at: now)
+        create(:ai_classifier_run, started_at: now - 90.seconds, completed_at: nil)
+
+        get :index
+
+        expect(assigns(:avg_duration)).to eq(2000)
+      end
+
+      it 'reports no average when nothing has completed' do
+        create(:ai_classifier_run, started_at: Time.current, completed_at: nil)
+
+        get :index
+
+        expect(assigns(:avg_duration)).to be_nil
+        expect(assigns(:total_count)).to eq(1)
+      end
+
+      it 'reports zeroes rather than blowing up on an empty scope' do
+        get :index
+
+        expect(assigns(:total_count)).to eq(0)
+        expect(assigns(:success_count)).to eq(0)
+        expect(assigns(:failure_count)).to eq(0)
+        expect(assigns(:avg_duration)).to be_nil
+      end
     end
 
     describe '#show' do

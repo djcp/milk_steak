@@ -25,10 +25,14 @@ feature 'User filters recipes', js: true do
     fill_in 'filter_set_cooking_methods', with: 'deep fried'
     # The <details> <summary> serves as the field's accessible label.
     expect(find('#filter_set_cooking_methods')['aria-labelledby']).to eq('filter_cooking_methods_summary')
+    # Let the keyup-triggered autocomplete request finish before dismissing the
+    # menu; otherwise a late response reopens it after the Escape.
+    wait_for_ajax
     # Dismiss the jQuery UI autocomplete menu (Escape) before submitting.
     # An open menu can race the page navigation in Selenium and raise
     # "Node with given id does not belong to the document".
     find('#filter_set_cooking_methods').send_keys(:escape)
+    expect(page).to have_no_css('.ui-autocomplete', visible: :visible)
     click_on 'Apply'
 
     expect(page).to have_content 'French fries'

@@ -109,7 +109,7 @@ Serve with raw jellybeans
 
     recipe_on_page.submit
 
-    expect(recipe_on_page.title).to match /Milk Steak/
+    expect(recipe_on_page.title).to include('Milk Steak')
     expect(recipe_on_page.ingredient_names).to include('steak', 'milk')
     expect(recipe_on_page.ingredient_quantities).to match_array([
       '1', '8', '2.5', '1'

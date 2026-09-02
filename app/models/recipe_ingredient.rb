@@ -3,8 +3,6 @@ class RecipeIngredient < ApplicationRecord
   belongs_to :ingredient
   acts_as_list scope: %i[recipe_id section]
 
-  validates :recipe, presence: true
-  validates :ingredient, presence: true
   validates :quantity,
     allow_blank: true,
     length: { maximum: 10 }
@@ -28,7 +26,7 @@ class RecipeIngredient < ApplicationRecord
     name = attrs['name'].to_s.strip.downcase
 
     if name.present?
-      self.ingredient = Ingredient.find_or_create_by(name: name)
+      self.ingredient = Ingredient.resolve_by_name(name)
     else
       self.ingredient ||= Ingredient.new
     end

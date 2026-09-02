@@ -1,4 +1,8 @@
 class RecipeAiExtractor
+  # The model returned something that isn't a usable recipe. LLM output is
+  # non-deterministic, so this stays retryable.
+  class InvalidResponse < StandardError; end
+
   include AiService
 
   SYSTEM_PROMPT = <<~PROMPT.freeze
@@ -104,14 +108,22 @@ class RecipeAiExtractor
 
   def user_message
     @user_message ||= "Extract the recipe from this untrusted text:\n\n" \
-                      "<untrusted_recipe_text>\n#{@text}\n</untrusted_recipe_text>"
+                      "<untrusted_recipe_text>\n#{sanitized_text}\n</untrusted_recipe_text>"
+  end
+
+  # The delimiters are the whole prompt-injection defence, so the untrusted text
+  # must not be able to emit one. A fetched page containing a literal
+  # </untrusted_recipe_text> would otherwise close the boundary early and have
+  # everything after it read as trusted instructions.
+  def sanitized_text
+    @text.to_s.gsub(%r{</?untrusted_recipe_text>}i, '[redacted-tag]')
   end
 
   def validate_result!(data)
-    raise 'AI response is not a JSON object' unless data.is_a?(Hash)
+    raise InvalidResponse, 'AI response is not a JSON object' unless data.is_a?(Hash)
 
     missing = %w[name directions].reject { |key| data[key].present? }
-    raise "AI response is missing required fields: #{missing.join(', ')}" if missing.any?
+    raise InvalidResponse, "AI response is missing required fields: #{missing.join(', ')}" if missing.any?
 
     validate_ingredients!(data['ingredients'])
   end
@@ -119,8 +131,8 @@ class RecipeAiExtractor
   def validate_ingredients!(ingredients)
     return if ingredients.nil?
 
-    raise 'AI response ingredients must be an array' unless ingredients.is_a?(Array)
-    raise 'AI response includes too many ingredients' if ingredients.length > 200
+    raise InvalidResponse, 'AI response ingredients must be an array' unless ingredients.is_a?(Array)
+    raise InvalidResponse, 'AI response includes too many ingredients' if ingredients.length > 200
   end
 
   def current_adapter

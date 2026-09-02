@@ -56,4 +56,68 @@ describe Recipe do
       expect(recipe.featured_image?).to be true
     end
   end
+
+  # These predicates drive the publish/reject/reprocess buttons and the AI
+  # pipeline's transitions, but were only exercised indirectly.
+  describe 'status predicates' do
+    it 'is publishable only while awaiting review' do
+      Recipe::STATUSES.each do |status|
+        expected = status == 'review'
+        expect(build(:recipe, status: status).publishable?).to eq(expected), status
+      end
+    end
+
+    it 'is reprocessable only after a processing failure' do
+      Recipe::STATUSES.each do |status|
+        expected = status == 'processing_failed'
+        expect(build(:recipe, status: status).reprocessable?).to eq(expected), status
+      end
+    end
+
+    it 'is pre-review while draft, processing or failed' do
+      Recipe::STATUSES.each do |status|
+        expected = %w[draft processing processing_failed].include?(status)
+        expect(build(:recipe, status: status).pre_review?).to eq(expected), status
+      end
+    end
+  end
+
+  describe '#name_for_url' do
+    it 'lowercases and underscores the name' do
+      expect(build(:recipe, name: 'Chocolate Cake').name_for_url).to eq('chocolate_cake')
+    end
+
+    it 'strips punctuation' do
+      expect(build(:recipe, name: 'Mom\'s Best! Cake?').name_for_url).to eq('moms_best_cake')
+    end
+
+    it 'drops non-ascii characters, which is lossy but stable' do
+      # Pinning current behaviour rather than endorsing it: accented characters
+      # are dropped rather than transliterated.
+      expect(build(:recipe, name: 'Creme Brulee').name_for_url).to eq('creme_brulee')
+    end
+  end
+
+  describe 'nested recipe_ingredients rejection' do
+    it 'keeps an ingredient that has only a name' do
+      # "cilantro" or "salt to taste" have neither quantity nor unit, and were
+      # previously discarded on save with no feedback to the user.
+      recipe = build(:recipe)
+      recipe.recipe_ingredients_attributes = [
+        { 'quantity' => '', 'unit' => '', 'ingredient_attributes' => { 'name' => 'cilantro' } }
+      ]
+
+      expect { recipe.save! }.to change(RecipeIngredient, :count).by(1)
+      expect(RecipeIngredient.includes(:ingredient).last.name).to eq('cilantro')
+    end
+
+    it 'still rejects a wholly blank row' do
+      recipe = build(:recipe)
+      recipe.recipe_ingredients_attributes = [
+        { 'quantity' => '', 'unit' => '', 'ingredient_attributes' => { 'name' => '' } }
+      ]
+
+      expect { recipe.save! }.not_to change(RecipeIngredient, :count)
+    end
+  end
 end

@@ -1,5 +1,7 @@
 module Admin
   class RecipesController < BaseController
+    include Paginatable
+
     before_action :find_recipe, only: %i[publish reject reprocess destroy]
 
     after_action :verify_policy_scoped, only: :index
@@ -9,7 +11,7 @@ module Admin
       @recipes = policy_scope(Recipe).includes(:user, :images).recent
       @status_counts = scoped_status_counts(policy_scope(Recipe))
       @recipes = @recipes.by_status(params[:status]) if params[:status].present?
-      @recipes = @recipes.paginate(page: params[:page], per_page: admin_per_page)
+      @recipes = @recipes.paginate(page: page_param, per_page: per_page_param(default: 20, max: 100))
       recipe_ids  = @recipes.map(&:id)
       @run_counts = AiClassifierRun.where(recipe_id: recipe_ids).group(:recipe_id).count
     end
@@ -48,9 +50,6 @@ module Admin
 
     private
 
-    def admin_per_page
-      params.fetch(:per_page, 20).to_i.clamp(1, 100)
-    end
 
     def scoped_status_counts(scope)
       scope.group(:status).count.tap do |counts|
@@ -59,7 +58,9 @@ module Admin
     end
 
     def find_recipe
-      @recipe = policy_scope(Recipe).includes(:user, :images, :recipe_ingredients, :ingredients).find(params[:id])
+      @recipe = policy_scope(Recipe)
+                .includes(:user, :images, :recipe_ingredients, :ingredients)
+                .find(params.expect(:id))
     end
   end
 end

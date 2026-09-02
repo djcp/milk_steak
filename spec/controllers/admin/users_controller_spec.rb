@@ -69,6 +69,22 @@ describe Admin::UsersController do
 
         expect(flash[:notice]).to include(user.username)
       end
+
+      # Scoped to the same set #index lists, so re-approving an already-approved
+      # user (or an admin) 404s instead of writing and claiming success.
+      it 'does not act on an already-approved user' do
+        user = create(:user)
+
+        expect { patch :approve, params: { id: user.id } }
+          .to raise_error(ActiveRecord::RecordNotFound)
+      end
+
+      it 'does not act on an admin' do
+        admin = create(:user, :admin)
+
+        expect { patch :approve, params: { id: admin.id } }
+          .to raise_error(ActiveRecord::RecordNotFound)
+      end
     end
   end
 end

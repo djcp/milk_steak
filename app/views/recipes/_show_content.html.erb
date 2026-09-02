@@ -47,14 +47,16 @@
 
   <% if recipe.featured_image? %>
     <div class="hero-image mt-6 lg:mt-8">
-      <%= image_tag(recipe.featured_image.image_url(:large), class: 'w-full aspect-[16/9] object-cover rounded-2xl shadow-sm') %>
+      <%= image_tag(recipe.featured_image.image_url(:large),
+        alt: recipe.featured_image.caption.presence || recipe.name,
+        class: 'w-full aspect-[16/9] object-cover rounded-2xl shadow-sm') %>
     </div>
   <% end %>
 
   <div class="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
     <div class="recipe_ingredients bg-white rounded-xl px-6 py-5 shadow-sm">
       <h2 class="font-display text-xl text-ink mb-4">Ingredients</h2>
-      <% recipe.recipe_ingredients.order(:position).group_by(&:section).each do |section, ingredients| %>
+      <% recipe.recipe_ingredients.group_by(&:section).each do |section, ingredients| %>
         <% if section.present? %>
           <h3 class="font-semibold text-ink mt-4 mb-1 first:mt-0"><%= section %></h3>
         <% end %>
@@ -85,7 +87,7 @@
     <div class="images mt-10" id="image_list">
       <h2 class="font-display text-xl text-ink mb-4">Photos</h2>
       <div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-4">
-        <%= render recipe.images.order('id') %>
+        <%= render recipe.images %>
       </div>
     </div>
   <% end %>

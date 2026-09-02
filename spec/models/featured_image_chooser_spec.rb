@@ -13,10 +13,16 @@ describe FeaturedImageChooser do
     expect(described_class.find(recipe)).to eq images.first
   end
 
-  it 'returns the first image when there are multiple featured images' do
-    recipe, images = create_recipe_with_images_preloaded(count: 2, featured: true)
+  it 'cannot be given multiple featured images, so its pick is deterministic' do
+    # A partial unique index now enforces at most one featured image per
+    # recipe. The chooser keeps its `find { featured } || first` fallback for
+    # the no-featured case, but the ambiguous multiple-featured state that
+    # this example used to cover is no longer reachable.
+    recipe = create(:recipe)
+    create(:image, recipe: recipe, featured: true)
 
-    expect(described_class.find(recipe)).to eq images.first
+    expect { create(:image, recipe: recipe, featured: true) }
+      .to raise_error(ActiveRecord::RecordNotUnique)
   end
 
   it 'returns nil when there are no images' do

@@ -1,5 +1,7 @@
 module Admin
   class AiClassifierRunsController < BaseController
+    include Paginatable
+
     before_action :find_run, only: %i[show rerun]
 
     after_action :verify_policy_scoped, only: :index
@@ -8,8 +10,8 @@ module Admin
       authorize :ai_classifier_run, :index?
       base = scoped_runs
 
-      per_page = params.fetch(:per_page, 10).to_i.clamp(1, 100)
-      page     = (params[:page] || 1).to_i
+      per_page = per_page_param(default: 10, max: 100)
+      page     = page_param
 
       @recipe_ids        = paginated_recipe_ids(base, page, per_page)
       @runs_by_recipe_id = grouped_runs(base, @recipe_ids)
@@ -53,29 +55,30 @@ module Admin
       runs.group_by(&:recipe_id)
     end
 
+    # One pass instead of four serial aggregates over the same scope. Not
+    # cached: this page exists to observe recent runs, so stale counts would
+    # defeat its purpose, and a single indexed aggregate is cheap.
     def assign_stats
-      scoped = policy_scope(AiClassifierRun)
-      @total_count   = scoped.count
-      @success_count = scoped.successful.count
-      @failure_count = scoped.failed.count
-      @avg_duration  = compute_avg_duration
+      totals = policy_scope(AiClassifierRun).pick(Arel.sql(<<~SQL.squish)) || [0, 0, 0, nil]
+        COUNT(*),
+        COUNT(*) FILTER (WHERE success),
+        COUNT(*) FILTER (WHERE NOT success),
+        AVG(EXTRACT(EPOCH FROM (completed_at - started_at)) * 1000)
+          FILTER (WHERE started_at IS NOT NULL AND completed_at IS NOT NULL)
+      SQL
+
+      @total_count, @success_count, @failure_count, average_duration = totals
+      @avg_duration = average_duration&.round
     end
 
     def assign_filtered_recipe
       return if params[:recipe_id].blank?
 
-      @filtered_recipe = policy_scope(Recipe).find(params[:recipe_id])
+      @filtered_recipe = policy_scope(Recipe).find(params.expect(:recipe_id))
     end
 
     def find_run
-      @run = policy_scope(AiClassifierRun).includes(:recipe).find(params[:id])
-    end
-
-    def compute_avg_duration
-      policy_scope(AiClassifierRun)
-        .where.not(started_at: nil).where.not(completed_at: nil)
-        .average('EXTRACT(EPOCH FROM (completed_at - started_at)) * 1000')
-        &.round
+      @run = policy_scope(AiClassifierRun).includes(:recipe).find(params.expect(:id))
     end
   end
 end

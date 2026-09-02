@@ -5,6 +5,31 @@ require 'uri'
 class SafeUrlFetcher
   class BlockedAddressError < StandardError; end
 
+  # Subclasses BlockedAddressError so existing rescuers keep working, while
+  # callers that care can tell "response too big" from "internal address".
+  class ResponseTooLargeError < BlockedAddressError; end
+  class TooManyRedirectsError < StandardError; end
+  class RedirectWithoutLocationError < StandardError; end
+
+  # Accumulates a response body while enforcing the cap *during* the read, so a
+  # hostile server can't force the whole payload into memory before we check.
+  # Subclasses String so Net::HTTPResponse#body still hands callers a String
+  # (RecipeTextExtractor passes it straight to Nokogiri).
+  class SizeLimitedBody < String
+    def initialize(limit)
+      super()
+      @limit = limit
+    end
+
+    def <<(chunk)
+      if bytesize + chunk.bytesize > @limit
+        raise ResponseTooLargeError, "Response exceeds maximum size of #{@limit} bytes"
+      end
+
+      super
+    end
+  end
+
   MAX_REDIRECTS = 5
   MAX_BYTES     = 5.megabytes
   OPEN_TIMEOUT  = 5
@@ -63,10 +88,10 @@ class SafeUrlFetcher
       response = http_get(uri)
       return response unless redirect?(response)
 
-      raise "Too many redirects fetching #{@uri}" if redirects >= @max_redirects
+      raise TooManyRedirectsError, "Too many redirects fetching #{@uri}" if redirects >= @max_redirects
 
       location = response['location']
-      raise "Redirect without location from #{uri}" if location.blank?
+      raise RedirectWithoutLocationError, "Redirect without location from #{uri}" if location.blank?
 
       uri = URI.join(uri, location)
       validate_uri!(uri)
@@ -102,15 +127,27 @@ class SafeUrlFetcher
     http.open_timeout = OPEN_TIMEOUT
     http.read_timeout = READ_TIMEOUT
 
-    response = http.request(request)
-    enforce_max_size!(response)
-    response
+    result = nil
+    http.start do |connection|
+      connection.request(request) do |response|
+        reject_oversized_content_length!(response)
+
+        # Every response is read through the capped buffer, redirects included:
+        # Net::HTTP drains any body left unread when the block exits, which
+        # would otherwise pull an unbounded redirect body into memory uncapped.
+        response.read_body(SizeLimitedBody.new(MAX_BYTES))
+        result = response
+      end
+    end
+    result
   end
 
-  def enforce_max_size!(response)
-    return if response.body.to_s.bytesize <= MAX_BYTES
+  # Cheap pre-check: refuse before reading a single byte when the server has
+  # already told us the payload is too big.
+  def reject_oversized_content_length!(response)
+    return if response['content-length'].to_i <= MAX_BYTES
 
-    raise BlockedAddressError, "Response exceeds maximum size of #{MAX_BYTES} bytes"
+    raise ResponseTooLargeError, "Response exceeds maximum size of #{MAX_BYTES} bytes"
   end
 
   def redirect?(response)

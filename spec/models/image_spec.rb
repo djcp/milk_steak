@@ -123,4 +123,28 @@ describe Image do
       expect(image.image_url(:original)).to be_present
     end
   end
+
+  describe 'featured uniqueness' do
+    it 'refuses a second featured image on the same recipe at the database level' do
+      recipe = create(:recipe)
+      create(:image, recipe: recipe, featured: true)
+
+      # Enforced by a partial unique index, not a validation: without it
+      # FeaturedImageChooser's pick is undefined when several are flagged.
+      expect { create(:image, recipe: recipe, featured: true) }
+        .to raise_error(ActiveRecord::RecordNotUnique)
+    end
+
+    it 'allows many non-featured images on the same recipe' do
+      recipe = create(:recipe)
+
+      expect { 3.times { create(:image, recipe: recipe, featured: false) } }
+        .to change(described_class, :count).by(3)
+    end
+
+    it 'allows a featured image on each of several recipes' do
+      expect { 2.times { create(:image, recipe: create(:recipe), featured: true) } }
+        .to change(described_class, :count).by(2)
+    end
+  end
 end

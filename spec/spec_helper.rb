@@ -6,6 +6,11 @@ ENV['RAILS_ENV'] = 'test'
 require File.expand_path('../../config/environment', __FILE__)
 
 require 'rspec/rails'
+
+# Aborts with a clear message when the test database is behind db/schema.rb.
+# Without it the schema silently drifts after a migration, and specs fail in
+# ways that look like application bugs rather than a stale database.
+ActiveRecord::Migration.maintain_test_schema!
 require 'shoulda/matchers'
 require 'webmock/rspec'
 
@@ -17,10 +22,16 @@ RSpec.configure do |config|
   end
   config.include Features::SessionHelpers, type: :feature
   config.include Devise::Test::ControllerHelpers, type: :controller
+  config.include Devise::Test::IntegrationHelpers, type: :request
   config.include Controllers::SessionHelpers, type: :controller
   config.include FactoryBot::Syntax::Methods
   config.include ActiveStorageTestHelpers
+  config.include ActiveSupport::Testing::TimeHelpers
   config.infer_base_class_for_anonymous_controllers = false
+  # Rate-limit counters live in the cache; without this a run of sign-ins in one
+  # spec would throttle a later one.
+  config.before { Rails.cache.clear }
+
   config.infer_spec_type_from_file_location!
   config.order = 'random'
   config.use_transactional_fixtures = false

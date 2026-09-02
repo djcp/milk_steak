@@ -42,4 +42,11 @@ class ApplicationController < ActionController::Base
 
     q.strip.presence
   end
+
+  # Values are already bound parameters, so this is not an injection fix: it
+  # stops a literal % or _ in the term acting as a wildcard, which would make a
+  # one-character query match every row.
+  def like_pattern(value)
+    ActiveRecord::Base.sanitize_sql_like(value.to_s)
+  end
 end

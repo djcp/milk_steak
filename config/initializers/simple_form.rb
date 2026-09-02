@@ -1,4 +1,58 @@
 # Use this setup block to configure all options available in SimpleForm.
+# Associates each Simple Form hint with its input via aria-describedby.
+#
+# The hints are visually hidden by default (opacity: 0 in application.css,
+# revealed on hover/focus). Content hidden that way stays in the accessibility
+# tree, but without an explicit association a screen-reader user tabbing into a
+# field never hears it -- e.g. the username rules on the sign-up form. Simple
+# Form puts no id on its hint span, so this component renders the span itself
+# and points the input at it.
+module SimpleFormAriaHints
+  def aria_hint(wrapper_options = nil)
+    return unless has_hint?
+
+    template.content_tag(:span, hint(wrapper_options), class: 'hint', id: hint_id)
+  end
+
+  def input_html_options
+    options = super
+    return options unless has_hint?
+
+    described_by = [options['aria-describedby'], hint_id].compact_blank.join(' ')
+    options.merge('aria-describedby' => described_by)
+  end
+
+  private
+
+  # Mirrors ActionView::Helpers::Tags::Base#tag_id so the reference always
+  # matches the id Rails generates for the input.
+  def hint_id
+    sanitized_object_name = object_name.to_s.gsub(/\]\[|[^-a-zA-Z0-9:.]/, '_').delete_suffix('_')
+    "#{sanitized_object_name}_#{attribute_name}_hint"
+  end
+end
+
+# prepend, not include: input_html_options is defined directly on Base, so an
+# included module would sit below it in the ancestor chain and never run.
+SimpleForm::Inputs::Base.prepend(SimpleFormAriaHints)
+
+# rubocop:disable Style/OneClassPerFile -- both modules exist solely to
+# configure the wrapper defined below, and must be loaded before
+# SimpleForm.setup runs; splitting them out would separate them from the
+# configuration they modify.
+#
+# Makes the "N errors prohibited this from being saved" banner announce itself.
+# Applied centrally rather than at each `f.error_notification` call site so a
+# newly added form can't silently omit it.
+module SimpleFormAnnouncedErrors
+  def html_options
+    super.reverse_merge('role' => 'alert')
+  end
+end
+
+SimpleForm::ErrorNotification.prepend(SimpleFormAnnouncedErrors)
+# rubocop:enable Style/OneClassPerFile
+
 SimpleForm.setup do |config|
   # Wrappers are used by the form builder to generate a
   # complete input. You can remove any component from the
@@ -41,7 +95,7 @@ SimpleForm.setup do |config|
 
     ## Inputs
     b.use :label_input
-    b.use :hint,  wrap_with: { tag: :span, class: :hint }
+    b.use :aria_hint
     b.use :error, wrap_with: { tag: :span, class: :error }
 
     ## full_messages_for

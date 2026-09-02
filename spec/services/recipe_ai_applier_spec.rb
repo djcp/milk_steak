@@ -142,6 +142,18 @@ describe RecipeAiApplier do
       expect(run.user_prompt).to eq(data.to_json)
     end
 
+    it 'caps applied ingredients at 200' do
+      # Silently truncates rather than raising, unlike the extractor, which
+      # rejects an over-long list outright. Both halves of that pair are pinned.
+      oversized = data.merge(
+        'ingredients' => Array.new(250) { |i| { 'name' => "ingredient #{i}", 'quantity' => '1' } }
+      )
+
+      described_class.apply(recipe, oversized)
+
+      expect(recipe.reload.recipe_ingredients.count).to eq(200)
+    end
+
     context 'when save! raises' do
       it 'records a failed run and re-raises' do
         # Stub save! on this specific recipe instance (avoids any_instance interfering with
@@ -154,6 +166,27 @@ describe RecipeAiApplier do
         expect(run.success).to be false
         expect(run.error_class).to eq('RuntimeError')
         expect(run.completed_at).not_to be_nil
+      end
+
+      it 'rolls back the ingredient wipe instead of leaving the recipe empty' do
+        existing = create(:recipe_ingredient, recipe: recipe)
+        allow(recipe).to receive(:save!).and_raise(RuntimeError, 'save failed')
+
+        expect { described_class.apply(recipe, data) }.to raise_error(RuntimeError)
+
+        # apply_ingredients calls destroy_all before rebuilding. Without the
+        # surrounding transaction that delete commits on its own, so a failure
+        # here would strand the recipe with zero ingredients -- and the job's
+        # retry_on would then re-run against the emptied set.
+        expect(RecipeIngredient.where(recipe_id: recipe.id).pluck(:id)).to eq([existing.id])
+      end
+
+      it 'still records the failed run, which the rollback must not erase' do
+        create(:recipe_ingredient, recipe: recipe)
+        allow(recipe).to receive(:save!).and_raise(RuntimeError, 'save failed')
+
+        expect { suppress(RuntimeError) { described_class.apply(recipe, data) } }
+          .to change(AiClassifierRun, :count).by(1)
       end
     end
   end

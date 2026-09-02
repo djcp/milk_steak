@@ -10,19 +10,20 @@ module ApplicationHelper
     end.join(' ')
   end
 
+  # Built once: Redcarpet's renderer and parser are stateless after
+  # configuration, and this ran twice per recipe show. The flags are a security
+  # boundary (see spec/helpers/application_helper_spec.rb), not formatting
+  # preference -- escape_html and safe_links_only are what keep user-supplied
+  # recipe text inert.
+  MARKDOWN = Redcarpet::Markdown.new(
+    Redcarpet::Render::HTML.new(safe_links_only: true, no_styles: true, escape_html: true),
+    autolink: true
+  ).freeze
+
   def markdown_format(text)
-    if text.present?
-      renderer = Redcarpet::Render::HTML.new(
-        safe_links_only: true,
-        no_styles: true,
-        escape_html: true
-      )
-      markdown = Redcarpet::Markdown.new(
-        renderer,
-        autolink: true
-      )
-      %Q|<div class="markdown-content">#{markdown.render(text)}</div>|
-    end
+    return if text.blank?
+
+    %(<div class="markdown-content">#{MARKDOWN.render(text)}</div>)
   end
 
   def featured_image_class(image)

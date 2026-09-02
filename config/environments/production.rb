@@ -47,7 +47,7 @@ Rails.application.configure do
   config.active_support.report_deprecations = false
 
   # Replace the default in-process memory cache store with a durable alternative.
-  # config.cache_store = :mem_cache_store
+  config.cache_store = :solid_cache_store
 
   # Replace the default in-process and non-durable queuing backend for Active Job.
   config.active_job.queue_adapter = :solid_queue
@@ -75,11 +75,10 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [:id]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
-  #
+  # HOST is guaranteed present by config/initializers/host_check.rb, which
+  # raises at boot when it is missing.
+  config.hosts = [ENV.fetch('HOST'), "www.#{ENV.fetch('HOST')}"]
+
   # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  config.host_authorization = { exclude: ->(request) { request.path == '/up' } }
 end

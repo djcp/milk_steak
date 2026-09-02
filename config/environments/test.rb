@@ -16,7 +16,11 @@ Rails.application.configure do
 
   # Show full error reports.
   config.consider_all_requests_local = true
-  config.cache_store = :null_store
+  # A real store, not :null_store: Rails' `rate_limit` counts through the cache,
+  # so a null store silently makes every rate limit a no-op and leaves the
+  # sign-in/sign-up throttles untestable. spec_helper clears it between examples
+  # so counters can't leak across tests and trip the limiter mid-suite.
+  config.cache_store = :memory_store
 
   # Render exception templates for rescuable exceptions and raise for other exceptions.
   config.action_dispatch.show_exceptions = :rescuable

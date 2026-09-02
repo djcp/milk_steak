@@ -1,8 +1,15 @@
 class Recipe < ApplicationRecord
   STATUSES = %w[draft processing processing_failed review published rejected].freeze
 
-  has_many :images, dependent: :destroy, inverse_of: :recipe
-  has_many :recipe_ingredients, dependent: :destroy, inverse_of: :recipe
+  # Autocomplete responses are capped so a broad query can't serialise the
+  # whole table into a dropdown.
+  AUTOCOMPLETE_LIMIT = 20
+
+  # Ordered at the association so callers get a stable order without calling
+  # .order, which would discard the eager-loaded collection and re-query.
+  has_many :images, -> { order(:id) }, dependent: :destroy, inverse_of: :recipe
+  has_many :recipe_ingredients, -> { order(:position) },
+    dependent: :destroy, inverse_of: :recipe
   has_many :ingredients, through: :recipe_ingredients
   belongs_to :user
 
@@ -28,7 +35,13 @@ class Recipe < ApplicationRecord
 
   accepts_nested_attributes_for :recipe_ingredients,
     allow_destroy: true,
-    reject_if: ->(attr) { attr['unit'].blank? && attr['quantity'].blank? }
+    # Also keeps a row that has only a name. "cilantro" or "salt to taste" are
+    # legitimate ingredients with neither quantity nor unit, and the previous
+    # predicate discarded them on save without telling the user.
+    reject_if: lambda { |attr|
+      attr['unit'].blank? && attr['quantity'].blank? &&
+        attr.dig('ingredient_attributes', 'name').blank?
+    }
 
   accepts_nested_attributes_for :images,
     allow_destroy: true,
@@ -60,21 +73,28 @@ class Recipe < ApplicationRecord
   end
 
   def self.fuzzy_autocomplete_for(context, query)
+    pattern = ActiveRecord::Base.sanitize_sql_like(query.to_s)
+
     ActsAsTaggableOn::Tagging.includes(:tag).where(
       context: context,
       taggable_type: 'Recipe',
       taggable_id: published.select(:id)
     ).joins(:tag).where(
-      'tags.name like ?', "%#{query}%"
-    ).distinct
+      'tags.name like ?', "%#{pattern}%"
+    ).distinct.limit(AUTOCOMPLETE_LIMIT)
+  end
+
+  # Memoised: _recipe.html.erb calls featured_image? and then featured_image,
+  # and _show_content does the same, so the chooser walked the collection twice
+  # per render. `defined?` rather than ||= so a nil result is cached too.
+  def featured_image
+    return @featured_image if defined?(@featured_image)
+
+    @featured_image = FeaturedImageChooser.find(self)
   end
 
   def featured_image?
     featured_image.present?
-  end
-
-  def featured_image
-    FeaturedImageChooser.find(self)
   end
 
   def pre_review?

@@ -13,7 +13,7 @@ gem 'rdoc', '>= 7.2.0'
 gem 'email_validator'
 gem 'flutie'
 gem 'image_processing', '~> 1.2'
-gem 'active_storage_validations'
+gem 'active_storage_validations', '~> 3.0'
 gem 'pg', '~> 1.1'
 gem 'propshaft'
 gem 'tailwindcss-rails', '~> 4.0'
@@ -26,6 +26,7 @@ gem 'pundit'
 gem 'will_paginate'
 gem 'redcarpet'
 gem 'aws-sdk-s3', require: false
+gem 'solid_cache'
 gem 'solid_queue'
 gem 'ruby_llm'
 
@@ -53,10 +54,8 @@ group :test do
   gem 'selenium-webdriver'
   gem 'capybara'
   gem 'database_cleaner-active_record'
-  gem 'launchy'
   gem 'shoulda-matchers', '~> 5.0', require: false
   gem 'simplecov', require: false
-  gem 'timecop'
   gem 'webmock'
 end
 
