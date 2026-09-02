@@ -7,8 +7,12 @@ class RecipeOnPage
     end
   end
 
+  # Selects on data-ingredient-index so only real rows match. The previous
+  # selector also matched the column-header row (which shares .ingredient),
+  # hence its unexplained `count + 1`. `has_css?` also auto-waits, where
+  # `all(...).count` sampled the DOM once and raced the row-adding JS.
   def has_ingredient_fields_numbering?(count)
-    all('fieldset#ingredients div.ingredient').count == count + 1
+    has_css?('fieldset#ingredients div.ingredient[data-ingredient-index]', count: count)
   end
 
   def click_to_add_more_ingredients
@@ -107,6 +111,9 @@ class RecipeOnPage
 
   def submit
     find('input[type="submit"]').click
-    has_css?('article.recipe h1', wait: 10)
+    # assert_selector, not has_css?: callers ignore the boolean, so a failed
+    # submit used to surface later as a confusing timeout on an unrelated
+    # expectation instead of failing here.
+    assert_selector('article.recipe h1', wait: 10)
   end
 end

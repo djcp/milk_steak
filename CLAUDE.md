@@ -139,7 +139,7 @@ Recipes have a `status` field with values: `draft`, `processing`, `processing_fa
 
 - **RSpec** with FactoryBot, Shoulda Matchers, Capybara, Database Cleaner
 - Factories in `spec/support/factories.rb`, validated via `spec/models/factories_spec.rb`
-- Shared examples in `spec/support/shared_examples/`
+- Shared examples in `spec/support/shared_examples/`. `'an autocomplete controller'` takes a **required** `seed:` lambda (`->(recipe, value)`) describing how to attach a value to a recipe for that endpoint, so adding a new autocomplete without draft-disclosure coverage is a loud failure rather than a silent omission. Verified to have teeth: removing the `published` scopes fails exactly seven examples, one per endpoint
 - Policy specs in `spec/policies/` are plain RSpec (no pundit-matchers) — they assert the role matrix directly on policy booleans and `Scope#resolve`
 - Feature specs use Selenium headless Chrome (`js: true`); default driver is `rack_test`
 - `user_logs_in` (in `Features::SessionHelpers`) creates and logs in a regular user; `log_in_as(user)` logs in a pre-created user (use this when you need to supply your own user, e.g. an admin)

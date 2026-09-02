@@ -142,6 +142,18 @@ describe RecipeAiApplier do
       expect(run.user_prompt).to eq(data.to_json)
     end
 
+    it 'caps applied ingredients at 200' do
+      # Silently truncates rather than raising, unlike the extractor, which
+      # rejects an over-long list outright. Both halves of that pair are pinned.
+      oversized = data.merge(
+        'ingredients' => Array.new(250) { |i| { 'name' => "ingredient #{i}", 'quantity' => '1' } }
+      )
+
+      described_class.apply(recipe, oversized)
+
+      expect(recipe.reload.recipe_ingredients.count).to eq(200)
+    end
+
     context 'when save! raises' do
       it 'records a failed run and re-raises' do
         # Stub save! on this specific recipe instance (avoids any_instance interfering with

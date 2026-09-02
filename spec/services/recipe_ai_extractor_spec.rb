@@ -64,6 +64,15 @@ describe RecipeAiExtractor do
       expect(message).to include('</untrusted_recipe_text>')
     end
 
+    it 'rejects a response with more than 200 ingredients' do
+      oversized = { 'name' => 'x', 'directions' => 'y',
+                    'ingredients' => Array.new(201) { { 'name' => 'z' } } }
+      stub_ruby_llm(content: oversized.to_json)
+
+      expect { described_class.extract('text') }
+        .to raise_error(/too many ingredients/)
+    end
+
     it 'strips a closing delimiter smuggled in via the fetched page' do
       # The delimiters are the entire prompt-injection defence, so scraped text
       # must not be able to emit one and have what follows read as instructions.

@@ -27,7 +27,7 @@ describe RecipesController do
       end
     end
 
-    context '#update' do
+    context '#edit' do
       it 'is valid' do
         user = build(:user)
         allow(controller).to receive(:current_user).and_return(user)
@@ -54,8 +54,82 @@ describe RecipesController do
       end
     end
 
-    context '#updated' do
-      # it
+    context '#index pagination limits' do
+      # per_page is clamped because an unbounded value lets a single request
+      # ask the database and the renderer for the entire table.
+      it 'clamps an absurd per_page down to the maximum' do
+        get :index, params: { per_page: 10_000_000 }
+
+        expect(assigns(:recipes).per_page).to eq(48)
+      end
+
+      it 'clamps a zero or negative per_page up to the minimum' do
+        get :index, params: { per_page: 0 }
+        expect(assigns(:recipes).per_page).to eq(1)
+
+        get :index, params: { per_page: -5 }
+        expect(assigns(:recipes).per_page).to eq(1)
+      end
+
+      it 'treats a non-numeric per_page as the minimum rather than erroring' do
+        get :index, params: { per_page: 'lots' }
+
+        expect(response).to be_successful
+        expect(assigns(:recipes).per_page).to eq(1)
+      end
+
+      it 'floors page at 1' do
+        get :index, params: { page: -3 }
+        expect(assigns(:recipes).current_page).to eq(1)
+
+        get :index, params: { page: 'abc' }
+        expect(assigns(:recipes).current_page).to eq(1)
+      end
+    end
+
+    context '#update' do
+      it 'updates the recipe and redirects to it' do
+        user = create(:user)
+        sign_in_user user
+        recipe = create(:recipe, user: user, name: 'Old name')
+
+        patch :update, params: { id: recipe.id, recipe: { name: 'New name' } }
+
+        expect(recipe.reload.name).to eq('New name')
+        expect(response).to redirect_to(recipe_path(recipe))
+        expect(flash[:notice]).to eq(I18n.t('ui.recipes.updated'))
+      end
+
+      it 're-renders the form when the update is invalid' do
+        user = create(:user)
+        sign_in_user user
+        recipe = create(:recipe, user: user, name: 'Old name')
+
+        patch :update, params: { id: recipe.id, recipe: { name: '' } }
+
+        expect(recipe.reload.name).to eq('Old name')
+        expect(response).to render_template(:edit)
+        expect(flash[:error]).to eq(I18n.t('ui.recipes.invalid_creation'))
+      end
+
+      it 'ignores status, which only admins may set' do
+        user = create(:user)
+        sign_in_user user
+        recipe = create(:recipe, user: user, status: 'published')
+
+        patch :update, params: { id: recipe.id, recipe: { name: 'Still fine', status: 'draft' } }
+
+        expect(recipe.reload.status).to eq('published')
+      end
+
+      it "cannot update another user's recipe" do
+        sign_in_user create(:user)
+        recipe = create(:recipe, name: 'Untouched')
+
+        patch :update, params: { id: recipe.id, recipe: { name: 'Hijacked' } }
+
+        expect(recipe.reload.name).to eq('Untouched')
+      end
     end
 
     context '#create' do
@@ -192,19 +266,18 @@ describe RecipesController do
 
         expect(response).to redirect_to(new_user_session_path)
       end
-
-      it 'has a logical message' do
-        post :create, params: { recipe: { name: 'foo' } }
-
-        expect(response).to redirect_to(new_user_session_path)
-      end
     end
 
     context '#create' do
       it 'cannot post to #create' do
-        post :new
+        post :create, params: { recipe: { name: 'foo' } }
 
         expect(response).to redirect_to(new_user_session_path)
+      end
+
+      it 'creates nothing' do
+        expect { post :create, params: { recipe: { name: 'foo' } } }
+          .not_to change(Recipe, :count)
       end
     end
   end
