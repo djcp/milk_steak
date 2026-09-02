@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_01_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_01_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -75,6 +75,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_000001) do
     t.bigint "recipe_id", null: false
     t.datetime "updated_at", null: false
     t.index ["recipe_id"], name: "index_images_on_recipe_id"
+    t.index ["recipe_id"], name: "index_images_one_featured_per_recipe", unique: true, where: "(featured = true)"
   end
 
   create_table "ingredients", force: :cascade do |t|
@@ -123,7 +124,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_000001) do
     t.index ["user_id", "status"], name: "index_recipes_on_user_id_and_status"
     t.index ["user_id"], name: "index_recipes_on_user_id"
     t.check_constraint "octet_length(source_text) <= 51200", name: "recipes_source_text_length_check"
-    t.check_constraint "status::text = ANY (ARRAY['draft'::character varying, 'processing'::character varying, 'processing_failed'::character varying, 'review'::character varying, 'published'::character varying, 'rejected'::character varying]::text[])", name: "recipes_status_check"
+    t.check_constraint "status::text = ANY (ARRAY['draft'::character varying::text, 'processing'::character varying::text, 'processing_failed'::character varying::text, 'review'::character varying::text, 'published'::character varying::text, 'rejected'::character varying::text])", name: "recipes_status_check"
   end
 
   create_table "solid_queue_batch_executions", force: :cascade do |t|
@@ -316,12 +317,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_000001) do
     t.string "unconfirmed_email"
     t.string "unlock_token"
     t.datetime "updated_at"
-    t.string "username", default: "", null: false
+    t.string "username", null: false
+    t.index "lower((email)::text)", name: "index_users_on_lower_email", unique: true
+    t.index "lower((username)::text)", name: "index_users_on_lower_username", unique: true
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
-    t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
-    t.index ["username"], name: "index_users_on_username", unique: true
     t.index ["username"], name: "index_users_on_username_trgm", opclass: :gin_trgm_ops, using: :gin
   end
 

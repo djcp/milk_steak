@@ -6,6 +6,11 @@ ENV['RAILS_ENV'] = 'test'
 require File.expand_path('../../config/environment', __FILE__)
 
 require 'rspec/rails'
+
+# Aborts with a clear message when the test database is behind db/schema.rb.
+# Without it the schema silently drifts after a migration, and specs fail in
+# ways that look like application bugs rather than a stale database.
+ActiveRecord::Migration.maintain_test_schema!
 require 'shoulda/matchers'
 require 'webmock/rspec'
 

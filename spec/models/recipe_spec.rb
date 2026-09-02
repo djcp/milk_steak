@@ -97,4 +97,27 @@ describe Recipe do
       expect(build(:recipe, name: 'Creme Brulee').name_for_url).to eq('creme_brulee')
     end
   end
+
+  describe 'nested recipe_ingredients rejection' do
+    it 'keeps an ingredient that has only a name' do
+      # "cilantro" or "salt to taste" have neither quantity nor unit, and were
+      # previously discarded on save with no feedback to the user.
+      recipe = build(:recipe)
+      recipe.recipe_ingredients_attributes = [
+        { 'quantity' => '', 'unit' => '', 'ingredient_attributes' => { 'name' => 'cilantro' } }
+      ]
+
+      expect { recipe.save! }.to change(RecipeIngredient, :count).by(1)
+      expect(RecipeIngredient.includes(:ingredient).last.name).to eq('cilantro')
+    end
+
+    it 'still rejects a wholly blank row' do
+      recipe = build(:recipe)
+      recipe.recipe_ingredients_attributes = [
+        { 'quantity' => '', 'unit' => '', 'ingredient_attributes' => { 'name' => '' } }
+      ]
+
+      expect { recipe.save! }.not_to change(RecipeIngredient, :count)
+    end
+  end
 end

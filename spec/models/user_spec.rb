@@ -92,4 +92,18 @@ describe User do
       expect(user.reload.access_locked?).to be false
     end
   end
+
+  describe 'case-insensitive uniqueness' do
+    it 'rejects an email differing only in case' do
+      create(:user, email: 'Alice@example.com')
+
+      expect(build(:user, email: 'alice@example.com')).not_to be_valid
+    end
+
+    it 'rejects a username differing only in case' do
+      create(:user, username: 'Alice')
+
+      expect(build(:user, username: 'alice')).not_to be_valid
+    end
+  end
 end

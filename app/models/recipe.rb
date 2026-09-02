@@ -35,7 +35,13 @@ class Recipe < ApplicationRecord
 
   accepts_nested_attributes_for :recipe_ingredients,
     allow_destroy: true,
-    reject_if: ->(attr) { attr['unit'].blank? && attr['quantity'].blank? }
+    # Also keeps a row that has only a name. "cilantro" or "salt to taste" are
+    # legitimate ingredients with neither quantity nor unit, and the previous
+    # predicate discarded them on save without telling the user.
+    reject_if: lambda { |attr|
+      attr['unit'].blank? && attr['quantity'].blank? &&
+        attr.dig('ingredient_attributes', 'name').blank?
+    }
 
   accepts_nested_attributes_for :images,
     allow_destroy: true,

@@ -5,7 +5,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :trackable, :validatable, :confirmable,
          :lockable
 
-  validates :email, email: true, presence: true, uniqueness: true
+  validates :email, email: true, presence: true, uniqueness: { case_sensitive: false }
   validates :username, presence: true,
                        uniqueness: { case_sensitive: false },
                        format: { with: /\A[a-z0-9_]+\z/i },
