@@ -1,4 +1,6 @@
 class RecipesController < ApplicationController
+  include Paginatable
+
   BLANK_INGREDIENT_ROWS = 5
   BLANK_IMAGE_ROWS = 4
 
@@ -16,28 +18,24 @@ class RecipesController < ApplicationController
       :user, images: { image_attachment: { blob: :variant_records } }
     ).recent.paginate(
       page: page_param,
-      per_page: per_page_param
+      per_page: per_page_param(default: 12, max: 48)
     )
     @recipes = @filter_set.apply_to(@recipes)
+  end
+
+  def show
+    authorize @recipe
   end
 
   def new
     @recipe = Recipe.new
     authorize @recipe
-    set_up_form_for(@recipe)
+    build_form_placeholders(@recipe)
   end
 
-  def update
+  def edit
     authorize @recipe
-    begin
-      @recipe.update!(permitted_attributes(@recipe))
-      flash[:notice] = t('ui.recipes.updated')
-      redirect_to recipe_path(@recipe)
-    rescue ActiveRecord::RecordInvalid => e
-      flash[:error] = "#{t('ui.recipes.invalid_creation')}"
-      set_up_form_for(@recipe)
-      render :edit
-    end
+    build_form_placeholders(@recipe)
   end
 
   def create
@@ -48,20 +46,24 @@ class RecipesController < ApplicationController
       @recipe.save!
       flash[:notice] = t('created')
       redirect_to recipe_path(@recipe)
-    rescue ActiveRecord::RecordInvalid => e
-      flash[:error] = "#{t('ui.recipes.invalid_creation')}"
-      set_up_form_for(@recipe)
+    rescue ActiveRecord::RecordInvalid
+      flash[:error] = t('ui.recipes.invalid_creation').to_s
+      build_form_placeholders(@recipe)
       render :new
     end
   end
 
-  def show
+  def update
     authorize @recipe
-  end
-
-  def edit
-    authorize @recipe
-    set_up_form_for(@recipe)
+    begin
+      @recipe.update!(permitted_attributes(@recipe))
+      flash[:notice] = t('ui.recipes.updated')
+      redirect_to recipe_path(@recipe)
+    rescue ActiveRecord::RecordInvalid
+      flash[:error] = t('ui.recipes.invalid_creation').to_s
+      build_form_placeholders(@recipe)
+      render :edit
+    end
   end
 
   private
@@ -74,7 +76,7 @@ class RecipesController < ApplicationController
   # Reads `target` rather than the association itself so this never triggers a
   # lazy load: on edit/update find_recipe has already preloaded it, and on new
   # or a failed create the in-memory rows are exactly what we want to count.
-  def set_up_form_for(recipe)
+  def build_form_placeholders(recipe)
     blank_ingredients = BLANK_INGREDIENT_ROWS - recipe.recipe_ingredients.target.count(&:new_record?)
     blank_images = BLANK_IMAGE_ROWS - recipe.images.target.count(&:new_record?)
 
@@ -90,15 +92,7 @@ class RecipesController < ApplicationController
     # Worth keeping because these associations are exempt from strict loading
     # (see Recipe), so a future N+1 on them would be invisible to the suite.
     @recipe = Recipe.includes(:user, :recipe_ingredients, :ingredients,
-      :cooking_methods, :cultural_influences, :courses, :dietary_restrictions,
-      images: { image_attachment: { blob: :variant_records } }).find(params[:id])
-  end
-
-  def page_param
-    [1, params.fetch(:page, 1).to_i].max
-  end
-
-  def per_page_param
-    params.fetch(:per_page, 12).to_i.clamp(1, 48)
+                              :cooking_methods, :cultural_influences, :courses, :dietary_restrictions,
+                              images: { image_attachment: { blob: :variant_records } }).find(params.expect(:id))
   end
 end

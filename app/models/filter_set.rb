@@ -13,7 +13,7 @@ class FilterSet
 
   TAG_CONTEXTS = %i[cooking_methods cultural_influences courses dietary_restrictions].freeze
 
-  attr_accessor *FILTERS
+  attr_accessor(*FILTERS)
 
   def initialize(params)
     @cooking_methods     = normalize params[:cooking_methods]

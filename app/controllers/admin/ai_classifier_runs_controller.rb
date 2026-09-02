@@ -1,5 +1,7 @@
 module Admin
   class AiClassifierRunsController < BaseController
+    include Paginatable
+
     before_action :find_run, only: %i[show rerun]
 
     after_action :verify_policy_scoped, only: :index
@@ -8,8 +10,8 @@ module Admin
       authorize :ai_classifier_run, :index?
       base = scoped_runs
 
-      per_page = params.fetch(:per_page, 10).to_i.clamp(1, 100)
-      page     = (params[:page] || 1).to_i
+      per_page = per_page_param(default: 10, max: 100)
+      page     = page_param
 
       @recipe_ids        = paginated_recipe_ids(base, page, per_page)
       @runs_by_recipe_id = grouped_runs(base, @recipe_ids)

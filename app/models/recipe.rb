@@ -84,12 +84,17 @@ class Recipe < ApplicationRecord
     ).distinct.limit(AUTOCOMPLETE_LIMIT)
   end
 
-  def featured_image?
-    featured_image.present?
+  # Memoised: _recipe.html.erb calls featured_image? and then featured_image,
+  # and _show_content does the same, so the chooser walked the collection twice
+  # per render. `defined?` rather than ||= so a nil result is cached too.
+  def featured_image
+    return @featured_image if defined?(@featured_image)
+
+    @featured_image = FeaturedImageChooser.find(self)
   end
 
-  def featured_image
-    FeaturedImageChooser.find(self)
+  def featured_image?
+    featured_image.present?
   end
 
   def pre_review?

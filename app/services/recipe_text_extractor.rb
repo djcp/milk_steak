@@ -1,4 +1,7 @@
 class RecipeTextExtractor
+  # Upstream returned a non-success status. Transient, so worth retrying.
+  class FetchError < StandardError; end
+
   include AiService
 
   MAX_TEXT_LENGTH = 15_000
@@ -33,7 +36,7 @@ class RecipeTextExtractor
   def fetch_and_parse
     response = SafeUrlFetcher.fetch(@url)
 
-    raise "HTTP #{response.code}: Failed to fetch #{@url}" unless response.is_a?(Net::HTTPSuccess)
+    raise FetchError, "HTTP #{response.code}: Failed to fetch #{@url}" unless response.is_a?(Net::HTTPSuccess)
 
     doc = Nokogiri::HTML(response.body)
 

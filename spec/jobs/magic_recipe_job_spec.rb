@@ -94,6 +94,28 @@ describe MagicRecipeJob do
       expect(recipe.reload.status).to eq('processing_failed')
     end
 
+    it 'discards rather than retrying a failure that cannot succeed' do
+      recipe = create(:recipe, :magic)
+      allow(RecipeTextExtractor).to receive(:from_url)
+        .and_raise(SafeUrlFetcher::BlockedAddressError, 'internal address')
+
+      # perform_now runs the rescue handlers; a blocked URL will never
+      # succeed, so burning three attempts on it is pure waste. The recipe is
+      # still marked failed by the rescue inside #perform before re-raising.
+      expect { described_class.perform_now(recipe.id) }.not_to raise_error
+      expect(recipe.reload.status).to eq('processing_failed')
+    end
+
+    it 'still retries a transient upstream failure' do
+      recipe = create(:recipe, :magic)
+      allow(RecipeTextExtractor).to receive(:from_url)
+        .and_raise(RecipeTextExtractor::FetchError, 'HTTP 503')
+
+      # retry_on re-enqueues rather than raising, so this must not discard.
+      expect { described_class.perform_now(recipe.id) }.not_to raise_error
+      expect(recipe.reload.status).to eq('processing_failed')
+    end
+
     it 'raises rather than swallowing a missing recipe' do
       expect { described_class.new.perform(-1) }
         .to raise_error(ActiveRecord::RecordNotFound)

@@ -8,6 +8,8 @@ class SafeUrlFetcher
   # Subclasses BlockedAddressError so existing rescuers keep working, while
   # callers that care can tell "response too big" from "internal address".
   class ResponseTooLargeError < BlockedAddressError; end
+  class TooManyRedirectsError < StandardError; end
+  class RedirectWithoutLocationError < StandardError; end
 
   # Accumulates a response body while enforcing the cap *during* the read, so a
   # hostile server can't force the whole payload into memory before we check.
@@ -86,10 +88,10 @@ class SafeUrlFetcher
       response = http_get(uri)
       return response unless redirect?(response)
 
-      raise "Too many redirects fetching #{@uri}" if redirects >= @max_redirects
+      raise TooManyRedirectsError, "Too many redirects fetching #{@uri}" if redirects >= @max_redirects
 
       location = response['location']
-      raise "Redirect without location from #{uri}" if location.blank?
+      raise RedirectWithoutLocationError, "Redirect without location from #{uri}" if location.blank?
 
       uri = URI.join(uri, location)
       validate_uri!(uri)

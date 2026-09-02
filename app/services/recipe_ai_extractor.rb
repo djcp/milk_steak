@@ -1,4 +1,8 @@
 class RecipeAiExtractor
+  # The model returned something that isn't a usable recipe. LLM output is
+  # non-deterministic, so this stays retryable.
+  class InvalidResponse < StandardError; end
+
   include AiService
 
   SYSTEM_PROMPT = <<~PROMPT.freeze
@@ -116,10 +120,10 @@ class RecipeAiExtractor
   end
 
   def validate_result!(data)
-    raise 'AI response is not a JSON object' unless data.is_a?(Hash)
+    raise InvalidResponse, 'AI response is not a JSON object' unless data.is_a?(Hash)
 
     missing = %w[name directions].reject { |key| data[key].present? }
-    raise "AI response is missing required fields: #{missing.join(', ')}" if missing.any?
+    raise InvalidResponse, "AI response is missing required fields: #{missing.join(', ')}" if missing.any?
 
     validate_ingredients!(data['ingredients'])
   end
@@ -127,8 +131,8 @@ class RecipeAiExtractor
   def validate_ingredients!(ingredients)
     return if ingredients.nil?
 
-    raise 'AI response ingredients must be an array' unless ingredients.is_a?(Array)
-    raise 'AI response includes too many ingredients' if ingredients.length > 200
+    raise InvalidResponse, 'AI response ingredients must be an array' unless ingredients.is_a?(Array)
+    raise InvalidResponse, 'AI response includes too many ingredients' if ingredients.length > 200
   end
 
   def current_adapter
