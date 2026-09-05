@@ -1,6 +1,8 @@
 require 'spec_helper'
 
-feature 'User views homepage', js: true do
+# Not js: true — pagination is entirely server-rendered, so the default
+# rack_test driver exercises the same markup without a browser.
+feature 'User views homepage' do
   include RecipeGenerator
 
   scenario 'sees a paginated list of recipes' do

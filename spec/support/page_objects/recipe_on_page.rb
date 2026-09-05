@@ -1,5 +1,8 @@
+require_relative '../features/autocomplete_helpers'
+
 class RecipeOnPage
   include Capybara::DSL
+  include Features::AutocompleteHelpers
 
   def title
     within '.recipe' do
@@ -21,8 +24,15 @@ class RecipeOnPage
     end
   end
 
+  # Reports what the menu actually held when the expected entry is missing.
+  # A bare "Unable to find css '.ui-autocomplete li'" cannot distinguish "the
+  # menu never opened" from "it opened with different entries", which are
+  # different bugs with different fixes.
   def has_autocomplete_including?(term)
     find('.ui-autocomplete li', text: term)
+  rescue Capybara::ElementNotFound => e
+    entries = all('.ui-autocomplete li', visible: :all, wait: 0).map(&:text)
+    raise e, "#{e.message}\nMenu entries present: #{entries.inspect}"
   end
 
   def cooking_methods
@@ -110,6 +120,11 @@ class RecipeOnPage
   end
 
   def submit
+    # Every form this page object drives has autocomplete fields on it. Shutting
+    # them down before navigating away means no pending search can fire against
+    # a document that is being replaced. Doing it here covers every caller.
+    dismiss_autocompletes
+
     find('input[type="submit"]').click
     # assert_selector, not has_css?: callers ignore the boolean, so a failed
     # submit used to surface later as a confusing timeout on an unrelated

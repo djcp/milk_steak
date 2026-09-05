@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-feature 'User manages recipes', js: true do
+feature 'User manages recipes', :js do
   scenario 'can add arbitrary numbers of ingredients' do
     user_logs_in
 
