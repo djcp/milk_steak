@@ -8,5 +8,8 @@
 <%= yield :javascript %>
 
 <% if Rails.env.test? %>
-  <%= javascript_include_tag "test_setup" %>
+  <%# defer: true is required, not cosmetic. jQuery above is deferred, so a
+      classic script here would run at parse time — before jQuery exists — and
+      die on `$ is not defined`, silently leaving animations on and AJAX async. %>
+  <%= javascript_include_tag "test_setup", defer: true %>
 <% end %>
